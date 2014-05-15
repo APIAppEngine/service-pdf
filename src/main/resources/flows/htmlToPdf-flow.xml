@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright (c) 2013 Mike Nimer.
+
+  This file is part of ApiServer Project.
+
+  The ApiServer Project is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  The ApiServer Project is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<beans
+        xmlns:http="http://www.springframework.org/schema/integration/http"
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:si="http://www.springframework.org/schema/integration"
+        xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http.xsd">
+
+
+
+    <si:channel id="convertHtmlToPdfChannelRequestChannel"/>
+
+    <si:channel id="convertHtmlToPdfChannelReplyChannel"/>
+
+
+    <si:gateway id="convertHtmlToPdfChannelApiGateway"
+                service-interface="apiserver.services.pdf.gateways.PdfConversionGateway"
+                default-reply-channel="convertHtmlToPdfChannelReplyChannel"
+                default-reply-timeout="#{applicationProperties.defaultReplyTimeout}">
+
+        <si:method name="convertHtmlToPdf"
+                   request-channel="convertHtmlToPdfChannelRequestChannel"/>
+
+    </si:gateway>
+
+
+
+    <si:chain input-channel="convertHtmlToPdfChannelRequestChannel"
+              output-channel="convertHtmlToPdfChannelReplyChannel">
+
+        <si:service-activator
+                method="execute">
+            <bean class="apiserver.core.connectors.coldfusion.services.BinaryCFCService">
+                <property name="cfcPath" value="api-pdf-convert.cfc?method=htmlToPdf"/>
+                <property name="cfcMethod" value="POST"/>
+            </bean>
+        </si:service-activator>
+
+    </si:chain>
+</beans>
+
