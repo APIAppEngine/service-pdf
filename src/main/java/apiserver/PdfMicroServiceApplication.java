@@ -38,7 +38,7 @@ public class PdfMicroServiceApplication implements EmbeddedServletContainerCusto
     @Override
     public void customize(ConfigurableEmbeddedServletContainer configurableEmbeddedServletContainer)
     {
-        //configurableEmbeddedServletContainer.setPort(9001);
+        configurableEmbeddedServletContainer.setPort(9003);
     }
 
 
