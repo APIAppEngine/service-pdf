@@ -1,6 +1,6 @@
 package apiserver.services.pdf.gateways.jobs;
 
-import apiserver.apis.v1_0.documents.model.Document;
+import apiserver.services.cache.model.Document;
 import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
 import apiserver.core.connectors.coldfusion.services.ObjectJob;
 

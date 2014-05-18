@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,8 +75,7 @@ public class ConvertHtmlController
      * @throws java.io.IOException
      */
     @ApiOperation(value = "Convert an HTML string into a PDF document.")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/convert/html", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "/convert/html", method = {RequestMethod.POST, RequestMethod.GET}, produces = "application/pdf")
     public ResponseEntity<byte[]> html2pdf(
             @ApiParam(name="html", required = true) @RequestParam(value = "html") String html,
             @ApiParam(name="headerHtml", required = false) @RequestParam(value = "headerHtml", required = false) String headerHtml,

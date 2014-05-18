@@ -19,9 +19,9 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.apis.v1_0.documents.model.Document;
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.ThumbnailPdfJob;
 import com.wordnik.swagger.annotations.Api;
@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -87,8 +86,7 @@ public class ThumbnailController
      * @throws Exception
      */
     @ApiOperation(value = "Generate thumbnails from the pages of a PDF")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/thumbnail", method = RequestMethod.POST)
+    @RequestMapping(value = "/thumbnail", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> thumbnailPdf(
             @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
             @ApiParam(name="format", required = false, allowableValues = "png,jpeg,tiff") @RequestPart("format") String format,
@@ -156,8 +154,7 @@ public class ThumbnailController
      * @throws Exception
      */
     @ApiOperation(value = "Generate thumbnails from the pages of a PDF")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/thumbnail", method = RequestMethod.POST)
+    @RequestMapping(value = "/thumbnail/{documentId}", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> thumbnailCachedPdf(
             @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
             @ApiParam(name="format", required = false, allowableValues = "png,jpeg,tiff") @RequestPart("format") String format,

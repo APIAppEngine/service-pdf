@@ -1,9 +1,9 @@
 package apiserver.services.pdf.controllers;
 
 import apiserver.MimeType;
-import apiserver.apis.v1_0.documents.model.Document;
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.DDXPdfJob;
 import apiserver.services.pdf.gateways.jobs.Document2PdfJob;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -42,8 +41,8 @@ public class DDXController
 
     private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
 
-    @Qualifier("processDDXApiGateway")
-    @Autowired
+    @Qualifier("processDDXGateway")
+    @Autowired(required = false)
     public PdfGateway gateway;
 
 
@@ -66,8 +65,7 @@ public class DDXController
      * @throws Exception
      */
     @ApiOperation(value = "Use a DDX file for advanced manipulation")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/modify/ddx", method = RequestMethod.POST)
+    @RequestMapping(value = "/modify/ddx", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> processDDX(
             @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
             @ApiParam(name="ddx", required = true) @RequestParam("ddx") String DDX
@@ -102,8 +100,7 @@ public class DDXController
      * @throws Exception
      */
     @ApiOperation(value = "Use a DDX file for advanced manipulation")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/modify/{documentId}/ddx", method = RequestMethod.POST)
+    @RequestMapping(value = "/modify/{documentId}/ddx", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> processCachedPdfDDX(
             @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
             @ApiParam(name="ddx", required = true) @RequestParam("ddx") String DDX

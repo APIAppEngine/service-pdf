@@ -19,7 +19,7 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.apis.v1_0.documents.model.Document;
+import apiserver.services.cache.model.Document;
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
 import apiserver.core.connectors.coldfusion.services.ObjectJob;
@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -76,8 +75,7 @@ public class InfoController
      * @throws Exception
      */
     @ApiOperation(value = "TODO")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/info/get", method = RequestMethod.POST)
+    @RequestMapping(value = "/info/get", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<Object> getPdfInfo(
             @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
             @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
@@ -106,8 +104,7 @@ public class InfoController
      * @throws Exception
      */
     @ApiOperation(value = "Get information about document")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/{documentId}/info/get", method = RequestMethod.GET)
+    @RequestMapping(value = "/{documentId}/info/get", method = RequestMethod.GET, produces = "application/pdf")
     public ResponseEntity<Object> getCachedPdfInfo(
             @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
             @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
@@ -137,8 +134,7 @@ public class InfoController
      * @throws Exception
      */
     @ApiOperation(value = "Set information about document")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/info/set", method = RequestMethod.POST)
+    @RequestMapping(value = "/info/set", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> setPdfInfo(
             @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
             @ApiParam(name="info", required = true) @RequestPart("info") Map info,
@@ -173,8 +169,7 @@ public class InfoController
      * @throws Exception
      */
     @ApiOperation(value = "Set information about cached document")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/{documentId}/info/set", method = RequestMethod.GET)
+    @RequestMapping(value = "/{documentId}/info/set", method = RequestMethod.GET, produces = "application/pdf")
     public ResponseEntity<byte[]> setCachedPdfInfo(
             @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
             @ApiParam(name="info", required = true) @RequestPart("info") Map info,

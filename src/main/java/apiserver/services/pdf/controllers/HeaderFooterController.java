@@ -1,9 +1,9 @@
 package apiserver.services.pdf.controllers;
 
 import apiserver.MimeType;
-import apiserver.apis.v1_0.documents.model.Document;
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.AddFooterPdfJob;
 import apiserver.services.pdf.gateways.jobs.AddHeaderPdfJob;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -77,8 +76,7 @@ public class HeaderFooterController
      * @throws Exception
      */
     @ApiOperation(value = "Add Header to PDF pages")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/modify/header", method = RequestMethod.POST)
+    @RequestMapping(value = "/modify/header", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> addHeader(
             @ApiParam(name="file", required = true) @RequestPart(value = "file") MultipartFile file,
             @ApiParam(name="image", required = false) @RequestPart(value = "image", required = false) MultipartFile image,
@@ -151,8 +149,7 @@ public class HeaderFooterController
      * @throws Exception
      */
     @ApiOperation(value = "Add Header to cached PDF pages")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/modify/{documentId}/header", method = RequestMethod.POST)
+    @RequestMapping(value = "/modify/{documentId}/header", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> addHeaderToCachedPdf(
             @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
             @ApiParam(name="image", required = false) @RequestPart(value = "image", required = false) MultipartFile image,
@@ -231,8 +228,7 @@ public class HeaderFooterController
      * @throws Exception
      */
     @ApiOperation(value = "Add Footer to PDF pages")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/modify/footer", method = RequestMethod.POST)
+    @RequestMapping(value = "/modify/footer", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> addFooter(
             @ApiParam(name="file", required = true) @RequestPart(value = "file") MultipartFile file,
             @ApiParam(name="image", required = false) @RequestPart(value = "image", required = false) MultipartFile image,
@@ -308,8 +304,7 @@ public class HeaderFooterController
      * @throws Exception
      */
     @ApiOperation(value = "Add Footer to cached PDF pages")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/modify/{documentId}/footer", method = RequestMethod.POST)
+    @RequestMapping(value = "/modify/{documentId}/footer", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> addFooterToCachedPdf(
             @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
             @ApiParam(name="image", required = false) @RequestPart(value = "image", required = false) MultipartFile image,
@@ -377,9 +372,8 @@ public class HeaderFooterController
      * @throws Exception
      */
     @ApiOperation(value = " Remove Header & Footer from pdf pages")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/modify/{documentId}/headerFooter", method = RequestMethod.DELETE)
-    public ResponseEntity<byte[]> remoteHeaderFooterFromPdf(
+    @RequestMapping(value = "/modify/headerFooter", method = RequestMethod.DELETE, produces = "application/pdf")
+    public ResponseEntity<byte[]> removeHeaderFooterFromPdf(
             @ApiParam(name="file", required = true) @RequestPart(value = "file") MultipartFile file,
             @ApiParam(name="pages", required = false) @RequestPart(value = "pages", required = false) String pages,
             @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
@@ -417,10 +411,9 @@ public class HeaderFooterController
      * @throws java.io.IOException
      * @throws Exception
      */
-    @ApiOperation(value = " Remove Header & Footer from cached pdf document")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/modify/{documentId}/headerFooter", method = RequestMethod.DELETE)
-    public ResponseEntity<byte[]> remoteHeaderFooterToCachedPdf(
+    @ApiOperation(value = "Remove Header & Footer from cached pdf document")
+    @RequestMapping(value = "/modify/{documentId}/headerFooter", method = RequestMethod.DELETE, produces = "application/pdf")
+    public ResponseEntity<byte[]> removeHeaderFooterFromCachedPdf(
             @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
             @ApiParam(name="pages", required = false) @RequestPart(value = "pages", required = false) String pages,
             @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password

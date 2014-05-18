@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright (c) 2013 Mike Nimer.
+
+  This file is part of ApiServer Project.
+
+  The ApiServer Project is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  The ApiServer Project is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:http="http://www.springframework.org/schema/integration/http"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+
+    <!-- status flows -->
+    <import resource="flows/addFooterToPdf-flow.xml"/>
+    <import resource="flows/addHeaderToPdf-flow.xml"/>
+    <import resource="flows/documentGet-flow.xml"/>
+    <import resource="flows/documentDelete-flow.xml"/>
+    <import resource="flows/documentAdd-flow.xml"/>
+    <import resource="flows/deletePdfPages-flow.xml"/>
+    <import resource="flows/documentToPdf-flow.xml"/>
+    <import resource="flows/extractPdfForm-flow.xml"/>
+    <import resource="flows/extractPdfImage-flow.xml"/>
+    <import resource="flows/extractPdfText-flow.xml"/>
+    <import resource="flows/htmlToPdf-flow.xml"/>
+    <import resource="flows/mergePdf-flow.xml"/>
+    <import resource="flows/optimizePdf-flow.xml"/>
+    <import resource="flows/documentToPdf-flow.xml"/>
+    <import resource="flows/pagesPdf-flow.xml"/>
+    <import resource="flows/pdfHeaderFooter-flow.xml"/>
+    <import resource="flows/pdfInfo-flow.xml"/>
+    <import resource="flows/populatePdfForm-flow.xml"/>
+    <import resource="flows/processDDX-flow.xml"/>
+    <import resource="flows/securePdf-flow.xml"/>
+    <import resource="flows/thumbnailPdf-flow.xml"/>
+    <import resource="flows/transformPdf-flow.xml"/>
+    <import resource="flows/urlToPdf-flow.xml"/>
+    <import resource="flows/watermarkPdf-flow.xml"/>
+
+
+
+
+    <util:map id="applicationProperties"
+              key-type="java.lang.String"
+              value-type="java.lang.String">
+        <entry key="defaultReplyTimeout" value="60000" />
+    </util:map>
+
+    <util:map id="coldfusionProperties"
+              key-type="java.lang.String"
+              value-type="java.lang.String">
+        <!-- future plans to support, TCP, JMS -->
+        <entry key="REQUEST_TYPE" value="http" />
+        <entry key="host" value="localhost" />
+        <entry key="port" value="8500" />
+        <entry key="contextRoot" value="/" />
+        <entry key="path" value="/apiserver-inf/components/v1" />
+    </util:map>
+
+</beans>
+

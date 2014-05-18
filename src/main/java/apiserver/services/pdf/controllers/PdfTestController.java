@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Controller
 @RestController
-public class TestController
+public class PdfTestController
 {
     @RequestMapping(value = "/pdf/test", method= RequestMethod.GET)
     public ResponseEntity<Map> test()

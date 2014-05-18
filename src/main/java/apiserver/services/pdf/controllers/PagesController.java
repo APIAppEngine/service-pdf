@@ -19,9 +19,9 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.apis.v1_0.documents.model.Document;
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.DeletePdfPagesJob;
 import com.wordnik.swagger.annotations.Api;
@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -52,7 +51,7 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
+//@Api(value = "/pdf", description = "[PDF]")
 @RequestMapping("/pdf")
 public class PagesController
 {
@@ -74,8 +73,7 @@ public class PagesController
      * @throws Exception
      */
     @ApiOperation(value = "Delete one or more pages from a pdf")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/modify/pages", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/modify/pages", method = RequestMethod.DELETE, produces = "application/pdf")
     public ResponseEntity<byte[]> deletePagesFromPdf(
             @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
             @ApiParam(name="pages", required = true) @RequestPart("pages") String pages
@@ -108,8 +106,7 @@ public class PagesController
      * @throws Exception
      */
     @ApiOperation(value = "Delete one or more pages from a pdf")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/modify/{documentId}/pages", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/modify/{documentId}/pages", method = RequestMethod.DELETE, produces = "application/pdf")
     public ResponseEntity<byte[]> deletePagesFromCachedPdf(
             @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
             @ApiParam(name="pages", required = true) @RequestPart("pages") String pages

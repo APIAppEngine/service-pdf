@@ -19,9 +19,9 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.apis.v1_0.documents.model.Document;
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.MergePdfJob;
 import com.wordnik.swagger.annotations.Api;
@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -75,8 +74,7 @@ public class MergeController
      * @throws Exception
      */
     @ApiOperation(value = "Merge two pdf files into one.")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/merge", method = RequestMethod.POST)
+    @RequestMapping(value = "/merge", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> mergePdfDocuments(
             @ApiParam(name="file1", required = true) @RequestPart("file1") MultipartFile file1,
             @ApiParam(name="file2", required = true) @RequestPart("file2") MultipartFile file2

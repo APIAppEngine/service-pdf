@@ -19,7 +19,7 @@ package apiserver.services.pdf.gateways.jobs;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.apis.v1_0.documents.model.Document;
+import apiserver.services.cache.model.Document;
 import apiserver.core.connectors.coldfusion.jobs.CFPDFFormJob;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
 

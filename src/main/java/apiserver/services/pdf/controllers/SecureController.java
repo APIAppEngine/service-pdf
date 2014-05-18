@@ -19,10 +19,10 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.apis.v1_0.documents.model.Document;
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
 import apiserver.exceptions.NotImplementedException;
+import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.SecurePdfJob;
 import com.wordnik.swagger.annotations.Api;
@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -79,8 +78,7 @@ public class SecureController
      * @throws Exception
      */
     @ApiOperation(value = "Secure a pdf with a password")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/protect", method = RequestMethod.POST)
+    @RequestMapping(value = "/protect", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> protectPdf(
             @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
             @ApiParam(name="password", required = false) @RequestPart("password") String password,
@@ -134,8 +132,7 @@ public class SecureController
      * @throws Exception
      */
     @ApiOperation(value = "Secure a cached pdf with a password")
-    @Produces("application/pdf")
-    @RequestMapping(value = "/{documentId}/protect", method = RequestMethod.GET)
+    @RequestMapping(value = "/{documentId}/protect", method = RequestMethod.GET, produces = "application/pdf")
     public ResponseEntity<byte[]> protectPdf(
             @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
