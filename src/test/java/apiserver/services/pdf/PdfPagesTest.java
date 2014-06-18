@@ -1,6 +1,7 @@
-package unitTests.v1_0.pdf;
+package apiserver.services.pdf;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.ImportResource;
@@ -10,15 +11,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 /**
  * Created by mnimer on 4/13/14.
  */
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ImportResource("flows/populatePdfForm-flow.xml")
-public class PopulatePdfFormTest
+@Ignore
+public class PdfPagesTest
 {
 
 
     @Test
-    public void populatedFormFields()
+    public void deletePdfPages()
     {
         Assert.fail("Not implemented yet");
     }

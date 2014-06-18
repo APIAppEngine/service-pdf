@@ -77,21 +77,21 @@ public class ConvertUrlController
     public ResponseEntity<byte[]> url2pdf(
             @ApiParam(name="path", required = true) @RequestParam(value = "path") String path,
             // Optional arguments
-            @ApiParam(name="backgroundVisible", required = false, defaultValue = "true") @RequestParam(value = "backgroundVisible") Boolean backgroundVisible,
-            @ApiParam(name="encryption", required = false, defaultValue = "none", allowableValues = "128-bit,40-bit,none") @RequestParam(value = "encryption") CFDocumentJob.Encryption encryption,
-            @ApiParam(name="fontEmbed", required = false, defaultValue = "true", allowableValues = "true,false") @RequestParam(value = "fontEmbed") Boolean fontEmbed,
+            @ApiParam(name="backgroundVisible", required = false, defaultValue = "true") @RequestParam(value = "backgroundVisible", required = false) Boolean backgroundVisible,
+            @ApiParam(name="encryption", required = false, defaultValue = "none", allowableValues = "128-bit,40-bit,none") @RequestParam(value = "encryption", required = false) String encryption,
+            @ApiParam(name="fontEmbed", required = false, defaultValue = "true", allowableValues = "true,false") @RequestParam(value = "fontEmbed", required = false) Boolean fontEmbed,
             @ApiParam(name="marginBottom", required = false, defaultValue = "0") @RequestParam(value = "marginBottom", defaultValue = "0") Integer marginBottom,
             @ApiParam(name="marginTop", required = false, defaultValue = "0") @RequestParam(value = "marginTop", defaultValue = "0") Integer marginTop,
             @ApiParam(name="marginLeft", required = false, defaultValue = "0") @RequestParam(value = "marginLeft", defaultValue = "0") Integer marginLeft,
             @ApiParam(name="marginRight", required = false, defaultValue = "0") @RequestParam(value = "marginRight", defaultValue = "0") Integer marginRight,
-            @ApiParam(name="orientation", required = false, defaultValue = "portrait", allowableValues = "portrait,landscape") @RequestParam(value = "orientation", defaultValue = "0") CFDocumentJob.Orientation orientation,
-            @ApiParam(name="ownerPassword", required = false) @RequestParam(value = "ownerPassword") String ownerPassword,
-            @ApiParam(name="pageHeight", required = false) @RequestParam(value = "pageHeight") Integer pageHeight,
-            @ApiParam(name="pageWidth", required = false) @RequestParam(value = "pageWidth") Integer pageWidth,
-            @ApiParam(name="pageType", required = false, defaultValue = "letter", allowableValues = "legal,letter,a4,a5,b4,b5,b4-jis,b5-jis,custom") @RequestParam(value = "pageType", defaultValue = "letter") CFDocumentJob.PageType pageType,
-            @ApiParam(name="scale", required = false) @RequestParam(value = "scale") Integer scale,
-            @ApiParam(name="unit", required = false) @RequestParam(value = "unit") CFDocumentJob.Unit unit,
-            @ApiParam(name="userPassword", required = false) @RequestParam(value = "userPassword") String userPassword,
+            @ApiParam(name="orientation", required = false, defaultValue = "portrait", allowableValues = "portrait,landscape") @RequestParam(value = "orientation", required = false) String orientation,
+            @ApiParam(name="ownerPassword", required = false) @RequestParam(value = "ownerPassword", required = false) String ownerPassword,
+            @ApiParam(name="pageHeight", required = false) @RequestParam(value = "pageHeight", required = false) Integer pageHeight,
+            @ApiParam(name="pageWidth", required = false) @RequestParam(value = "pageWidth", required = false) Integer pageWidth,
+            @ApiParam(name="pageType", required = false, defaultValue = "letter", allowableValues = "legal,letter,a4,a5,b4,b5,b4-jis,b5-jis,custom") @RequestParam(value = "pageType", required = false) String pageType,
+            @ApiParam(name="scale", required = false) @RequestParam(value = "scale", required = false) Integer scale,
+            @ApiParam(name="unit", required = false) @RequestParam(value = "unit", required = false) String unit,
+            @ApiParam(name="userPassword", required = false) @RequestParam(value = "userPassword", required = false) String userPassword,
             // Permisions[] items
             @ApiParam(name="allowPrinting", required = false, defaultValue = "false") @RequestParam(value = "allowPrinting", defaultValue = "false") Boolean allowPrinting,
             @ApiParam(name="allowModifyContents", required = false, defaultValue = "false") @RequestParam(value = "allowModifyContents", defaultValue = "false") Boolean allowModifyContents,
@@ -107,31 +107,33 @@ public class ConvertUrlController
         args.setPath(path);
 
         if( backgroundVisible != null) args.setBackgroundVisible(backgroundVisible);
-        if( encryption != null ) args.setEncryption(encryption);
+        if( encryption != null ) args.setEncryption( CFDocumentJob.Encryption.valueOf(encryption));
         if( fontEmbed != null) args.setFontEmbed(fontEmbed);
         if( marginBottom != null) args.setMarginBottom(marginBottom);
         if( marginTop != null) args.setMarginTop(marginTop);
         if( marginLeft != null) args.setMarginLeft(marginLeft);
         if( marginRight != null) args.setMarginRight(marginRight);
-        if( orientation != null) args.setOrientation(orientation);
+        if( orientation != null) args.setOrientation( CFDocumentJob.Orientation.valueOf(orientation) );
         if( ownerPassword != null) args.setOwnerPassword(ownerPassword);
         if( pageHeight != null) args.setPageHeight(pageHeight);
         if( pageWidth != null) args.setPageWidth(pageWidth);
-        if( pageType != null) args.setPageType(pageType);
+        if( pageType != null) args.setPageType( CFDocumentJob.PageType.valueOf(pageType));
         if( scale != null) args.setScale(scale);
-        if( unit != null) args.setUnit(unit);
+        if( unit != null) args.setUnit(CFDocumentJob.Unit.valueOf(unit));
         if( userPassword != null) args.setUserPassword(userPassword);
 
-        List<CFDocumentJob.Permission> permissionsArray = new ArrayList();
-        if( allowAssembly ) permissionsArray.add(CFDocumentJob.Permission.AllowAssembly);
-        if( allowCopy ) permissionsArray.add(CFDocumentJob.Permission.AllowCopy);
-        if( allowDegradedPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowDegradedPrinting);
-        if( allowFillIn  ) permissionsArray.add(CFDocumentJob.Permission.AllowFillIn);
-        if( allowModifyAnnotations ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyAnnotations);
-        if( allowModifyContents ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyContents);
-        if( allowScreenReaders ) permissionsArray.add(CFDocumentJob.Permission.AllowScreenReaders);
-        if( allowPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowPrinting);
-        args.setPermissions( (CFDocumentJob.Permission[])permissionsArray.toArray() );
+        List<String> permissionsArray = new ArrayList();
+        if( allowAssembly ) permissionsArray.add(CFDocumentJob.Permission.AllowAssembly.name());
+        if( allowCopy ) permissionsArray.add(CFDocumentJob.Permission.AllowCopy.name());
+        if( allowDegradedPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowDegradedPrinting.name());
+        if( allowFillIn  ) permissionsArray.add(CFDocumentJob.Permission.AllowFillIn.name());
+        if( allowModifyAnnotations ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyAnnotations.name());
+        if( allowModifyContents ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyContents.name());
+        if( allowScreenReaders ) permissionsArray.add(CFDocumentJob.Permission.AllowScreenReaders.name());
+        if( allowPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowPrinting.name());
+        if( permissionsArray.size() > 0 ) {
+            args.setPermissions((String[]) permissionsArray.toArray());
+        }
 
         Future<Map> future = gateway.convertUrlToPdf(args);
         BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);

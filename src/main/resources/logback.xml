@@ -21,7 +21,7 @@
             <MaxFileSize>10MB</MaxFileSize>
         </triggeringPolicy>
     </appender>
-    <logger name="org.springframework.integration.file" level="DEBUG" />
+    <logger name="org.springframework.integration.file" level="WARN" />
     <root level="WARN">
         <appender-ref ref="CONSOLE" />
         <!--appender-ref ref="FILE" /-->

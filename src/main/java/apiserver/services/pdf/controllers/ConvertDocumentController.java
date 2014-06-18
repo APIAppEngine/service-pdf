@@ -131,16 +131,16 @@ public class ConvertDocumentController
         if( unit != null) job.setUnit(unit);
         if( userPassword != null) job.setUserPassword(userPassword);
 
-        List<CFDocumentJob.Permission> permissionsArray = new ArrayList();
-        if( allowAssembly ) permissionsArray.add(CFDocumentJob.Permission.AllowAssembly);
-        if( allowCopy ) permissionsArray.add(CFDocumentJob.Permission.AllowCopy);
-        if( allowDegradedPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowDegradedPrinting);
-        if( allowFillIn  ) permissionsArray.add(CFDocumentJob.Permission.AllowFillIn);
-        if( allowModifyAnnotations ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyAnnotations);
-        if( allowModifyContents ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyContents);
-        if( allowScreenReaders ) permissionsArray.add(CFDocumentJob.Permission.AllowScreenReaders);
-        if( allowPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowPrinting);
-        job.setPermissions( (CFDocumentJob.Permission[])permissionsArray.toArray() );
+        List<String> permissionsArray = new ArrayList();
+        if( allowAssembly ) permissionsArray.add(CFDocumentJob.Permission.AllowAssembly.name());
+        if( allowCopy ) permissionsArray.add(CFDocumentJob.Permission.AllowCopy.name());
+        if( allowDegradedPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowDegradedPrinting.name());
+        if( allowFillIn  ) permissionsArray.add(CFDocumentJob.Permission.AllowFillIn.name());
+        if( allowModifyAnnotations ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyAnnotations.name());
+        if( allowModifyContents ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyContents.name());
+        if( allowScreenReaders ) permissionsArray.add(CFDocumentJob.Permission.AllowScreenReaders.name());
+        if( allowPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowPrinting.name());
+        job.setPermissions( (String[])permissionsArray.toArray() );
 
 
 
@@ -216,16 +216,16 @@ public class ConvertDocumentController
         if( unit != null) job.setUnit(unit);
         if( userPassword != null) job.setUserPassword(userPassword);
 
-        List<CFDocumentJob.Permission> permissionsArray = new ArrayList();
-        if( allowAssembly ) permissionsArray.add(CFDocumentJob.Permission.AllowAssembly);
-        if( allowCopy ) permissionsArray.add(CFDocumentJob.Permission.AllowCopy);
-        if( allowDegradedPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowDegradedPrinting);
-        if( allowFillIn  ) permissionsArray.add(CFDocumentJob.Permission.AllowFillIn);
-        if( allowModifyAnnotations ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyAnnotations);
-        if( allowModifyContents ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyContents);
-        if( allowScreenReaders ) permissionsArray.add(CFDocumentJob.Permission.AllowScreenReaders);
-        if( allowPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowPrinting);
-        job.setPermissions( (CFDocumentJob.Permission[])permissionsArray.toArray() );
+        List<String> permissionsArray = new ArrayList();
+        if( allowAssembly ) permissionsArray.add(CFDocumentJob.Permission.AllowAssembly.name());
+        if( allowCopy ) permissionsArray.add(CFDocumentJob.Permission.AllowCopy.name());
+        if( allowDegradedPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowDegradedPrinting.name());
+        if( allowFillIn  ) permissionsArray.add(CFDocumentJob.Permission.AllowFillIn.name());
+        if( allowModifyAnnotations ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyAnnotations.name());
+        if( allowModifyContents ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyContents.name());
+        if( allowScreenReaders ) permissionsArray.add(CFDocumentJob.Permission.AllowScreenReaders.name());
+        if( allowPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowPrinting.name());
+        job.setPermissions( (String[])permissionsArray.toArray() );
 
 
         Future<Map> future = gateway.convertDocumentToPdf(job);

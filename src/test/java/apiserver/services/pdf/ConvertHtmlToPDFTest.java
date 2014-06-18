@@ -1,4 +1,4 @@
-package unitTests.v1_0.pdf;
+package apiserver.services.pdf;
 
 /*******************************************************************************
  Copyright (c) 2013 Mike Nimer.
@@ -19,17 +19,21 @@ package unitTests.v1_0.pdf;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+import apiserver.PdfMicroServiceApplication;
+import apiserver.PdfTestBase;
 import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
 import apiserver.services.pdf.gateways.PdfConversionGateway;
-import apiserver.services.pdf.gateways.jobs.Url2PdfJob;
+import apiserver.services.pdf.gateways.jobs.Html2PdfJob;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -39,50 +43,55 @@ import java.util.concurrent.TimeUnit;
  * User: mikenimer
  * Date: 9/16/13
  */
+@WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ImportResource("flows/urlToPdf-flow.xml")
-public class ConvertUrlToPDFTest
+@SpringApplicationConfiguration(classes = PdfMicroServiceApplication.class)
+public class ConvertHtmlToPDFTest
 {
-
-    @Qualifier("convertUrlToPdfChannelApiGateway")
     @Autowired
-    public PdfConversionGateway pdfUrlGateway;
+    private WebApplicationContext context;
+
+    @Qualifier("convertHtmlToPdfChannelApiGateway")
+    @Autowired public PdfConversionGateway pdfHtmlGateway;
 
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    @Value("#{applicationProperties.defaultReplyTimeout}")
+    private Integer defaultTimeout;
 
 
 
     @Test
-    public void convertUrlToPdf()
+    public void convertHtmlToPdfGateway()
     {
         try
         {
-            Url2PdfJob args = new Url2PdfJob();
-            args.setPath("http://www.mikenimer.com");
+            Html2PdfJob args = new Html2PdfJob();
+            args.setHtml("<b>Hello World</b>");
             args.setFontEmbed(true);
             args.setMarginBottom(2);
             args.setMarginTop(2);
             args.setMarginLeft(2);
             args.setMarginRight(2);
 
-            CFDocumentJob.Permission[] permissions = new CFDocumentJob.Permission[]{
-                CFDocumentJob.Permission.AllowCopy,
-                CFDocumentJob.Permission.AllowPrinting,
-                CFDocumentJob.Permission.AllowScreenReaders
+            String[] permissions = new String[]{
+                    CFDocumentJob.Permission.AllowCopy.name(),
+                    CFDocumentJob.Permission.AllowPrinting.name(),
+                    CFDocumentJob.Permission.AllowScreenReaders.name()
             };
             args.setPermissions(permissions);
 
-            Future<Map> resultFuture = pdfUrlGateway.convertUrlToPdf(args);
+            Future<Map> resultFuture = pdfHtmlGateway.convertHtmlToPdf(args);
             Object result = resultFuture.get( defaultTimeout, TimeUnit.MILLISECONDS );
 
             Assert.assertTrue(result != null);
-            Assert.assertTrue( ((Url2PdfJob)result).getPdfBytes().length > 500000 );
+            Assert.assertTrue(((Html2PdfJob)result).getPdfBytes().length > 10000);
+            PdfTestBase.saveFileToLocalDisk("test-htmlToPdf2.pdf", ((Html2PdfJob)result).getPdfBytes());
         }
         catch (Exception ex){
             ex.printStackTrace();
             Assert.fail(ex.getMessage());
         }
     }
+
 
 }

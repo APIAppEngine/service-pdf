@@ -54,24 +54,5 @@
     <import resource="flows/watermarkPdf-flow.xml"/>
 
 
-
-
-    <util:map id="applicationProperties"
-              key-type="java.lang.String"
-              value-type="java.lang.String">
-        <entry key="defaultReplyTimeout" value="60000" />
-    </util:map>
-
-    <util:map id="coldfusionProperties"
-              key-type="java.lang.String"
-              value-type="java.lang.String">
-        <!-- future plans to support, TCP, JMS -->
-        <entry key="REQUEST_TYPE" value="http" />
-        <entry key="host" value="localhost" />
-        <entry key="port" value="8500" />
-        <entry key="contextRoot" value="/" />
-        <entry key="path" value="/apiserver-inf/components/v1" />
-    </util:map>
-
 </beans>
 

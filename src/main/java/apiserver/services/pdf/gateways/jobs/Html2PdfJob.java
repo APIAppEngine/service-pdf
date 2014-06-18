@@ -52,12 +52,22 @@ public class Html2PdfJob extends CFDocumentJob implements BinaryJob
     }
 
 
+    public String getHeaderHtml() {
+        return headerHtml;
+    }
+
+
     /**
      * HTML to use for the header of all pages in the PDF
      * @param headerHtml
      */
     public void setHeaderHtml(String headerHtml) {
         this.headerHtml = headerHtml;
+    }
+
+
+    public String getFooterHtml() {
+        return footerHtml;
     }
 
 

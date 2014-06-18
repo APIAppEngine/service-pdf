@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
 
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
-@ImportResource("pdf-flow-config.xml")
+@ImportResource( {"classpath:pdf-flow-config.xml"} )
 public class PdfMicroServiceApplication implements EmbeddedServletContainerCustomizer
 {
 
