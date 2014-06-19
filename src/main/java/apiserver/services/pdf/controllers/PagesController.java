@@ -75,14 +75,19 @@ public class PagesController
     @ApiOperation(value = "Delete one or more pages from a pdf")
     @RequestMapping(value = "/modify/pages", method = RequestMethod.DELETE, produces = "application/pdf")
     public ResponseEntity<byte[]> deletePagesFromPdf(
-            @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
-            @ApiParam(name="pages", required = true) @RequestPart("pages") String pages
+            @ApiParam(name="file", required = true)
+                @RequestPart("file") MultipartFile file,
+            @ApiParam(name="pages", required = false, value = "page or pages to add the footer")
+                @RequestPart(value = "pages", required = false) String pages,
+            @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
+                @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         DeletePdfPagesJob job = new DeletePdfPagesJob();
         //file
         job.setFile(new Document(file));
-        job.setPages(pages);
+        if(pages!=null) job.setPages(pages);
+        if(password!=null) job.setPassword(password);
 
         Future<Map> future = gateway.deletePages(job);
         BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
@@ -108,14 +113,20 @@ public class PagesController
     @ApiOperation(value = "Delete one or more pages from a pdf")
     @RequestMapping(value = "/modify/{documentId}/pages", method = RequestMethod.DELETE, produces = "application/pdf")
     public ResponseEntity<byte[]> deletePagesFromCachedPdf(
-            @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
-            @ApiParam(name="pages", required = true) @RequestPart("pages") String pages
+            @ApiParam(name="documentId", required = true)
+                @RequestPart("documentId") String documentId,
+            @ApiParam(name="pages", required = false, value = "page or pages to add the footer")
+                @RequestPart(value = "pages", required = false) String pages,
+            @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
+                @RequestPart(value = "password", required = false) String password
+
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         DeletePdfPagesJob job = new DeletePdfPagesJob();
         //file
         job.setDocumentId(documentId);
-        job.setPages(pages);
+        if(pages!=null) job.setPages(pages);
+        if(password!=null) job.setPassword(password);
 
         Future<Map> future = gateway.deletePages(job);
         BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);

@@ -27,7 +27,9 @@ public interface PdfGateway
 
     Future<Map> removeHeaderFooter(RemoveHeaderFooterJob args);
 
-    Future<Map> pdfInfo(PdfInfoJob args);
+    Future<Map> pdfGetInfo(PdfGetInfoJob args);
+
+    Future<Map> pdfSetInfo(PdfSetInfoJob args);
 
     Future<Map> deletePages(DeletePdfPagesJob args);
 

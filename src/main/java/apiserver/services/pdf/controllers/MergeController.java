@@ -19,6 +19,7 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
+import apiserver.MimeType;
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
 import apiserver.services.cache.model.Document;
@@ -73,17 +74,42 @@ public class MergeController
      * @throws java.io.IOException
      * @throws Exception
      */
-    @ApiOperation(value = "Merge two pdf files into one.")
+    @ApiOperation(value = "Merge two PDF documents into an output PDF file.")
     @RequestMapping(value = "/merge", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> mergePdfDocuments(
-            @ApiParam(name="file1", required = true) @RequestPart("file1") MultipartFile file1,
-            @ApiParam(name="file2", required = true) @RequestPart("file2") MultipartFile file2
+            @ApiParam(name="files", required = true, value = "multiple pdf files to merge into one.")
+                @RequestPart("files") MultipartFile[] files,
+            @ApiParam(name="order", required = true, allowableValues = "name,time", value="How to order the files when merging, required only when package is specified as true")
+                @RequestPart("order") String order,
+            @ApiParam(name="package", required = true, allowableValues = "yes,no", value="create PDF packages if set to true.")
+                @RequestPart("package") Boolean packagePdf,
+            @ApiParam(name="ascending", required = true, allowableValues = "yes,no", value="Order in which the PDF files are sorted:")
+                @RequestPart("ascending") Boolean ascending,
+            @ApiParam(name="keepBookmark", required = true, allowableValues = "yes,no", value="Specifies whether bookmarks from the source PDF documents are retained in the merged document")
+                @RequestPart("keepBookmark") Boolean keepBookmark,
+            @ApiParam(name="pages", required = true, value="Page or pages in the source PDF document on which to perform the action. You can specify multiple pages and page ranges as follows: “1,6–9,56–89,100, 110–120”.")
+                @RequestPart("pages") String pages,
+            @ApiParam(name="password", required = true, value="Owner or user password of the source PDF document, if the document is password-protected.")
+                @RequestPart("password") String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         MergePdfJob job = new MergePdfJob();
-        job.setFile1( new Document(file1) );
-        job.setFile2( new Document(file2) );
 
+        int idx = 0;
+        Document[] documents = new Document[files.length];
+        for (MultipartFile file : files) {
+            Document doc = new Document(file);
+            doc.setFileName(file.getOriginalFilename());
+            doc.setContentType(MimeType.getMimeType(file.getOriginalFilename()));
+            documents[idx++] = doc;
+        }
+
+        if( order != null ) job.setOrder(order);
+        if( packagePdf != null ) job.setPackagePdf(packagePdf);
+        if( ascending != null ) job.setAscending(ascending);
+        if( keepBookmark != null ) job.setKeepBookmark(keepBookmark);
+        if( pages != null ) job.setPages(pages);
+        if( password != null ) job.setPassword(password);
 
         Future<Map> future = gateway.mergePdf(job);
         BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);

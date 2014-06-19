@@ -11,8 +11,8 @@ public class MergePdfJob extends CFPdfJob implements BinaryJob
 {
 
     private String documentId;
-    private Document file1;
-    private Document file2;
+    private Document[] files;
+
     private byte[] pdfBytes;
 
 
@@ -28,27 +28,13 @@ public class MergePdfJob extends CFPdfJob implements BinaryJob
     }
 
 
-    public Document getFile1()
-    {
-        return file1;
+    public Document[] getFiles() {
+        return files;
     }
 
 
-    public void setFile1(Document file)
-    {
-        this.file1 = file;
-    }
-
-
-    public Document getFile2()
-    {
-        return file2;
-    }
-
-
-    public void setFile2(Document file2)
-    {
-        this.file2 = file2;
+    public void setFiles(Document[] files) {
+        this.files = files;
     }
 
 

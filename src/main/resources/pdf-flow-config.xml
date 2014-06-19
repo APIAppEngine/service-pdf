@@ -44,7 +44,8 @@
     <import resource="flows/documentToPdf-flow.xml"/>
     <import resource="flows/pagesPdf-flow.xml"/>
     <import resource="flows/pdfHeaderFooter-flow.xml"/>
-    <import resource="flows/pdfInfo-flow.xml"/>
+    <import resource="flows/pdfGetInfo-flow.xml"/>
+    <import resource="flows/pdfSetInfo-flow.xml"/>
     <import resource="flows/populatePdfForm-flow.xml"/>
     <import resource="flows/processDDX-flow.xml"/>
     <import resource="flows/securePdf-flow.xml"/>

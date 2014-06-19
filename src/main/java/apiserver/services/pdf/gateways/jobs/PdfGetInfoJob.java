@@ -1,13 +1,13 @@
 package apiserver.services.pdf.gateways.jobs;
 
-import apiserver.services.cache.model.Document;
 import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
 import apiserver.core.connectors.coldfusion.services.ObjectJob;
+import apiserver.services.cache.model.Document;
 
 /**
  * Created by mnimer on 4/17/14.
  */
-public class ExtractTextJob extends CFPdfJob implements ObjectJob
+public class PdfGetInfoJob extends CFPdfJob implements ObjectJob
 {
 
     private String documentId;
@@ -37,6 +37,7 @@ public class ExtractTextJob extends CFPdfJob implements ObjectJob
     {
         this.file = file;
     }
+
 
     public Object getResult()
     {

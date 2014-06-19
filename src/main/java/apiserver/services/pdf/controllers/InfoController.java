@@ -19,12 +19,13 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.services.cache.model.Document;
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
 import apiserver.core.connectors.coldfusion.services.ObjectJob;
+import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.PdfInfoJob;
+import apiserver.services.pdf.gateways.jobs.PdfGetInfoJob;
+import apiserver.services.pdf.gateways.jobs.PdfSetInfoJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -56,17 +57,22 @@ import java.util.concurrent.TimeoutException;
 @RequestMapping("/pdf")
 public class InfoController
 {
-    @Qualifier("pdfInfoApiGateway")
-    @Autowired
-    public PdfGateway gateway;
+    @Qualifier("pdfGetInfoApiGateway")
+    @Autowired public PdfGateway getInfoGateway;
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    @Qualifier("pdfSetInfoApiGateway")
+    @Autowired public PdfGateway setInfoGateway;
+
+    private
+    @Value("#{applicationProperties.defaultReplyTimeout}")
+    Integer defaultTimeout;
 
 
     /**
      * Get information about document
-     * @param file  PDF to pull info from
-     * @param password  Password to open pdf
+     *
+     * @param file     PDF to pull info from
+     * @param password Password to open pdf
      * @return
      * @throws InterruptedException
      * @throws java.util.concurrent.ExecutionException
@@ -74,19 +80,23 @@ public class InfoController
      * @throws java.io.IOException
      * @throws Exception
      */
-    @ApiOperation(value = "TODO")
+    @ApiOperation(value = "Get information about a PDF document ")
     @RequestMapping(value = "/info/get", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<Object> getPdfInfo(
-            @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
-            @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
-    {
-        PdfInfoJob job = new PdfInfoJob();
-        job.setFile(new Document(file));
-        if( password != null ) job.setPassword(password);
+            @ApiParam(name = "file", required = true)
+                @RequestPart("file") MultipartFile file,
+            @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
+                @RequestPart(value = "password", required = false) String password
+    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        Future<Map> future = gateway.pdfInfo(job);
-        ObjectJob payload = (ObjectJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        PdfGetInfoJob job = new PdfGetInfoJob();
+        job.setFile(new Document(file));
+        if (password != null) {
+            job.setPassword(password);
+        }
+
+        Future<Map> future = getInfoGateway.pdfGetInfo(job);
+        ObjectJob payload = (ObjectJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         return ResponseEntityHelper.processObject(payload.getResult());
     }
@@ -94,8 +104,9 @@ public class InfoController
 
     /**
      * Get information about document
+     *
      * @param documentId
-     * @param password  Password to open pdf
+     * @param password   Password to open pdf
      * @return
      * @throws InterruptedException
      * @throws java.util.concurrent.ExecutionException
@@ -103,19 +114,23 @@ public class InfoController
      * @throws java.io.IOException
      * @throws Exception
      */
-    @ApiOperation(value = "Get information about document")
+    @ApiOperation(value = "Get information about a cached PDF document ")
     @RequestMapping(value = "/{documentId}/info/get", method = RequestMethod.GET, produces = "application/pdf")
     public ResponseEntity<Object> getCachedPdfInfo(
-            @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
-            @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
-    {
-        PdfInfoJob job = new PdfInfoJob();
-        job.setDocumentId(documentId);
-        if( password != null ) job.setPassword(password);
+            @ApiParam(name = "documentId", required = true)
+                @RequestPart("documentId") String documentId,
+            @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
+                @RequestPart(value = "password", required = false) String password
+    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        Future<Map> future = gateway.pdfInfo(job);
-        ObjectJob payload = (ObjectJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        PdfGetInfoJob job = new PdfGetInfoJob();
+        job.setDocumentId(documentId);
+        if (password != null) {
+            job.setPassword(password);
+        }
+
+        Future<Map> future = getInfoGateway.pdfGetInfo(job);
+        ObjectJob payload = (ObjectJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         return ResponseEntityHelper.processObject(payload.getResult());
     }
@@ -123,9 +138,10 @@ public class InfoController
 
     /**
      * Set information about document
-     * @param file  PDF to update
-     * @param info  Map of key/values to set
-     * @param password  Password to open pdf
+     *
+     * @param file     PDF to update
+     * @param info     Map of key/values to set
+     * @param password Password to open pdf
      * @return
      * @throws InterruptedException
      * @throws java.util.concurrent.ExecutionException
@@ -133,21 +149,28 @@ public class InfoController
      * @throws java.io.IOException
      * @throws Exception
      */
-    @ApiOperation(value = "Set information about document")
+    @ApiOperation(value = "Set information about a PDF document ")
     @RequestMapping(value = "/info/set", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> setPdfInfo(
-            @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
-            @ApiParam(name="info", required = true) @RequestPart("info") Map info,
-            @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
-    {
-        PdfInfoJob job = new PdfInfoJob();
-        job.setFile(new Document(file));
-        job.setInfo(info);
-        if( password != null ) job.setPassword(password);
+            @ApiParam(name = "file", required = true)
+                @RequestPart("file") MultipartFile file,
+            @ApiParam(name = "info", required = true, value = "Map variable for relevant information. You can specify the Author, Subject, Title, and Keywords for the PDF output file.")
+                @RequestPart("info") Map info,
+            @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
+                @RequestPart(value = "password", required = false) String password
+    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        Future<Map> future = gateway.pdfInfo(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        PdfSetInfoJob job = new PdfSetInfoJob();
+        job.setFile(new Document(file));
+        if (info != null) {
+            job.setInfo(info);
+        }
+        if (password != null) {
+            job.setPassword(password);
+        }
+
+        Future<Map> future = setInfoGateway.pdfSetInfo(job);
+        BinaryJob payload = (BinaryJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         byte[] fileBytes = payload.getPdfBytes();
         String contentType = "application/pdf";
@@ -158,9 +181,10 @@ public class InfoController
 
     /**
      * Set information about cached document
-     * @param documentId  PDF to update
-     * @param info  Map of key/values to set
-     * @param password  Password to open pdf
+     *
+     * @param documentId PDF to update
+     * @param info       Map of key/values to set
+     * @param password   Password to open pdf
      * @return
      * @throws InterruptedException
      * @throws java.util.concurrent.ExecutionException
@@ -168,21 +192,28 @@ public class InfoController
      * @throws java.io.IOException
      * @throws Exception
      */
-    @ApiOperation(value = "Set information about cached document")
+    @ApiOperation(value = "Set information about a cached PDF document ")
     @RequestMapping(value = "/{documentId}/info/set", method = RequestMethod.GET, produces = "application/pdf")
     public ResponseEntity<byte[]> setCachedPdfInfo(
-            @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
-            @ApiParam(name="info", required = true) @RequestPart("info") Map info,
-            @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
-    {
-        PdfInfoJob job = new PdfInfoJob();
-        job.setDocumentId(documentId);
-        job.setInfo(info);
-        if( password != null ) job.setPassword(password);
+            @ApiParam(name = "documentId", required = true)
+                @RequestPart("documentId") String documentId,
+            @ApiParam(name = "info", required = true, value = "Map variable for relevant information. You can specify the Author, Subject, Title, and Keywords for the PDF output file.")
+                @RequestPart("info") Map info,
+            @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
+                @RequestPart(value = "password", required = false) String password
+    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        Future<Map> future = gateway.pdfInfo(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        PdfSetInfoJob job = new PdfSetInfoJob();
+        job.setDocumentId(documentId);
+        if (info != null) {
+            job.setInfo(info);
+        }
+        if (password != null) {
+            job.setPassword(password);
+        }
+
+        Future<Map> future = setInfoGateway.pdfSetInfo(job);
+        BinaryJob payload = (BinaryJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         byte[] fileBytes = payload.getPdfBytes();
         String contentType = "application/pdf";

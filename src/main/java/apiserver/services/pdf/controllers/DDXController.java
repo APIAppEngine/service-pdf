@@ -64,11 +64,13 @@ public class DDXController
      * @throws java.io.IOException
      * @throws Exception
      */
-    @ApiOperation(value = "Use a DDX file for advanced manipulation")
+    @ApiOperation(value = "Use DDX instructions to manipulate PDF documents")
     @RequestMapping(value = "/modify/ddx", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> processDDX(
-            @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
-            @ApiParam(name="ddx", required = true) @RequestParam("ddx") String DDX
+            @ApiParam(name="file", required = true)
+                @RequestPart("file") MultipartFile file,
+            @ApiParam(name="ddx", required = true, value = "string with DDX instructions")
+                @RequestParam("ddx") String DDX
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         DDXPdfJob job = new DDXPdfJob();

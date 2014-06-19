@@ -17,7 +17,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class ExtractPdfFormTest
 {
 
-
     @Test
     public void extractFormFields()
     {

@@ -29,25 +29,25 @@
 
 
 
-    <si:channel id="pdfInfoRequestChannel"/>
+    <si:channel id="pdfGetInfoRequestChannel"/>
 
-    <si:channel id="pdfInfoReplyChannel"/>
+    <si:channel id="pdfGetInfoReplyChannel"/>
 
 
-    <si:gateway id="pdfInfoApiGateway"
+    <si:gateway id="pdfGetInfoApiGateway"
                 service-interface="apiserver.services.pdf.gateways.PdfGateway"
-                default-reply-channel="pdfInfoReplyChannel"
+                default-reply-channel="pdfGetInfoReplyChannel"
                 default-reply-timeout="#{applicationProperties.defaultReplyTimeout}">
 
-        <si:method name="pdfInfo"
-                   request-channel="pdfInfoRequestChannel"/>
+        <si:method name="pdfGetInfo"
+                   request-channel="pdfGetInfoRequestChannel"/>
 
     </si:gateway>
 
 
 
-    <si:chain input-channel="pdfInfoRequestChannel"
-              output-channel="pdfInfoReplyChannel">
+    <si:chain input-channel="pdfGetInfoRequestChannel"
+              output-channel="pdfGetInfoReplyChannel">
 
         <si:service-activator
                 method="execute">
