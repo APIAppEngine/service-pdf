@@ -22,6 +22,7 @@ package apiserver.services.pdf.service;
 import apiserver.exceptions.ColdFusionException;
 import apiserver.services.pdf.gateways.jobs.Url2PdfJob;
 import apiserver.services.pdf.grid.GridService;
+import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.services.pdf.UrlToPdfCallable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,18 +51,23 @@ public class UrlToPdfCFService extends GridService implements Serializable
 
         try
         {
+            long startTime = System.nanoTime();
             Grid grid = verifyGridConnection();
 
-            // Get grid-enabled executor service for nodes where attribute 'worker' is defined.
+            // Get grid-enabled executor service for nodes where attribute 'coldfusion-worker' is defined.
             ExecutorService exec = getColdFusionExecutor();
 
 
-            Future<byte[]> future = exec.submit(
+            Future<ByteArrayResult> future = exec.submit(
                     new UrlToPdfCallable(props.getPath(), props.getOptions())
             );
 
-            byte[] _result = future.get(defaultTimeout, TimeUnit.SECONDS);
-            props.setPdfBytes(_result);
+            ByteArrayResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
+            props.setPdfBytes(_result.getBytes());
+
+            long endTime = System.nanoTime();
+            log.debug("execution times: CF=" +_result.getStats().getExecutionTime() +"ms -- total=" +(endTime-startTime)+"ms");
+
             return props;
         }
         catch(Exception ge){

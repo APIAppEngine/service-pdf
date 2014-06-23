@@ -6,7 +6,6 @@ import apiserver.core.connectors.coldfusion.services.BinaryJob;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.DDXPdfJob;
-import apiserver.services.pdf.gateways.jobs.Document2PdfJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -71,7 +70,7 @@ public class DDXController
                 @RequestPart("file") MultipartFile file,
             @ApiParam(name="ddx", required = true, value = "string with DDX instructions")
                 @RequestParam("ddx") String DDX
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
+    ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
         DDXPdfJob job = new DDXPdfJob();
         job.setFile(new Document(file));
@@ -106,7 +105,7 @@ public class DDXController
     public ResponseEntity<byte[]> processCachedPdfDDX(
             @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
             @ApiParam(name="ddx", required = true) @RequestParam("ddx") String DDX
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
+    ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
         DDXPdfJob job = new DDXPdfJob();
         job.setDocumentId(documentId);
@@ -114,7 +113,7 @@ public class DDXController
 
 
         Future<Map> future = gateway.processDDX(job);
-        Document2PdfJob payload = (Document2PdfJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        DDXPdfJob payload = (DDXPdfJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
         byte[] fileBytes = payload.getPdfBytes();

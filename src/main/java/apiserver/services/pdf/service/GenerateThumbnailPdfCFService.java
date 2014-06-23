@@ -20,12 +20,12 @@ package apiserver.services.pdf.service;
  ******************************************************************************/
 
 import apiserver.exceptions.ColdFusionException;
-import apiserver.services.pdf.gateways.jobs.Html2PdfJob;
-import apiserver.services.pdf.gateways.jobs.Url2PdfJob;
+import apiserver.services.pdf.gateways.jobs.SecurePdfJob;
 import apiserver.services.pdf.grid.GridService;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
-import apiserver.workers.coldfusion.services.pdf.HtmlToPdfCallable;
-import apiserver.workers.coldfusion.services.pdf.UrlToPdfCallable;
+import apiserver.workers.coldfusion.model.CollectionByteArrayResult;
+import apiserver.workers.coldfusion.services.pdf.GenerateThumbnailCallable;
+import apiserver.workers.coldfusion.services.pdf.ProtectPdfCallable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gridgain.grid.Grid;
@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  * User: mnimer
  * Date: 9/18/12
  */
-public class HtmlToPdfCFService extends GridService implements Serializable
+public class GenerateThumbnailPdfCFService extends GridService implements Serializable
 {
     private final Log log = LogFactory.getLog(this.getClass());
 
@@ -49,7 +49,7 @@ public class HtmlToPdfCFService extends GridService implements Serializable
 
     public Object execute(Message<?> message) throws ColdFusionException
     {
-        Html2PdfJob props = (Html2PdfJob)message.getPayload();
+        SecurePdfJob props = (SecurePdfJob)message.getPayload();
 
         try
         {
@@ -60,12 +60,13 @@ public class HtmlToPdfCFService extends GridService implements Serializable
             ExecutorService exec = getColdFusionExecutor();
 
 
-            Future<ByteArrayResult> future = exec.submit(
-                    new HtmlToPdfCallable(props.getHtml(), props.getHeaderHtml(), props.getFooterHtml(), props.getOptions())
+            Future<CollectionByteArrayResult> future = exec.submit(
+                    new GenerateThumbnailCallable(props.getFile().getFileBytes(), props.getOptions())
             );
 
-            ByteArrayResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
-            props.setPdfBytes(_result.getBytes());
+
+            CollectionByteArrayResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
+            //props.setPdfBytes(_result.getBytes());
 
 
             long endTime = System.nanoTime();

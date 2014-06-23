@@ -20,11 +20,8 @@ package apiserver.services.pdf.controllers;
  ******************************************************************************/
 
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.FlattenPdfJob;
-import apiserver.services.pdf.gateways.jobs.LinerizePdfJob;
 import apiserver.services.pdf.gateways.jobs.OptimizePdfJob;
 import apiserver.services.pdf.gateways.jobs.PopulatePdfFormJob;
 import com.wordnik.swagger.annotations.Api;

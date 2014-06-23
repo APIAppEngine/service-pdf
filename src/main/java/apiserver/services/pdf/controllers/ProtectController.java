@@ -21,7 +21,6 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
-import apiserver.exceptions.NotImplementedException;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.SecurePdfJob;
@@ -54,9 +53,9 @@ import java.util.concurrent.TimeoutException;
 @RestController
 @Api(value = "/pdf", description = "[PDF]")
 @RequestMapping("/pdf")
-public class SecureController
+public class ProtectController
 {
-    @Qualifier("securePdfApiGateway")
+    @Qualifier("protectPdfApiGateway")
     @Autowired
     public PdfGateway gateway;
 
@@ -125,7 +124,7 @@ public class SecureController
         if( allowScreenReaders != null ) job.setAllowScreenReaders(allowScreenReaders);
         if( allowSecure != null ) job.setAllowSecure(allowSecure);
 
-        Future<Map> future = gateway.securePdf(job);
+        Future<Map> future = gateway.protectPdf(job);
         BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         byte[] fileBytes = payload.getPdfBytes();
@@ -192,7 +191,7 @@ public class SecureController
         if( allowScreenReaders != null ) job.setAllowScreenReaders(allowScreenReaders);
         if( allowSecure != null ) job.setAllowSecure(allowSecure);
 
-        Future<Map> future = gateway.securePdf(job);
+        Future<Map> future = gateway.protectPdf(job);
         BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         byte[] fileBytes = payload.getPdfBytes();

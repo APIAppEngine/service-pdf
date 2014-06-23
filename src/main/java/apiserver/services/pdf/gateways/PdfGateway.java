@@ -33,13 +33,9 @@ public interface PdfGateway
 
     Future<Map> deletePages(DeletePdfPagesJob args);
 
-    Future<Map> securePdf(SecurePdfJob args);
+    Future<Map> protectPdf(SecurePdfJob args);
 
     Future<Map> thumbnailGenerator(ThumbnailPdfJob job);
-
-    Future<Map> linerizePdf(LinerizePdfJob job);
-
-    Future<Map> flattenPdf(FlattenPdfJob job);
 
     Future<Map> transformPdf(SecurePdfJob job);
 

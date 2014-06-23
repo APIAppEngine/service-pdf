@@ -49,12 +49,16 @@
     <si:chain input-channel="processDDXRequestChannel"
               output-channel="processDDXReplyChannel">
 
+
+        <si:service-activator
+                method="getFromCache">
+            <bean class="apiserver.services.cache.services.DocumentService"/>
+        </si:service-activator>
+
+
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.core.connectors.coldfusion.services.BinaryCFCService">
-                <property name="cfcPath" value="api-pdf.cfc?method=processDDX"/>
-                <property name="cfcMethod" value="POST"/>
-            </bean>
+            <bean class="apiserver.services.pdf.service.ProcessPdfDDXCFService"/>
         </si:service-activator>
 
     </si:chain>

@@ -19,7 +19,6 @@ package apiserver.services.pdf.gateways;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.services.pdf.gateways.jobs.Document2PdfJob;
 import apiserver.services.pdf.gateways.jobs.Html2PdfJob;
 import apiserver.services.pdf.gateways.jobs.Url2PdfJob;
 
@@ -36,5 +35,4 @@ public interface PdfConversionGateway
 
     Future<Map> convertHtmlToPdf(Html2PdfJob args);
 
-    Future<Map> convertDocumentToPdf(Document2PdfJob args);
 }

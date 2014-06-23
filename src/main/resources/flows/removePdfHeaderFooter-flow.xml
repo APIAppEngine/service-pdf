@@ -29,32 +29,36 @@
 
 
 
-    <si:channel id="securePdfRequestChannel"/>
+    <si:channel id="removeHeaderFooterRequestChannel"/>
 
-    <si:channel id="securePdfReplyChannel"/>
+    <si:channel id="removeHeaderFooterReplyChannel"/>
 
 
-    <si:gateway id="securePdfApiGateway"
+    <si:gateway id="pdfHeaderFooterApiGateway"
                 service-interface="apiserver.services.pdf.gateways.PdfGateway"
-                default-reply-channel="securePdfReplyChannel"
+                default-reply-channel="removeHeaderFooterReplyChannel"
                 default-reply-timeout="#{applicationProperties.defaultReplyTimeout}">
 
-        <si:method name="securePdf"
-                   request-channel="securePdfRequestChannel"/>
+        <si:method name="removeHeaderFooter"
+                   request-channel="removeHeaderFooterRequestChannel"/>
 
     </si:gateway>
 
 
 
-    <si:chain input-channel="securePdfRequestChannel"
-              output-channel="securePdfReplyChannel">
+    <si:chain input-channel="removeHeaderFooterRequestChannel"
+              output-channel="removeHeaderFooterReplyChannel">
+
+
+        <si:service-activator
+                method="getFromCache">
+            <bean class="apiserver.services.cache.services.DocumentService"/>
+        </si:service-activator>
+
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.core.connectors.coldfusion.services.BinaryCFCService">
-                <property name="cfcPath" value="api-pdf.cfc?method=securePdf"/>
-                <property name="cfcMethod" value="POST"/>
-            </bean>
+            <bean class="apiserver.services.pdf.service.RemovePdfHeaderFooterCFService"/>
         </si:service-activator>
 
     </si:chain>
