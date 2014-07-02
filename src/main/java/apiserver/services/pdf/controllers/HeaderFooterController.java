@@ -46,7 +46,7 @@ public class HeaderFooterController
     @Autowired
     public PdfGateway footerGateway;
 
-    @Qualifier("pdfHeaderFooterApiGateway")
+    @Qualifier("pdfRemoveHeaderFooterApiGateway")
     @Autowired
     public PdfGateway headerFooterGateway;
 

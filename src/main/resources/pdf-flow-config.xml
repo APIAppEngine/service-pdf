@@ -30,30 +30,23 @@
     <!-- status flows -->
     <import resource="flows/addFooterToPdf-flow.xml"/>
     <import resource="flows/addHeaderToPdf-flow.xml"/>
-    <import resource="flows/documentGet-flow.xml"/>
-    <import resource="flows/documentDelete-flow.xml"/>
-    <import resource="flows/documentAdd-flow.xml"/>
     <import resource="flows/deletePdfPages-flow.xml"/>
-    <import resource="flows/documentToPdf-flow.xml"/>
     <import resource="flows/extractPdfForm-flow.xml"/>
     <import resource="flows/extractPdfImage-flow.xml"/>
     <import resource="flows/extractPdfText-flow.xml"/>
     <import resource="flows/htmlToPdf-flow.xml"/>
     <import resource="flows/mergePdf-flow.xml"/>
     <import resource="flows/optimizePdf-flow.xml"/>
-    <import resource="flows/documentToPdf-flow.xml"/>
-    <import resource="flows/pagesPdf-flow.xml"/>
-    <import resource="flows/pdfHeaderFooter-flow.xml"/>
     <import resource="flows/pdfGetInfo-flow.xml"/>
     <import resource="flows/pdfSetInfo-flow.xml"/>
     <import resource="flows/populatePdfForm-flow.xml"/>
     <import resource="flows/processDDX-flow.xml"/>
-    <import resource="flows/securePdf-flow.xml"/>
+    <import resource="flows/protectPdf-flow.xml"/>
+    <import resource="flows/removePdfHeaderFooter-flow.xml"/>
     <import resource="flows/thumbnailPdf-flow.xml"/>
     <import resource="flows/transformPdf-flow.xml"/>
     <import resource="flows/urlToPdf-flow.xml"/>
     <import resource="flows/watermarkPdf-flow.xml"/>
-
 
 </beans>
 

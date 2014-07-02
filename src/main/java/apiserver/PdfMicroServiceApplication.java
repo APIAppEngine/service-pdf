@@ -8,6 +8,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.ErrorPage;
+import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
 
+import javax.servlet.MultipartConfigElement;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,5 +44,14 @@ public class PdfMicroServiceApplication implements EmbeddedServletContainerCusto
 
     }
 
+
+
+    @Bean
+    MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setMaxFileSize("100MB");
+        factory.setMaxRequestSize("200MB");
+        return factory.createMultipartConfig();
+    }
 
 }

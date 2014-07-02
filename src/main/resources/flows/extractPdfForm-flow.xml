@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.ExtracePdfFormFieldsCFService"/>
+            <bean class="apiserver.services.pdf.service.ExtractPdfFormFieldsCFService"/>
         </si:service-activator>
 
     </si:chain>

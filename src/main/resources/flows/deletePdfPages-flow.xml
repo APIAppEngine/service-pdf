@@ -34,12 +34,12 @@
     <si:channel id="deletePdfPagesReplyChannel"/>
 
 
-    <si:gateway id="convertUrlToPdfChannelApiGateway"
-                service-interface="apiserver.services.pdf.gateways.PdfConversionGateway"
+    <si:gateway id="deletePagesPdfGateway"
+                service-interface="apiserver.services.pdf.gateways.PdfGateway"
                 default-reply-channel="deletePdfPagesReplyChannel"
                 default-reply-timeout="#{applicationProperties.defaultReplyTimeout}">
 
-        <si:method name="convertUrlToPdf"
+        <si:method name="deletePages"
                    request-channel="deletePdfPagesRequestChannel"/>
 
     </si:gateway>

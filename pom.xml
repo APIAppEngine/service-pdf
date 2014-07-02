@@ -36,6 +36,7 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
+
         <!-- Grid Gain -->
         <dependency>
             <groupId>org.gridgain</groupId>

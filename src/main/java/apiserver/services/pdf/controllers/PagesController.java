@@ -55,7 +55,7 @@ import java.util.concurrent.TimeoutException;
 @RequestMapping("/pdf")
 public class PagesController
 {
-    @Qualifier("pagesPdfGateway")
+    @Qualifier("deletePagesPdfGateway")
     @Autowired
     public PdfGateway gateway;
 

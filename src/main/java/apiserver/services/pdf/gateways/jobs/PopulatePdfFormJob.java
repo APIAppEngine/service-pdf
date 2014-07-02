@@ -22,6 +22,9 @@ package apiserver.services.pdf.gateways.jobs;
 import apiserver.services.cache.model.Document;
 import apiserver.core.connectors.coldfusion.jobs.CFPDFFormJob;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.util.Map;
 
 /**
  * User: mikenimer
@@ -32,7 +35,7 @@ public class PopulatePdfFormJob extends CFPDFFormJob implements BinaryJob
 
     private String documentId;
     private Document file;
-    private String XFDF;// XFDF XML String
+    private String fields; //JSON of Map
     private byte[] pdfBytes;
 
 
@@ -60,15 +63,13 @@ public class PopulatePdfFormJob extends CFPDFFormJob implements BinaryJob
     }
 
 
-    public String getXFDF()
-    {
-        return XFDF;
+    public String getFields() {
+        return fields;
     }
 
 
-    public void setXFDF(String XFDF)
-    {
-        this.XFDF = XFDF;
+    public void setFields(String fields) {
+        this.fields = fields;
     }
 
 

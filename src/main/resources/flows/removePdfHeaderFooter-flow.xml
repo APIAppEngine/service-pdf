@@ -34,7 +34,7 @@
     <si:channel id="removeHeaderFooterReplyChannel"/>
 
 
-    <si:gateway id="pdfHeaderFooterApiGateway"
+    <si:gateway id="pdfRemoveHeaderFooterApiGateway"
                 service-interface="apiserver.services.pdf.gateways.PdfGateway"
                 default-reply-channel="removeHeaderFooterReplyChannel"
                 default-reply-timeout="#{applicationProperties.defaultReplyTimeout}">

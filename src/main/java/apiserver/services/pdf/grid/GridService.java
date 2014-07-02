@@ -30,6 +30,10 @@ public class GridService implements Serializable
             try {
                 grid = GridGain.start(getGridConfiguration());
             }catch(GridException ge){
+                if( ge.getMessage().contains("Grid instance was not properly started or was already stopped") )
+                {
+                    GridGain.restart(true);
+                }
                 throw new RuntimeException(ge);
             }
         }
@@ -58,13 +62,12 @@ public class GridService implements Serializable
         Map<String, String> userAttr = new HashMap<String, String>();
         userAttr.put("ROLE", "image-pdf");
 
-
         GridOptimizedMarshaller gom = new GridOptimizedMarshaller();
         gom.setRequireSerializable(false);
 
         GridConfiguration gc = new GridConfiguration();
         gc.setGridName( ApiServerConstants.GRID_NAME );
-        gc.setPeerClassLoadingEnabled(false);
+        gc.setPeerClassLoadingEnabled(true);
         gc.setRestEnabled(false);
         gc.setUserAttributes(userAttr);
         gc.setMarshaller(gom);
