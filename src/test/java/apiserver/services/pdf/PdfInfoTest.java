@@ -15,12 +15,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class PdfInfoTest
 {
 
-
     @Test
     public void getInfo()
     {
         Assert.fail("Not implemented yet");
     }
+
     public void setInfo()
     {
         Assert.fail("Not implemented yet");

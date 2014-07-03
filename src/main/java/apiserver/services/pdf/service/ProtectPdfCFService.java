@@ -26,13 +26,16 @@ import apiserver.services.pdf.grid.GridService;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.services.pdf.OptimizePdfCallable;
 import apiserver.workers.coldfusion.services.pdf.ProtectPdfCallable;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gridgain.grid.Grid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 
+import java.io.File;
 import java.io.Serializable;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +53,7 @@ public class ProtectPdfCFService extends GridService implements Serializable
     public Object execute(Message<?> message) throws ColdFusionException
     {
         SecurePdfJob props = (SecurePdfJob)message.getPayload();
+        File tmpFile = null;
 
         try
         {
@@ -58,7 +62,6 @@ public class ProtectPdfCFService extends GridService implements Serializable
 
             // Get grid-enabled executor service for nodes where attribute 'worker' is defined.
             ExecutorService exec = getColdFusionExecutor();
-
 
             Future<ByteArrayResult> future = exec.submit(
                     new ProtectPdfCallable(props.getFile().getFileBytes(), props.getOptions())
@@ -76,6 +79,9 @@ public class ProtectPdfCFService extends GridService implements Serializable
         }
         catch(Exception ge){
             throw new RuntimeException(ge);
+        }
+        finally {
+            if( tmpFile != null ) tmpFile.delete();
         }
     }
 

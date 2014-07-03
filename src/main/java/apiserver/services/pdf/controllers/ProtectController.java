@@ -21,6 +21,7 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.exceptions.MessageConfigException;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.SecurePdfJob;
@@ -34,10 +35,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -79,34 +82,41 @@ public class ProtectController
     @ApiOperation(value = "Secure a pdf with a password")
     @RequestMapping(value = "/protect", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> protectPdf(
+            HttpServletRequest request,
             @ApiParam(name="file", required = true)
-                @RequestPart("file") MultipartFile file,
+                @RequestParam(value = "file", required = true) MultipartFile file,
+            @ApiParam(name="encrypt", required = false, allowableValues = "RC4_40,RC4_128,RC4_128M,AES_128,none", value = "Encryption type for the PDF output file:", defaultValue = "RC4_128")
+                @RequestParam(value = "encrypt", required = false) String encrypt,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart("password") String password,
+                @RequestParam(value = "password", required = false) String password,
             @ApiParam(name="newUserPassword", required = true, value="Password used to open PDF document.")
-                @RequestPart("newUserPassword") String newUserPassword,
+                @RequestParam(value = "newUserPassword", required = false) String newUserPassword,
             @ApiParam(name="newOwnerPassword", required = true, value = "Password used to set permissions on a PDF document.")
-                @RequestPart("newOwnerPassword") String newOwnerPassword,
-            @ApiParam(name="encrypt", required = false, allowableValues = "RC4_40,RC4_128,RC4_128M,AES_128,none", value = "Encryption type for the PDF output file:")
-                @RequestPart("encrypt") String encrypt,
+                @RequestParam(value = "newOwnerPassword", required = false) String newOwnerPassword,
             @ApiParam(name="allowAssembly", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowAssembly") Boolean allowAssembly,
+                @RequestParam(value = "allowAssembly", required = false) Boolean allowAssembly,
             @ApiParam(name="allowCopy", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowCopy") Boolean allowCopy,
+                @RequestParam(value = "allowCopy", required = false) Boolean allowCopy,
             @ApiParam(name="allowDegradedPrinting", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowDegradedPrinting") Boolean allowDegradedPrinting,
+                @RequestParam(value = "allowDegradedPrinting", required = false) Boolean allowDegradedPrinting,
             @ApiParam(name="allowFillIn", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowFillIn") Boolean allowFillIn,
+                @RequestParam(value = "allowFillIn", required = false) Boolean allowFillIn,
             @ApiParam(name="allowModifyAnnotations", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowModifyAnnotations") Boolean allowModifyAnnotations,
+                @RequestParam(value = "allowModifyAnnotations", required = false) Boolean allowModifyAnnotations,
             @ApiParam(name="allowPrinting", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowPrinting") Boolean allowPrinting,
+                @RequestParam(value = "allowPrinting", required = false) Boolean allowPrinting,
             @ApiParam(name="allowScreenReaders", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowScreenReaders") Boolean allowScreenReaders,
+                @RequestParam(value = "allowScreenReaders", required = false) Boolean allowScreenReaders,
             @ApiParam(name="allowSecure", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowSecure") Boolean allowSecure
+                @RequestParam(value = "allowSecure", required = false) Boolean allowSecure
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
+        if( newUserPassword == null && newOwnerPassword == null)
+        {
+            throw new MessageConfigException("Missing newUserPassword or newOwnerPassword");
+        }
+
+
         SecurePdfJob job = new SecurePdfJob();
         //file
         job.setFile(new Document(file));
