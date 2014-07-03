@@ -20,7 +20,7 @@ package apiserver.services.pdf.service;
  ******************************************************************************/
 
 import apiserver.exceptions.ColdFusionException;
-import apiserver.services.pdf.gateways.jobs.Url2PdfJob;
+import apiserver.services.pdf.gateways.jobs.Url2PdfResult;
 import apiserver.services.pdf.grid.GridService;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.services.pdf.UrlToPdfCallable;
@@ -47,7 +47,7 @@ public class UrlToPdfCFService extends GridService implements Serializable
 
     public Object execute(Message<?> message) throws ColdFusionException
     {
-        Url2PdfJob props = (Url2PdfJob)message.getPayload();
+        Url2PdfResult props = (Url2PdfResult)message.getPayload();
 
         try
         {
@@ -63,7 +63,7 @@ public class UrlToPdfCFService extends GridService implements Serializable
             );
 
             ByteArrayResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
-            props.setPdfBytes(_result.getBytes());
+            props.setResult(_result.getBytes());
 
             long endTime = System.nanoTime();
             log.debug("execution times: CF=" +_result.getStats().getExecutionTime() +"ms -- total=" +(endTime-startTime)+"ms");

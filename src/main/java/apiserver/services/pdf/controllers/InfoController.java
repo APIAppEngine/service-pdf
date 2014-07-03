@@ -20,12 +20,12 @@ package apiserver.services.pdf.controllers;
  ******************************************************************************/
 
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
-import apiserver.core.connectors.coldfusion.services.ObjectJob;
+import apiserver.core.connectors.coldfusion.services.BinaryResult;
+import apiserver.core.connectors.coldfusion.services.ObjectResult;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.PdfGetInfoJob;
-import apiserver.services.pdf.gateways.jobs.PdfSetInfoJob;
+import apiserver.services.pdf.gateways.jobs.PdfGetInfoResult;
+import apiserver.services.pdf.gateways.jobs.PdfSetInfoResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -89,14 +89,14 @@ public class InfoController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        PdfGetInfoJob job = new PdfGetInfoJob();
+        PdfGetInfoResult job = new PdfGetInfoResult();
         job.setFile(new Document(file));
         if (password != null) {
             job.setPassword(password);
         }
 
         Future<Map> future = getInfoGateway.pdfGetInfo(job);
-        ObjectJob payload = (ObjectJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        ObjectResult payload = (ObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         return ResponseEntityHelper.processObject(payload.getResult());
     }
@@ -123,14 +123,14 @@ public class InfoController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        PdfGetInfoJob job = new PdfGetInfoJob();
+        PdfGetInfoResult job = new PdfGetInfoResult();
         job.setDocumentId(documentId);
         if (password != null) {
             job.setPassword(password);
         }
 
         Future<Map> future = getInfoGateway.pdfGetInfo(job);
-        ObjectJob payload = (ObjectJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        ObjectResult payload = (ObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         return ResponseEntityHelper.processObject(payload.getResult());
     }
@@ -160,7 +160,7 @@ public class InfoController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        PdfSetInfoJob job = new PdfSetInfoJob();
+        PdfSetInfoResult job = new PdfSetInfoResult();
         job.setFile(new Document(file));
         if (info != null) {
             job.setInfo(info);
@@ -170,9 +170,9 @@ public class InfoController
         }
 
         Future<Map> future = setInfoGateway.pdfSetInfo(job);
-        BinaryJob payload = (BinaryJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -203,7 +203,7 @@ public class InfoController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        PdfSetInfoJob job = new PdfSetInfoJob();
+        PdfSetInfoResult job = new PdfSetInfoResult();
         job.setDocumentId(documentId);
         if (info != null) {
             job.setInfo(info);
@@ -213,9 +213,9 @@ public class InfoController
         }
 
         Future<Map> future = setInfoGateway.pdfSetInfo(job);
-        BinaryJob payload = (BinaryJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;

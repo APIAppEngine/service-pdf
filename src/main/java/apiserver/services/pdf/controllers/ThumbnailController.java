@@ -20,10 +20,10 @@ package apiserver.services.pdf.controllers;
  ******************************************************************************/
 
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.core.connectors.coldfusion.services.BinaryResult;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.ThumbnailPdfJob;
+import apiserver.services.pdf.gateways.jobs.ThumbnailPdfResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -116,7 +116,7 @@ public class ThumbnailController
                 @RequestPart("password") String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        ThumbnailPdfJob job = new ThumbnailPdfJob();
+        ThumbnailPdfResult job = new ThumbnailPdfResult();
         //file
         job.setFile(new Document(file));
 
@@ -134,9 +134,9 @@ public class ThumbnailController
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = gateway.thumbnailGenerator(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -197,7 +197,7 @@ public class ThumbnailController
 
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        ThumbnailPdfJob job = new ThumbnailPdfJob();
+        ThumbnailPdfResult job = new ThumbnailPdfResult();
         //file
         job.setDocumentId(documentId);
 
@@ -215,9 +215,9 @@ public class ThumbnailController
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = gateway.thumbnailGenerator(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;

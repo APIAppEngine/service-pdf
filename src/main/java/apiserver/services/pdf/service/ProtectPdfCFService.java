@@ -20,13 +20,10 @@ package apiserver.services.pdf.service;
  ******************************************************************************/
 
 import apiserver.exceptions.ColdFusionException;
-import apiserver.services.pdf.gateways.jobs.OptimizePdfJob;
-import apiserver.services.pdf.gateways.jobs.SecurePdfJob;
+import apiserver.services.pdf.gateways.jobs.SecurePdfResult;
 import apiserver.services.pdf.grid.GridService;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
-import apiserver.workers.coldfusion.services.pdf.OptimizePdfCallable;
 import apiserver.workers.coldfusion.services.pdf.ProtectPdfCallable;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gridgain.grid.Grid;
@@ -35,7 +32,6 @@ import org.springframework.messaging.Message;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +48,7 @@ public class ProtectPdfCFService extends GridService implements Serializable
 
     public Object execute(Message<?> message) throws ColdFusionException
     {
-        SecurePdfJob props = (SecurePdfJob)message.getPayload();
+        SecurePdfResult props = (SecurePdfResult)message.getPayload();
         File tmpFile = null;
 
         try
@@ -69,7 +65,7 @@ public class ProtectPdfCFService extends GridService implements Serializable
 
 
             ByteArrayResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
-            props.setPdfBytes(_result.getBytes());
+            props.setResult(_result.getBytes());
 
 
             long endTime = System.nanoTime();

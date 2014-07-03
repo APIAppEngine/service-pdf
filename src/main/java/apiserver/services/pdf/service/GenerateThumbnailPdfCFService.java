@@ -20,12 +20,10 @@ package apiserver.services.pdf.service;
  ******************************************************************************/
 
 import apiserver.exceptions.ColdFusionException;
-import apiserver.services.pdf.gateways.jobs.SecurePdfJob;
+import apiserver.services.pdf.gateways.jobs.SecurePdfResult;
 import apiserver.services.pdf.grid.GridService;
-import apiserver.workers.coldfusion.model.ByteArrayResult;
-import apiserver.workers.coldfusion.model.CollectionByteArrayResult;
+import apiserver.workers.coldfusion.model.CollectionResult;
 import apiserver.workers.coldfusion.services.pdf.GenerateThumbnailCallable;
-import apiserver.workers.coldfusion.services.pdf.ProtectPdfCallable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gridgain.grid.Grid;
@@ -49,7 +47,7 @@ public class GenerateThumbnailPdfCFService extends GridService implements Serial
 
     public Object execute(Message<?> message) throws ColdFusionException
     {
-        SecurePdfJob props = (SecurePdfJob)message.getPayload();
+        SecurePdfResult props = (SecurePdfResult)message.getPayload();
 
         try
         {
@@ -60,13 +58,13 @@ public class GenerateThumbnailPdfCFService extends GridService implements Serial
             ExecutorService exec = getColdFusionExecutor();
 
 
-            Future<CollectionByteArrayResult> future = exec.submit(
+            Future<CollectionResult> future = exec.submit(
                     new GenerateThumbnailCallable(props.getFile().getFileBytes(), props.getOptions())
             );
 
 
-            CollectionByteArrayResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
-            //props.setPdfBytes(_result.getBytes());
+            CollectionResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
+            //props.setResult(_result.getBytes());
 
 
             long endTime = System.nanoTime();

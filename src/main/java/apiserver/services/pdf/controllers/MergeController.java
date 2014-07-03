@@ -21,10 +21,10 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.MimeType;
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.core.connectors.coldfusion.services.BinaryResult;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.MergePdfJob;
+import apiserver.services.pdf.gateways.jobs.MergePdfResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -93,7 +93,7 @@ public class MergeController
                 @RequestPart("password") String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        MergePdfJob job = new MergePdfJob();
+        MergePdfResult job = new MergePdfResult();
 
         int idx = 0;
         Document[] documents = new Document[files.length];
@@ -112,9 +112,9 @@ public class MergeController
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = gateway.mergePdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;

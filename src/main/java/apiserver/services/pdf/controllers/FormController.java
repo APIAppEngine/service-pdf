@@ -20,11 +20,11 @@ package apiserver.services.pdf.controllers;
  ******************************************************************************/
 
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.core.connectors.coldfusion.services.BinaryResult;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfFormGateway;
-import apiserver.services.pdf.gateways.jobs.ExtractPdfFormJob;
-import apiserver.services.pdf.gateways.jobs.PopulatePdfFormJob;
+import apiserver.services.pdf.gateways.jobs.ExtractPdfFormResult;
+import apiserver.services.pdf.gateways.jobs.PopulatePdfFormResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -84,12 +84,12 @@ public class FormController
             @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        ExtractPdfFormJob job = new ExtractPdfFormJob();
+        ExtractPdfFormResult job = new ExtractPdfFormResult();
         job.setFile(new Document(file));
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = extractGateway.extractPdfForm(job);
-        ExtractPdfFormJob payload = (ExtractPdfFormJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        ExtractPdfFormResult payload = (ExtractPdfFormResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         return ResponseEntityHelper.processObject(payload.getResult());
     }
@@ -112,12 +112,12 @@ public class FormController
             @ApiParam(name="password", required = false) @RequestPart("password") String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        ExtractPdfFormJob job = new ExtractPdfFormJob();
+        ExtractPdfFormResult job = new ExtractPdfFormResult();
         job.setDocumentId(documentId);
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = extractGateway.extractPdfForm(job);
-        ExtractPdfFormJob payload = (ExtractPdfFormJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        ExtractPdfFormResult payload = (ExtractPdfFormResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         return ResponseEntityHelper.processObject(payload);
     }
@@ -142,15 +142,15 @@ public class FormController
             @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        PopulatePdfFormJob job = new PopulatePdfFormJob();
+        PopulatePdfFormResult job = new PopulatePdfFormResult();
         job.setFile(new Document(file));
         job.setFields(fields);
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = populateGateway.populatePdfForm(job);
-        PopulatePdfFormJob payload = (PopulatePdfFormJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        PopulatePdfFormResult payload = (PopulatePdfFormResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -176,15 +176,15 @@ public class FormController
             @ApiParam(name="password", required = false) @RequestPart("password") String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        PopulatePdfFormJob job = new PopulatePdfFormJob();
+        PopulatePdfFormResult job = new PopulatePdfFormResult();
         job.setDocumentId(documentId);
         job.setFields(fields);
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = populateGateway.populatePdfForm(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;

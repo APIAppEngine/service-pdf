@@ -22,8 +22,8 @@ package apiserver.services.pdf.controllers;
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.OptimizePdfJob;
-import apiserver.services.pdf.gateways.jobs.PopulatePdfFormJob;
+import apiserver.services.pdf.gateways.jobs.OptimizePdfResult;
+import apiserver.services.pdf.gateways.jobs.PopulatePdfFormResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -119,7 +119,7 @@ public class OptimizeController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        OptimizePdfJob job = new OptimizePdfJob();
+        OptimizePdfResult job = new OptimizePdfResult();
         //file
         job.setFile(new Document(file));
 
@@ -138,9 +138,9 @@ public class OptimizeController
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = gateway.optimizePdf(job);
-        PopulatePdfFormJob payload = (PopulatePdfFormJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        PopulatePdfFormResult payload = (PopulatePdfFormResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -183,7 +183,7 @@ public class OptimizeController
             @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        OptimizePdfJob job = new OptimizePdfJob();
+        OptimizePdfResult job = new OptimizePdfResult();
         //file
         job.setDocumentId(documentId);
 
@@ -202,9 +202,9 @@ public class OptimizeController
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = gateway.optimizePdf(job);
-        PopulatePdfFormJob payload = (PopulatePdfFormJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        PopulatePdfFormResult payload = (PopulatePdfFormResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;

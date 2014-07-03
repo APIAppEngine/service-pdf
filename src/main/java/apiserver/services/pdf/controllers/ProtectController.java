@@ -20,11 +20,11 @@ package apiserver.services.pdf.controllers;
  ******************************************************************************/
 
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.core.connectors.coldfusion.services.BinaryResult;
 import apiserver.exceptions.MessageConfigException;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.SecurePdfJob;
+import apiserver.services.pdf.gateways.jobs.SecurePdfResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -117,7 +117,7 @@ public class ProtectController
         }
 
 
-        SecurePdfJob job = new SecurePdfJob();
+        SecurePdfResult job = new SecurePdfResult();
         //file
         job.setFile(new Document(file));
         if( password != null ) job.setPassword(password);
@@ -135,9 +135,9 @@ public class ProtectController
         if( allowSecure != null ) job.setAllowSecure(allowSecure);
 
         Future<Map> future = gateway.protectPdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -184,7 +184,7 @@ public class ProtectController
                 @RequestPart("allowSecure") Boolean allowSecure
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        SecurePdfJob job = new SecurePdfJob();
+        SecurePdfResult job = new SecurePdfResult();
         //file
         job.setDocumentId(documentId);
         if( password != null ) job.setPassword(password);
@@ -202,9 +202,9 @@ public class ProtectController
         if( allowSecure != null ) job.setAllowSecure(allowSecure);
 
         Future<Map> future = gateway.protectPdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;

@@ -21,29 +21,19 @@ package apiserver.services.pdf;
 
 import apiserver.PdfMicroServiceApplication;
 import apiserver.PdfTestBase;
-import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
-import apiserver.services.pdf.gateways.PdfConversionGateway;
-import apiserver.services.pdf.gateways.jobs.Html2PdfJob;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -57,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdfMicroServiceApplication.class)
 @IntegrationTest("server.port=0")
-public class ConvertHtmlToPDFRestTest
+public class ConvertHtmlToPdfRestTest
 {
 
     @Autowired public WebApplicationContext context;

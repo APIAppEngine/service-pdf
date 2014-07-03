@@ -11,35 +11,35 @@ import java.util.concurrent.Future;
  */
 public interface PdfGateway
 {
-    Future<Map> mergePdf(MergePdfJob args);
+    Future<Map> mergePdf(MergePdfResult args);
 
-    Future<Map> optimizePdf(OptimizePdfJob args);
+    Future<Map> optimizePdf(OptimizePdfResult args);
 
-    Future<Map> processDDX(DDXPdfJob args);
+    Future<Map> processDDX(DDXPdfResult args);
 
-    Future<Map> extractText(ExtractTextJob args);
+    Future<Map> extractText(ExtractTextResult args);
 
-    Future<Map> extractImage(ExtractImageJob args);
+    Future<Map> extractImage(ExtractImageResult args);
 
-    Future<Map> addFooterToPdf(AddFooterPdfJob args);
+    Future<Map> addFooterToPdf(AddFooterPdfResult args);
 
-    Future<Map> addHeaderToPdf(AddHeaderPdfJob args);
+    Future<Map> addHeaderToPdf(AddHeaderPdfResult args);
 
-    Future<Map> removeHeaderFooter(RemoveHeaderFooterJob args);
+    Future<Map> removeHeaderFooter(RemoveHeaderFooterResult args);
 
-    Future<Map> pdfGetInfo(PdfGetInfoJob args);
+    Future<Map> pdfGetInfo(PdfGetInfoResult args);
 
-    Future<Map> pdfSetInfo(PdfSetInfoJob args);
+    Future<Map> pdfSetInfo(PdfSetInfoResult args);
 
-    Future<Map> deletePages(DeletePdfPagesJob args);
+    Future<Map> deletePages(DeletePdfPagesResult args);
 
-    Future<Map> protectPdf(SecurePdfJob args);
+    Future<Map> protectPdf(SecurePdfResult args);
 
-    Future<Map> thumbnailGenerator(ThumbnailPdfJob job);
+    Future<Map> thumbnailGenerator(ThumbnailPdfResult job);
 
-    Future<Map> transformPdf(SecurePdfJob job);
+    Future<Map> transformPdf(SecurePdfResult job);
 
-    Future<Map> addWatermarkToPdf(WatermarkPdfJob job);
+    Future<Map> addWatermarkToPdf(WatermarkPdfResult job);
 
-    Future<Map> removeWatermarkFromPdf(WatermarkPdfJob job);
+    Future<Map> removeWatermarkFromPdf(WatermarkPdfResult job);
 }

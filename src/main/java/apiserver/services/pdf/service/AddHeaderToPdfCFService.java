@@ -20,8 +20,7 @@ package apiserver.services.pdf.service;
  ******************************************************************************/
 
 import apiserver.exceptions.ColdFusionException;
-import apiserver.services.pdf.gateways.jobs.AddFooterPdfJob;
-import apiserver.services.pdf.gateways.jobs.AddHeaderPdfJob;
+import apiserver.services.pdf.gateways.jobs.AddHeaderPdfResult;
 import apiserver.services.pdf.grid.GridService;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.services.pdf.AddFooterCallable;
@@ -48,7 +47,7 @@ public class AddHeaderToPdfCFService extends GridService implements Serializable
 
     public Object execute(Message<?> message) throws ColdFusionException
     {
-        AddHeaderPdfJob props = (AddHeaderPdfJob)message.getPayload();
+        AddHeaderPdfResult props = (AddHeaderPdfResult)message.getPayload();
 
         try
         {
@@ -65,7 +64,7 @@ public class AddHeaderToPdfCFService extends GridService implements Serializable
 
 
             ByteArrayResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
-            props.setPdfBytes(_result.getBytes());
+            props.setResult(_result.getBytes());
 
 
             long endTime = System.nanoTime();

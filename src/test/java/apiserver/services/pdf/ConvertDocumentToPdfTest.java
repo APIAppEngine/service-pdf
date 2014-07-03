@@ -70,6 +70,7 @@ public class ConvertDocumentToPdfTest
         convertEmbeddedDocument("spreadsheet.xlsx");
     }
 
+
     private void convertEmbeddedDocument(String name)
     {
 /**
@@ -98,7 +99,7 @@ public class ConvertDocumentToPdfTest
             Object result = resultFuture.get( defaultTimeout, TimeUnit.MILLISECONDS );
 
             Assert.assertTrue(result != null);
-            Assert.assertTrue(((Document2PdfJob) result).getPdfBytes().length > 0);
+            Assert.assertTrue(((Document2PdfJob) result).getResult().length > 0);
         }
         catch (Exception ex){
             ex.printStackTrace();

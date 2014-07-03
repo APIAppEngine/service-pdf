@@ -61,6 +61,11 @@
             <bean class="apiserver.services.pdf.service.ExtractPdfImagesCFService"/>
         </si:service-activator>
 
+        <si:service-activator
+                method="cacheFilesInCDN">
+            <bean class="apiserver.services.cache.services.CDNService"/>
+        </si:service-activator>
+
     </si:chain>
 </beans>
 

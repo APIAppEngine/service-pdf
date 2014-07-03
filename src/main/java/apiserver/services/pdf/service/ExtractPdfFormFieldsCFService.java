@@ -20,12 +20,9 @@ package apiserver.services.pdf.service;
  ******************************************************************************/
 
 import apiserver.exceptions.ColdFusionException;
-import apiserver.services.pdf.gateways.jobs.DeletePdfPagesJob;
-import apiserver.services.pdf.gateways.jobs.ExtractPdfFormJob;
+import apiserver.services.pdf.gateways.jobs.ExtractPdfFormResult;
 import apiserver.services.pdf.grid.GridService;
-import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.model.MapResult;
-import apiserver.workers.coldfusion.services.pdf.DeletePagesCallable;
 import apiserver.workers.coldfusion.services.pdf.ExtractFormFieldsCallable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,7 +31,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -51,7 +47,7 @@ public class ExtractPdfFormFieldsCFService extends GridService implements Serial
 
     public Object execute(Message<?> message) throws ColdFusionException
     {
-        ExtractPdfFormJob props = (ExtractPdfFormJob)message.getPayload();
+        ExtractPdfFormResult props = (ExtractPdfFormResult)message.getPayload();
 
         try
         {

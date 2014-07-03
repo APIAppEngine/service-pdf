@@ -21,10 +21,10 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.MimeType;
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.core.connectors.coldfusion.services.BinaryResult;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.WatermarkPdfJob;
+import apiserver.services.pdf.gateways.jobs.WatermarkPdfResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -98,7 +98,7 @@ public class WatermarkController
 
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        WatermarkPdfJob job = new WatermarkPdfJob();
+        WatermarkPdfResult job = new WatermarkPdfResult();
         //file
         job.setFile(new Document(file));
         if( image != null ){
@@ -113,9 +113,9 @@ public class WatermarkController
         if( opacity != null ) job.setOpacity(opacity);
 
         Future<Map> future = gateway.addWatermarkToPdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -153,7 +153,7 @@ public class WatermarkController
                 @RequestPart(value = "opacity", required = false) Double opacity
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        WatermarkPdfJob job = new WatermarkPdfJob();
+        WatermarkPdfResult job = new WatermarkPdfResult();
         //file
         job.setDocumentId(documentId);
         if( image != null ){
@@ -168,9 +168,9 @@ public class WatermarkController
         if( opacity != null ) job.setOpacity(opacity);
 
         Future<Map> future = gateway.addWatermarkToPdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -200,16 +200,16 @@ public class WatermarkController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        WatermarkPdfJob job = new WatermarkPdfJob();
+        WatermarkPdfResult job = new WatermarkPdfResult();
         //file
         job.setFile(new Document(file));
         if( pages != null ) job.setPages(pages);
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = gateway.removeWatermarkFromPdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -239,16 +239,16 @@ public class WatermarkController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        WatermarkPdfJob job = new WatermarkPdfJob();
+        WatermarkPdfResult job = new WatermarkPdfResult();
         //file
         job.setDocumentId( documentId );
         if( pages != null ) job.setPages(pages);
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = gateway.removeWatermarkFromPdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;

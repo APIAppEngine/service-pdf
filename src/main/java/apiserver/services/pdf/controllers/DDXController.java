@@ -2,10 +2,10 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.MimeType;
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.core.connectors.coldfusion.services.BinaryResult;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.DDXPdfJob;
+import apiserver.services.pdf.gateways.jobs.DDXPdfResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -72,16 +72,16 @@ public class DDXController
                 @RequestParam("ddx") String DDX
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        DDXPdfJob job = new DDXPdfJob();
+        DDXPdfResult job = new DDXPdfResult();
         job.setFile(new Document(file));
         job.setDdx(DDX);
 
 
         Future<Map> future = gateway.processDDX(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = MimeType.pdf.contentType;
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -107,16 +107,16 @@ public class DDXController
             @ApiParam(name="ddx", required = true) @RequestParam("ddx") String DDX
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        DDXPdfJob job = new DDXPdfJob();
+        DDXPdfResult job = new DDXPdfResult();
         job.setDocumentId(documentId);
         job.setDdx(DDX);
 
 
         Future<Map> future = gateway.processDDX(job);
-        DDXPdfJob payload = (DDXPdfJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        DDXPdfResult payload = (DDXPdfResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = MimeType.pdf.contentType;
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;

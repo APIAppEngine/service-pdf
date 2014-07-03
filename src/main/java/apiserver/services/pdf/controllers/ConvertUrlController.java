@@ -21,9 +21,9 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.core.connectors.coldfusion.services.BinaryResult;
 import apiserver.services.pdf.gateways.PdfConversionGateway;
-import apiserver.services.pdf.gateways.jobs.Url2PdfJob;
+import apiserver.services.pdf.gateways.jobs.Url2PdfResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.Path;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +127,7 @@ public class ConvertUrlController
                 @RequestParam(value = "allowDegradedPrinting", defaultValue = "false") Boolean allowDegradedPrinting
             ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        Url2PdfJob args = new Url2PdfJob();
+        Url2PdfResult args = new Url2PdfResult();
         args.setPath(path);
 
         if( backgroundVisible != null) args.setBackgroundVisible(backgroundVisible);
@@ -161,9 +160,9 @@ public class ConvertUrlController
         }
 
         Future<Map> future = gateway.convertUrlToPdf(args);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;

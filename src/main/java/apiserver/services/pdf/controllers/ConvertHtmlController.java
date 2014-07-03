@@ -21,9 +21,9 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.core.connectors.coldfusion.services.BinaryResult;
 import apiserver.services.pdf.gateways.PdfConversionGateway;
-import apiserver.services.pdf.gateways.jobs.Html2PdfJob;
+import apiserver.services.pdf.gateways.jobs.Html2PdfResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -135,7 +134,7 @@ public class ConvertHtmlController
 
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        Html2PdfJob args = new Html2PdfJob();
+        Html2PdfResult args = new Html2PdfResult();
         args.setHtml(html);
         args.setHeaderHtml(headerHtml);
         args.setFooterHtml(footerHtml);
@@ -171,9 +170,9 @@ public class ConvertHtmlController
         }
 
         Future<Map> future = gateway.convertHtmlToPdf(args);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;

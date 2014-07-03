@@ -20,11 +20,9 @@ package apiserver.services.pdf.service;
  ******************************************************************************/
 
 import apiserver.exceptions.ColdFusionException;
-import apiserver.services.pdf.gateways.jobs.AddHeaderPdfJob;
-import apiserver.services.pdf.gateways.jobs.DeletePdfPagesJob;
+import apiserver.services.pdf.gateways.jobs.DeletePdfPagesResult;
 import apiserver.services.pdf.grid.GridService;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
-import apiserver.workers.coldfusion.services.pdf.AddFooterCallable;
 import apiserver.workers.coldfusion.services.pdf.DeletePagesCallable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +47,7 @@ public class DeletePdfPagesCFService extends GridService implements Serializable
 
     public Object execute(Message<?> message) throws ColdFusionException
     {
-        DeletePdfPagesJob props = (DeletePdfPagesJob)message.getPayload();
+        DeletePdfPagesResult props = (DeletePdfPagesResult)message.getPayload();
 
         try
         {
@@ -66,7 +64,7 @@ public class DeletePdfPagesCFService extends GridService implements Serializable
 
 
             ByteArrayResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
-            props.setPdfBytes(_result.getBytes());
+            props.setResult(_result.getBytes());
 
 
             long endTime = System.nanoTime();

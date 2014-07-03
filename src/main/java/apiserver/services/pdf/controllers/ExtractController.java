@@ -22,11 +22,11 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.MimeType;
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.ObjectJob;
+import apiserver.core.connectors.coldfusion.services.ObjectResult;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.ExtractImageJob;
-import apiserver.services.pdf.gateways.jobs.ExtractTextJob;
+import apiserver.services.pdf.gateways.jobs.ExtractImageResult;
+import apiserver.services.pdf.gateways.jobs.ExtractTextResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -90,7 +91,7 @@ public class ExtractController
                 @RequestPart(value = "usestructure", required = false) Boolean useStructure
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        ExtractTextJob job = new ExtractTextJob();
+        ExtractTextResult job = new ExtractTextResult();
         job.setFile(new Document(file));
 
         job.setPages(pages==null?"*":pages);
@@ -102,7 +103,7 @@ public class ExtractController
 
 
         Future<Map> future = textGateway.extractText(job);
-        ObjectJob payload = (ObjectJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        ObjectResult payload = (ObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
         Object result = payload.getResult();
@@ -110,12 +111,12 @@ public class ExtractController
         return ResponseEntityHelper.processObject(result);
     }
 
-
+    // todo: add cachce.ttl to let user define a time to live in cache for the extracted images
     @ApiOperation(value = "Extract images in pdf")
-    @RequestMapping(value = "/extract/image", method = RequestMethod.POST, produces = "application/pdf")
+    @RequestMapping(value = "/extract/image", method = RequestMethod.POST)
     public ResponseEntity<Object> extractImageFromPdf(
             @ApiParam(name = "file", required = true)
-                @RequestPart("file") MultipartFile file,
+                @RequestPart(value="file", required = true) MultipartFile file,
             @ApiParam(name = "pages", required = false, defaultValue = "*", value = "page numbers from where the text needs to be extracted from the PDF document")
                 @RequestPart(value = "pages", required = false) String pages,
             @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
@@ -127,20 +128,19 @@ public class ExtractController
 
         ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        ExtractImageJob job = new ExtractImageJob();
+        ExtractImageResult job = new ExtractImageResult();
         job.setFile(new Document(file));
-        if(pages!=null) job.setPages(pages);
-        if(password!=null) job.setPassword(password);
+        job.setPages(pages==null?"*":pages);
         job.setFormat(format==null?"jpg":format);
         job.setImagePrefix(imagePrefix==null?"*":imagePrefix);
+        if(password!=null) job.setPassword(password);
 
 
         Future<Map> future = imageGateway.extractImage(job);
-        ObjectJob payload = (ObjectJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        ExtractImageResult payload = (ExtractImageResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        Object result = payload.getResult();
-        String contentType = MimeType.pdf.contentType;
+        Collection<byte[]> result = payload.getResult();
         return ResponseEntityHelper.processObject(result);
     }
 

@@ -1,13 +1,12 @@
 package apiserver.services.pdf.controllers;
 
-import apiserver.MimeType;
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryJob;
+import apiserver.core.connectors.coldfusion.services.BinaryResult;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.AddFooterPdfJob;
-import apiserver.services.pdf.gateways.jobs.AddHeaderPdfJob;
-import apiserver.services.pdf.gateways.jobs.RemoveHeaderFooterJob;
+import apiserver.services.pdf.gateways.jobs.AddFooterPdfResult;
+import apiserver.services.pdf.gateways.jobs.AddHeaderPdfResult;
+import apiserver.services.pdf.gateways.jobs.RemoveHeaderFooterResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -102,7 +101,7 @@ public class HeaderFooterController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        AddHeaderPdfJob job = new AddHeaderPdfJob();
+        AddHeaderPdfResult job = new AddHeaderPdfResult();
         job.setFile(new Document(file));
 
 
@@ -119,10 +118,10 @@ public class HeaderFooterController
 
 
         Future<Map> future = headerGateway.addHeaderToPdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -177,7 +176,7 @@ public class HeaderFooterController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        AddHeaderPdfJob job = new AddHeaderPdfJob();
+        AddHeaderPdfResult job = new AddHeaderPdfResult();
         job.setDocumentId(documentId);
 
         if( text != null ) job.setText(text);
@@ -193,10 +192,10 @@ public class HeaderFooterController
 
 
         Future<Map> future = headerGateway.addHeaderToPdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -257,7 +256,7 @@ public class HeaderFooterController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        AddFooterPdfJob job = new AddFooterPdfJob();
+        AddFooterPdfResult job = new AddFooterPdfResult();
         job.setFile(new Document(file));
 
         if( text != null ) job.setText(text);
@@ -273,10 +272,10 @@ public class HeaderFooterController
 
 
         Future<Map> future = footerGateway.addFooterToPdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -334,7 +333,7 @@ public class HeaderFooterController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        AddFooterPdfJob job = new AddFooterPdfJob();
+        AddFooterPdfResult job = new AddFooterPdfResult();
         job.setDocumentId(documentId);
 
 
@@ -351,10 +350,10 @@ public class HeaderFooterController
 
 
         Future<Map> future = footerGateway.addFooterToPdf(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -388,17 +387,17 @@ public class HeaderFooterController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        RemoveHeaderFooterJob job = new RemoveHeaderFooterJob();
+        RemoveHeaderFooterResult job = new RemoveHeaderFooterResult();
         job.setFile(new Document(file));
         job.setPages(pages);
         if( password != null ) job.setPassword(password);
 
 
         Future<Map> future = headerFooterGateway.removeHeaderFooter(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
@@ -431,17 +430,17 @@ public class HeaderFooterController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        RemoveHeaderFooterJob job = new RemoveHeaderFooterJob();
+        RemoveHeaderFooterResult job = new RemoveHeaderFooterResult();
         job.setDocumentId(documentId);
         job.setPages(pages);
         if( password != null ) job.setPassword(password);
 
 
         Future<Map> future = headerFooterGateway.removeHeaderFooter(job);
-        BinaryJob payload = (BinaryJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        byte[] fileBytes = payload.getPdfBytes();
+        byte[] fileBytes = payload.getResult();
         String contentType = "application/pdf";
         ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
         return result;
