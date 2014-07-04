@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdfMicroServiceApplication.class)
-public class ConvertHtmlToPDFGatewayTest
+public class ConvertHtmlToPdfGatewayTest
 {
     @Autowired
     private WebApplicationContext context;

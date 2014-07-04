@@ -27,6 +27,7 @@ import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.ExtractImageResult;
 import apiserver.services.pdf.gateways.jobs.ExtractTextResult;
+import apiserver.workers.coldfusion.model.StringResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -95,15 +96,15 @@ public class ExtractController
         job.setFile(new Document(file));
 
         job.setPages(pages==null?"*":pages);
+        job.setType(type==null?"xml":type);
         if(addquads!=null) job.setAddQuads(addquads);
         if(honourspaces!=null) job.setHonourSpaces(honourspaces);
         if(password!=null) job.setPassword(password);
-        job.setType(type==null?"xml":type);
-        job.setUseStructure(useStructure);
+        if(useStructure!=null) job.setUseStructure(useStructure);
 
 
-        Future<Map> future = textGateway.extractText(job);
-        ObjectResult payload = (ObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        Future future = textGateway.extractText(job);
+        ExtractTextResult payload = (ExtractTextResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
         Object result = payload.getResult();

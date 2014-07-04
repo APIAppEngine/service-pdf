@@ -1,18 +1,18 @@
 package apiserver.services.pdf.gateways.jobs;
 
+import apiserver.core.connectors.coldfusion.services.StringResult;
 import apiserver.services.cache.model.Document;
 import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
-import apiserver.core.connectors.coldfusion.services.ObjectResult;
 
 /**
  * Created by mnimer on 4/17/14.
  */
-public class ExtractTextResult extends CFPdfJob implements ObjectResult
+public class ExtractTextResult extends CFPdfJob implements StringResult
 {
 
     private String documentId;
     private Document file;
-    private Object result;
+    private String result;
 
 
     public String getDocumentId()
@@ -38,14 +38,15 @@ public class ExtractTextResult extends CFPdfJob implements ObjectResult
         this.file = file;
     }
 
-    public Object getResult()
+
+    public String getResult()
     {
         return result;
     }
 
 
-    public void setResult(Object results)
+    public void setResult(String results)
     {
-        this.result = result;
+        this.result = results;
     }
 }

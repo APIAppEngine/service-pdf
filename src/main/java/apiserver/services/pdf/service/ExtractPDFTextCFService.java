@@ -24,6 +24,7 @@ import apiserver.services.pdf.gateways.jobs.ExtractImageResult;
 import apiserver.services.pdf.gateways.jobs.ExtractTextResult;
 import apiserver.services.pdf.grid.GridService;
 import apiserver.workers.coldfusion.model.MapResult;
+import apiserver.workers.coldfusion.model.StringResult;
 import apiserver.workers.coldfusion.services.pdf.ExtractTextCallable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,13 +60,13 @@ public class ExtractPdfTextCFService extends GridService implements Serializable
             ExecutorService exec = getColdFusionExecutor();
 
 
-            Future<MapResult> future = exec.submit(
+            Future<StringResult> future = exec.submit(
                     new ExtractTextCallable(props.getFile().getFileBytes(), props.getOptions())
             );
 
 
-            MapResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
-            props.setResult(_result.getData());
+            StringResult _result = future.get(defaultTimeout, TimeUnit.SECONDS);
+            props.setResult(_result.getResult());
 
 
             long endTime = System.nanoTime();
