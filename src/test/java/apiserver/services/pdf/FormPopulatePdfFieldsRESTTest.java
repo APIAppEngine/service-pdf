@@ -12,9 +12,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * Created by mnimer on 4/13/14.
  */
 @Ignore
-public class PopulatePdfFormTest
+public class FormPopulatePdfFieldsRESTTest
 {
-
 
     @Test
     public void populatedFormFields()

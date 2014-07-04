@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdfMicroServiceApplication.class)
 @IntegrationTest("server.port=0")
-public class ExtractPdfFormRESTTest
+public class FormExtractPdfFieldsRESTTest
 {
 
     @Autowired
