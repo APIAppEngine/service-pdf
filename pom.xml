@@ -5,6 +5,7 @@
         <groupId>com.mikenimer.apiserver</groupId>
         <artifactId>apiserver</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../APIAppEngine/pom.xml</relativePath>
     </parent>
 
 
