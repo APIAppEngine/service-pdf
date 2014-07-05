@@ -24,6 +24,7 @@ import apiserver.services.pdf.gateways.jobs.AddHeaderPdfResult;
 import apiserver.services.pdf.grid.GridService;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.services.pdf.AddFooterCallable;
+import apiserver.workers.coldfusion.services.pdf.AddHeaderCallable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gridgain.grid.Grid;
@@ -59,7 +60,7 @@ public class AddHeaderToPdfCFService extends GridService implements Serializable
 
 
             Future<ByteArrayResult> future = exec.submit(
-                    new AddFooterCallable(props.getFile().getFileBytes(), props.getOptions())
+                    new AddHeaderCallable(props.getFile().getFileBytes(), props.getOptions())
             );
 
 

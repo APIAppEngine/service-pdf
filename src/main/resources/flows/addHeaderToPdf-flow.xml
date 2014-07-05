@@ -36,7 +36,7 @@
 
     <si:gateway id="addPdfHeaderApiGateway"
                 service-interface="apiserver.services.pdf.gateways.PdfGateway"
-                default-reply-channel="addPdfFooterReplyChannel"
+                default-reply-channel="addPdfHeaderReplyChannel"
                 default-reply-timeout="#{applicationProperties.defaultReplyTimeout}">
 
         <si:method name="addHeaderToPdf"
