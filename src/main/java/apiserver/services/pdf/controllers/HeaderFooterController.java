@@ -180,8 +180,8 @@ public class HeaderFooterController
         AddHeaderPdfResult job = new AddHeaderPdfResult();
         job.setDocumentId(documentId);
 
-        if( text != null ) job.setText(text);
-        if( pages != null ) job.setPages(pages);
+        job.setText(text);
+        job.setPages(pages==null?"*":pages);
         if( align != null ) job.setAlign(align);
         if( bottomMargin != null ) job.setBottomMargin(bottomMargin);
         if( leftMargin != null ) job.setLeftMargin(leftMargin);
@@ -228,40 +228,41 @@ public class HeaderFooterController
      * @throws java.io.IOException
      * @throws Exception
      */
+    //Todo add support using an image instead of only html text
     @ApiOperation(value = "Add Footer to PDF pages")
     @RequestMapping(value = "/modify/footer", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> addFooter(
             @ApiParam(name="file", required = true) 
                 @RequestPart(value = "file") MultipartFile file,
             @ApiParam(name="text", required = false, value = "_PAGELABEL: add current page label|_LASTPAGELABEL: add last page label|PAGENUMBER: add current page number|_LASTPAGENUMBER: add last page number|Text for the header. You can also add a normal text string.") 
-                @RequestPart(value = "text", required = false) String text,
+                @RequestParam(value = "text", required = false) String text,
             @ApiParam(name="pages", required = false, value = "page or pages to add the footer") 
-                @RequestPart(value = "pages", required = false) String pages,
+                @RequestParam(value = "pages", required = false) String pages,
             @ApiParam(name="align", required = false, allowableValues = "left,right,center") 
-                @RequestPart(value = "align", required = false) String align,
+                @RequestParam(value = "align", required = false) String align,
             @ApiParam(name="bottomMargin", required = false, value = "value of the header bottom marign") 
-                @RequestPart(value = "bottomMargin", required = false) Integer bottomMargin,
+                @RequestParam(value = "bottomMargin", required = false) Integer bottomMargin,
             @ApiParam(name="topMargin", required = false, value = "value of the header top marign") 
-                @RequestPart(value = "topMargin", required = false) Integer topMargin,
+                @RequestParam(value = "topMargin", required = false) Integer topMargin,
             @ApiParam(name="leftMargin", required = false, value = "value of the header left marign") 
-                @RequestPart(value = "leftMargin", required = false) Integer leftMargin,
+                @RequestParam(value = "leftMargin", required = false) Integer leftMargin,
             @ApiParam(name="rightMargin", required = false, value = "value of the header right margin") 
-                @RequestPart(value = "rightMargin", required = false) Integer rightMargin,
+                @RequestParam(value = "rightMargin", required = false) Integer rightMargin,
             @ApiParam(name="numberFormat", required = false, allowableValues = "lowercaseroman, numeric, uppercaseroman", value = "used with either _PAGENUMBER or _LASTPAGENUMBER") 
-                @RequestPart(value = "numberFormat", required = false) String numberFormat,
+                @RequestParam(value = "numberFormat", required = false) String numberFormat,
             @ApiParam(name="opacity", required = false, value = "header opacity") 
-                @RequestPart(value = "opacity", required = false) Integer opacity,
+                @RequestParam(value = "opacity", required = false) Integer opacity,
             @ApiParam(name="showOnPrint", required = false, defaultValue = "false", value = "Specify whether to print the watermark with the PDF document") 
-                @RequestPart(value = "showOnPrint", required = false) Boolean showOnPrint,
+                @RequestParam(value = "showOnPrint", required = false) Boolean showOnPrint,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.") 
-                @RequestPart(value = "password", required = false) String password
+                @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         AddFooterPdfResult job = new AddFooterPdfResult();
         job.setFile(new Document(file));
 
-        if( text != null ) job.setText(text);
-        if( pages != null ) job.setPages(pages);
+        job.setText(text);
+        job.setPages(pages==null?"*":pages);
         if( align != null ) job.setAlign(align);
         if( bottomMargin != null ) job.setBottomMargin(bottomMargin);
         if( leftMargin != null ) job.setLeftMargin(leftMargin);
@@ -305,41 +306,42 @@ public class HeaderFooterController
      * @throws java.io.IOException
      * @throws Exception
      */
+    //Todo add support using an image instead of only html text
     @ApiOperation(value = "Add Footer to cached PDF pages")
     @RequestMapping(value = "/modify/{documentId}/footer", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> addFooterToCachedPdf(
             @ApiParam(name="documentId", required = true) 
                 @RequestPart("documentId") String documentId,
             @ApiParam(name="text", required = false, value = "_PAGELABEL: add current page label|_LASTPAGELABEL: add last page label|PAGENUMBER: add current page number|_LASTPAGENUMBER: add last page number \\text for the header. You can also add a normal text string.") 
-                @RequestPart(value = "text", required = false) String text,
+                @RequestParam(value = "text", required = false) String text,
             @ApiParam(name="pages", required = false, value = "page or pages to add the footer") 
-                @RequestPart(value = "pages", required = false) String pages,
+                @RequestParam(value = "pages", required = false) String pages,
             @ApiParam(name="align", required = false, allowableValues = "left,right,center") 
-                @RequestPart(value = "align", required = false) String align,
+                @RequestParam(value = "align", required = false) String align,
             @ApiParam(name="bottomMargin", required = false, value = "value of the header bottom marign") 
-                @RequestPart(value = "bottomMargin", required = false) Integer bottomMargin,
+                @RequestParam(value = "bottomMargin", required = false) Integer bottomMargin,
             @ApiParam(name="topMargin", required = false, value = "value of the header top marign") 
-                @RequestPart(value = "topMargin", required = false) Integer topMargin,
+                @RequestParam(value = "topMargin", required = false) Integer topMargin,
             @ApiParam(name="leftMargin", required = false, value = "value of the header left marign") 
-                @RequestPart(value = "leftMargin", required = false) Integer leftMargin,
+                @RequestParam(value = "leftMargin", required = false) Integer leftMargin,
             @ApiParam(name="rightMargin", required = false, value = "value of the header right margin") 
-                @RequestPart(value = "rightMargin", required = false) Integer rightMargin,
+                @RequestParam(value = "rightMargin", required = false) Integer rightMargin,
             @ApiParam(name="numberFormat", required = false, allowableValues = "lowercaseroman, numeric, uppercaseroman", value = "used with either _PAGENUMBER or _LASTPAGENUMBER") 
-                @RequestPart(value = "numberFormat", required = false) String numberFormat,
+                @RequestParam(value = "numberFormat", required = false) String numberFormat,
             @ApiParam(name="opacity", required = false, value = "header opacity") 
-                @RequestPart(value = "opacity", required = false) Integer opacity,
+                @RequestParam(value = "opacity", required = false) Integer opacity,
             @ApiParam(name="showOnPrint", required = false, defaultValue = "false", value = "Specify whether to print the watermark with the PDF document") 
-                @RequestPart(value = "showOnPrint", required = false) Boolean showOnPrint,
+                @RequestParam(value = "showOnPrint", required = false) Boolean showOnPrint,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.") 
-                @RequestPart(value = "password", required = false) String password
+                @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         AddFooterPdfResult job = new AddFooterPdfResult();
         job.setDocumentId(documentId);
 
 
-        if( text != null ) job.setText(text);
-        if( pages != null ) job.setPages(pages);
+        job.setText(text);
+        job.setPages(pages==null?"*":pages);
         if( align != null ) job.setAlign(align);
         if( bottomMargin != null ) job.setBottomMargin(bottomMargin);
         if( leftMargin != null ) job.setLeftMargin(leftMargin);
