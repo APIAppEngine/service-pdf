@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DDX xmlns="http://ns.adobe.com/DDX/1.0/"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://ns.adobe.com/DDX/1.0/_coldfusion_ddx.xsd">
+
+    <StyleProfile name="bookFooter">
+        <Footer>
+            <Right>
+                <StyledText><p color="gray"> Page <_PageNumber/> of <_LastPageNumber/></p></StyledText>
+            </Right>
+        </Footer>
+    </StyleProfile>
+
+    <PDF result="completeBook">
+        <PDF source="titlePage" />
+        <TableOfContents maxBookmarkLevel="infinite"
+                         createLiveLinks="true"
+                         includeInTOC="false" >
+            <Footer styleReference="bookFooter" />
+        </TableOfContents>
+        <PDF source="chapter1">
+            <Header>
+                <Right>
+                    <StyledText><p color="gray">Chapter 1</p></StyledText>
+                </Right>
+            </Header>
+            <Footer styleReference="bookFooter" />
+        </PDF>
+        <PDF source="chapter2" >
+            <Header>
+                <Right>
+                    <StyledText><p color="gray">Chapter 2</p></StyledText>
+                </Right>
+            </Header>
+            <Footer styleReference="bookFooter" />
+        </PDF>
+        <PDF source="chapter3" >
+            <Header>
+                <Right>
+                    <StyledText><p color="gray">Chapter 3</p></StyledText>
+                </Right>
+            </Header>
+            <Footer styleReference="bookFooter" />
+        </PDF>
+        <PDF source="chapter4" >
+            <Header>
+                <Right>
+                    <StyledText><p color="gray">Chapter 4</p></StyledText>
+                </Right>
+            </Header>
+            <Footer styleReference="bookFooter" />
+        </PDF>
+        <PDF source="glossary" >
+            <Header>
+                <Right>
+                    <StyledText><p color="gray">Glossary</p></StyledText>
+                </Right>
+            </Header>
+            <Footer styleReference="bookFooter" />
+        </PDF>
+    </PDF>
+
+    <PDF result="preview">
+        <PDF source="titlePage">
+            <Watermark opacity="25%">
+                <StyledText><p color="gray">Preview</span></StyledText>
+            </Watermark>
+        </PDF>
+        <TableOfContents maxBookmarkLevel="infinite"
+                         createLiveLinks="true"
+                         includeInTOC="false" >
+            <Footer styleReference="bookFooter" />
+        </TableOfContents>
+        <PDF source="chapter1">
+            <Header>
+                <Right>
+                    <StyledText><p color="gray">Chapter 1</p></StyledText>
+                </Right>
+            </Header>
+            <Footer styleReference="bookFooter" />
+        </PDF>
+    </PDF>
+</DDX>

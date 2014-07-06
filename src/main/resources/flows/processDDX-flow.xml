@@ -35,11 +35,11 @@
 
 
     <si:gateway id="processDDXGateway"
-                service-interface="apiserver.services.pdf.gateways.PdfConversionGateway"
+                service-interface="apiserver.services.pdf.gateways.PdfGateway"
                 default-reply-channel="processDDXReplyChannel"
                 default-reply-timeout="#{applicationProperties.defaultReplyTimeout}">
 
-        <si:method name="convertUrlToPdf"
+        <si:method name="processDDX"
                    request-channel="processDDXRequestChannel"/>
 
     </si:gateway>

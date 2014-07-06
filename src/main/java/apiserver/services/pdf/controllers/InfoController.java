@@ -34,8 +34,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -86,7 +88,7 @@ public class InfoController
             @ApiParam(name = "file", required = true)
                 @RequestPart("file") MultipartFile file,
             @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart(value = "password", required = false) String password
+                @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
         PdfGetInfoResult job = new PdfGetInfoResult();
@@ -118,9 +120,9 @@ public class InfoController
     @RequestMapping(value = "/{documentId}/info/get", method = RequestMethod.GET, produces = "application/pdf")
     public ResponseEntity<Object> getCachedPdfInfo(
             @ApiParam(name = "documentId", required = true)
-                @RequestPart("documentId") String documentId,
+                @RequestParam("documentId") String documentId,
             @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart(value = "password", required = false) String password
+                @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
         PdfGetInfoResult job = new PdfGetInfoResult();
@@ -155,9 +157,9 @@ public class InfoController
             @ApiParam(name = "file", required = true)
                 @RequestPart("file") MultipartFile file,
             @ApiParam(name = "info", required = true, value = "Map variable for relevant information. You can specify the Author, Subject, Title, and Keywords for the PDF output file.")
-                @RequestPart("info") Map info,
+                @RequestParam("info") MultiValueMap info,
             @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart(value = "password", required = false) String password
+                @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
         PdfSetInfoResult job = new PdfSetInfoResult();
@@ -196,11 +198,11 @@ public class InfoController
     @RequestMapping(value = "/{documentId}/info/set", method = RequestMethod.GET, produces = "application/pdf")
     public ResponseEntity<byte[]> setCachedPdfInfo(
             @ApiParam(name = "documentId", required = true)
-                @RequestPart("documentId") String documentId,
+                @RequestParam("documentId") String documentId,
             @ApiParam(name = "info", required = true, value = "Map variable for relevant information. You can specify the Author, Subject, Title, and Keywords for the PDF output file.")
-                @RequestPart("info") Map info,
+                @RequestParam("info") MultiValueMap info,
             @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart(value = "password", required = false) String password
+                @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
         PdfSetInfoResult job = new PdfSetInfoResult();

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DDX xmlns="http://ns.adobe.com/DDX/1.0/"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <StyleProfile name="bookFooter">
+        <Footer>
+            <Right>
+                <StyledText><p color="gray"> Page <_PageNumber/> of <_LastPageNumber/></p></StyledText>
+            </Right>
+        </Footer>
+    </StyleProfile>
+
+    <PDF result="Out1">
+        <PDF source="Doc1"/>
+    </PDF>
+</DDX>

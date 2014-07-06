@@ -1,11 +1,14 @@
 package apiserver.services.pdf.grid;
 
 import apiserver.ApiServerConstants;
+import org.apache.log4j.Logger;
 import org.gridgain.grid.Grid;
 import org.gridgain.grid.GridConfiguration;
 import org.gridgain.grid.GridException;
 import org.gridgain.grid.GridGain;
 import org.gridgain.grid.GridProjection;
+import org.gridgain.grid.logger.GridLogger;
+import org.gridgain.grid.logger.log4j.GridLog4jLogger;
 import org.gridgain.grid.marshaller.optimized.GridOptimizedMarshaller;
 
 import java.io.Serializable;
@@ -62,12 +65,13 @@ public class GridService implements Serializable
         Map<String, String> userAttr = new HashMap<String, String>();
         userAttr.put("ROLE", "image-pdf");
 
+
         GridOptimizedMarshaller gom = new GridOptimizedMarshaller();
         gom.setRequireSerializable(false);
 
         GridConfiguration gc = new GridConfiguration();
         gc.setGridName( ApiServerConstants.GRID_NAME );
-        gc.setPeerClassLoadingEnabled(true);
+        gc.setPeerClassLoadingEnabled(false);
         gc.setRestEnabled(false);
         gc.setUserAttributes(userAttr);
         gc.setMarshaller(gom);

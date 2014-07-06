@@ -41,8 +41,7 @@ public class DDXController
     private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
 
     @Qualifier("processDDXGateway")
-    @Autowired(required = false)
-    public PdfGateway gateway;
+    @Autowired public PdfGateway gateway;
 
 
     /**
