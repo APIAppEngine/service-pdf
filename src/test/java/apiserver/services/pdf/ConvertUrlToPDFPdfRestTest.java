@@ -58,7 +58,7 @@ public class ConvertUrlToPdfPdfRestTest implements Serializable
 {
     @Autowired public WebApplicationContext context;
 
-    @Value("${local.server.port}")
+    @Value("${server.port}")
     public int port;
 
     @Value("${defaultReplyTimeout}")

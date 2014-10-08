@@ -67,7 +67,7 @@ public class DDXController
     public ResponseEntity<byte[]> processDDX(
             @ApiParam(name="file", required = true)
                 @RequestPart("file") MultipartFile file,
-            @ApiParam(name="ddx", required = true, value = "string with DDX instructions")
+            @ApiParam(name="ddx", required = true, value = "XML string with DDX instructions")
                 @RequestParam("ddx") String DDX
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {

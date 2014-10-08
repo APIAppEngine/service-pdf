@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="extractPdfFormRequestChannel"
+    <si:chain id="extractPdfFormChain" input-channel="extractPdfFormRequestChannel"
               output-channel="extractPdfFormReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.ExtractPdfFormFieldsCFService"/>
+            <bean class="apiserver.services.pdf.service.ExtractPdfFormFieldsCFConfig"/>
         </si:service-activator>
 
     </si:chain>

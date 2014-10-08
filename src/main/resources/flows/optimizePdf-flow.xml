@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="optimizePdfRequestChannel"
+    <si:chain id="optimizePdf" input-channel="optimizePdfRequestChannel"
               output-channel="optimizePdfReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.OptimizePdfCFService"/>
+            <bean class="apiserver.services.pdf.service.OptimizePdfCFConfig"/>
         </si:service-activator>
 
     </si:chain>

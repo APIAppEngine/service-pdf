@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="thumbnailPdfRequestChannel"
+    <si:chain id="thumbnailPdf" input-channel="thumbnailPdfRequestChannel"
               output-channel="thumbnailPdfReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.GenerateThumbnailPdfCFService"/>
+            <bean class="apiserver.services.pdf.service.GenerateThumbnailPdfCFConfig"/>
         </si:service-activator>
 
     </si:chain>

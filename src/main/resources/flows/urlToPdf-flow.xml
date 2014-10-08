@@ -46,12 +46,12 @@
 
 
 
-    <si:chain input-channel="convertUrlToPdfRequestChannel"
+    <si:chain id="urlToPdf" input-channel="convertUrlToPdfRequestChannel"
               output-channel="convertUrlToPdfReplyChannel">
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.UrlToPdfCFService"></bean>
+            <bean class="apiserver.services.pdf.service.UrlToPdfCFConfig"></bean>
         </si:service-activator>
 
     </si:chain>

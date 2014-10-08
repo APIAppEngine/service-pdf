@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="populatePdfFormRequestChannel"
+    <si:chain id="populatePdfFormChain" input-channel="populatePdfFormRequestChannel"
               output-channel="populatePdfFormReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.PopulatePdfFormFieldsCFService"/>
+            <bean class="apiserver.services.pdf.service.PopulatePdfFormFieldsCFConfig"/>
         </si:service-activator>
 
     </si:chain>

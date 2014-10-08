@@ -49,19 +49,19 @@
 
 
 
-    <si:chain input-channel="addWatermarkPdfRequestChannel"
+    <si:chain id="addWatermarkChain" input-channel="addWatermarkPdfRequestChannel"
               output-channel="watermarkPdfReplyChannel">
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.AddPdfWatermarkCFService"/>
+            <bean class="apiserver.services.pdf.service.AddPdfWatermarkCFConfig"/>
         </si:service-activator>
 
     </si:chain>
 
 
 
-    <si:chain input-channel="removeWatermarkPdfRequestChannel"
+    <si:chain id="removeWatermarkChain" input-channel="removeWatermarkPdfRequestChannel"
               output-channel="watermarkPdfReplyChannel">
 
 
@@ -73,7 +73,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.RemotePdfWatermarkCFService"/>
+            <bean class="apiserver.services.pdf.service.RemotePdfWatermarkCFConfig"/>
         </si:service-activator>
 
     </si:chain>

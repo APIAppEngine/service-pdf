@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="mergePdfFormRequestChannel"
+    <si:chain id="mergePdfChain" input-channel="mergePdfFormRequestChannel"
               output-channel="mergePdfFormReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.MergePdfFilesCFService"/>
+            <bean class="apiserver.services.pdf.service.MergePdfFilesCFConfig"/>
         </si:service-activator>
 
     </si:chain>

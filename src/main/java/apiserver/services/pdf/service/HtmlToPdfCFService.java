@@ -21,12 +21,12 @@ package apiserver.services.pdf.service;
 
 import apiserver.exceptions.ColdFusionException;
 import apiserver.services.pdf.gateways.jobs.Html2PdfResult;
-import apiserver.services.pdf.grid.GridService;
 import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.services.pdf.HtmlToPdfCallable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gridgain.grid.Grid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 
@@ -39,8 +39,12 @@ import java.util.concurrent.TimeUnit;
  * User: mnimer
  * Date: 9/18/12
  */
-public class HtmlToPdfCFService extends GridService implements Serializable
+public class HtmlToPdfCFService implements Serializable
 {
+    @Autowired private Grid grid;
+    // Get grid-enabled executor service for nodes where attribute 'worker' is defined.
+    @Autowired private ExecutorService executorService;
+
     private final Log log = LogFactory.getLog(this.getClass());
 
     private @Value("${defaultReplyTimeout}") Integer defaultTimeout;
@@ -52,13 +56,8 @@ public class HtmlToPdfCFService extends GridService implements Serializable
         try
         {
             long startTime = System.nanoTime();
-            Grid grid = verifyGridConnection();
 
-            // Get grid-enabled executor service for nodes where attribute 'worker' is defined.
-            ExecutorService exec = getColdFusionExecutor();
-
-
-            Future<ByteArrayResult> future = exec.submit(
+            Future<ByteArrayResult> future = executorService.submit(
                     new HtmlToPdfCallable(props.getHtml(), props.getHeaderHtml(), props.getFooterHtml(), props.getOptions())
             );
 

@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="convertHtmlToPdfChannelRequestChannel"
+    <si:chain id="htmlToPdfChain" input-channel="convertHtmlToPdfChannelRequestChannel"
               output-channel="convertHtmlToPdfChannelReplyChannel">
 
         <si:service-activator

@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="removeHeaderFooterRequestChannel"
+    <si:chain id="removePdfHeaderChain" input-channel="removeHeaderFooterRequestChannel"
               output-channel="removeHeaderFooterReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.RemovePdfHeaderFooterCFService"/>
+            <bean class="apiserver.services.pdf.service.RemovePdfHeaderFooterCFConfig"/>
         </si:service-activator>
 
     </si:chain>

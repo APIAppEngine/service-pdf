@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="pdfSetInfoRequestChannel"
+    <si:chain id="pdfSetInfoChain" input-channel="pdfSetInfoRequestChannel"
               output-channel="pdfSetInfoReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.SetPdfInfoCFService"/>
+            <bean class="apiserver.services.pdf.service.SetPdfInfoCFConfig"/>
         </si:service-activator>
 
     </si:chain>

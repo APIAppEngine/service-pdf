@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="addPdfFooterRequestChannel"
+    <si:chain id="addFooterChain" input-channel="addPdfFooterRequestChannel"
               output-channel="addPdfFooterReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.AddFooterToPdfCFService"/>
+            <bean class="apiserver.services.pdf.service.AddFooterToPdfCFConfig"/>
         </si:service-activator>
 
     </si:chain>

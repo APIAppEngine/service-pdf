@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="addPdfHeaderRequestChannel"
+    <si:chain id="addHeaderChain" input-channel="addPdfHeaderRequestChannel"
               output-channel="addPdfHeaderReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.AddHeaderToPdfCFService"/>
+            <bean class="apiserver.services.pdf.service.AddHeaderToPdfCFConfig"/>
         </si:service-activator>
 
     </si:chain>

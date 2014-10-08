@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="extractPdfImageRequestChannel"
+    <si:chain id="extractPdfImage" input-channel="extractPdfImageRequestChannel"
               output-channel="extractPdfImageReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.ExtractPdfImagesCFService"/>
+            <bean class="apiserver.services.pdf.service.ExtractPdfImagesCFConfig"/>
         </si:service-activator>
 
         <si:service-activator

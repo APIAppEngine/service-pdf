@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="transformPdfRequestChannel"
+    <si:chain id="transformPdf" input-channel="transformPdfRequestChannel"
               output-channel="transformPdfReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.TransformPdfCFService"/>
+            <bean class="apiserver.services.pdf.service.TransformPdfCFConfig"/>
         </si:service-activator>
 
     </si:chain>

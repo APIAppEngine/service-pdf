@@ -2,16 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>com.mikenimer.apiserver</groupId>
-        <artifactId>apiserver</artifactId>
+        <groupId>com.mikenimer.apiappengine</groupId>
+        <artifactId>APIAppEngine</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../APIAppEngine/pom.xml</relativePath>
     </parent>
 
-
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.mikenimer.apiserver</groupId>
+    <groupId>com.mikenimer.apiappengine</groupId>
     <artifactId>service-pdf</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -20,31 +19,35 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.mikenimer.apiserver</groupId>
+            <groupId>com.mikenimer.apiappengine</groupId>
             <artifactId>service-core</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>com.mikenimer.apiserver</groupId>
+            <groupId>com.mikenimer.apiappengine</groupId>
             <artifactId>service-cache</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>com.mikenimer.apiserver</groupId>
-            <artifactId>worker-coldfusion</artifactId>
+            <groupId>com.mikenimer.apiappengine.connectors</groupId>
+            <artifactId>connector-coldfusion</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.gridgain</groupId>
+                    <artifactId>gridgain-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
 
         <!-- Grid Gain -->
         <dependency>
             <groupId>org.gridgain</groupId>
-            <artifactId>gridgain-platform</artifactId>
-            <version>6.1.5</version>
+            <artifactId>gridgain-core</artifactId>
+            <version>6.5.0</version>
             <exclusions>
-
                 <exclusion>
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-continuation</artifactId>
@@ -63,19 +66,14 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-util</artifactId>
+                    <artifactId>jetty-server</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-xml</artifactId>
-                </exclusion>
-
             </exclusions>
         </dependency>
 
 
-
     </dependencies>
+
 
     <build>
         <finalName>service-pdf</finalName>
@@ -87,5 +85,100 @@
             </resource>
         </resources>
 
+        <plugins>
+            <plugin>
+                <groupId>com.mikenimer.apiappengine.util</groupId>
+                <artifactId>swagger-plugin</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>swagger-springmvc-generator</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputDirectoryAndFile>${project.build.outputDirectory}/api-docs/docs/index.json</outputDirectoryAndFile>
+
+                    <apiListing>
+                        <apiVersion>1.0</apiVersion>
+                        <swaggerVersion>1.2</swaggerVersion>
+
+                        <info>
+                            <title>PDF Services</title>
+                            <description>A collection of different REST services to generate and modify PDF files.</description>
+                            <termsOfServiceUrl></termsOfServiceUrl>
+                            <contact></contact>
+                            <license></license>
+                            <licenseUrl></licenseUrl>
+                        </info>
+
+                        <services>
+                            <service>
+                                <name>Ping</name>
+                                <description>Simple health check for this set of micro service.</description>
+                                <basePath>/</basePath>
+                                <basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.PdfTestController</basePackage>
+                                </basePackage>
+                            </service>
+                            <service>
+                                <name>Conversion Services</name>
+                                <description>Convert different formats to PDF.</description>
+                                <basePath>/</basePath>
+                                <basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.ConvertHtmlController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.ConvertUrlController</basePackage>
+                                </basePackage>
+                            </service>
+                            <service>
+                                <name>Form Services</name>
+                                <description>Work with PDF forms.</description>
+                                <basePath>/</basePath>
+                                <basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.FormController</basePackage>
+                                </basePackage>
+                            </service>
+                            <service>
+                                <name>Information</name>
+                                <description>Information about PDF files</description>
+                                <basePath>/</basePath>
+                                <basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.InfoController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.ExtractController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.ThumbnailController</basePackage>
+                                </basePackage>
+                            </service>
+                            <service>
+                                <name>Modification Services</name>
+                                <description>Various modifications to pdf files.</description>
+                                <basePath>/</basePath>
+                                <basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.DDXController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.HeaderFooterController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.MergeController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.OptimizeController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.PagesController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.TransformerController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.WatermarkController</basePackage>
+                                </basePackage>
+                            </service>
+                            <service>
+                                <name>Security Services</name>
+                                <description>Secure PDF files</description>
+                                <basePath>/</basePath>
+                                <basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.ProtectController</basePackage>
+                                </basePackage>
+                            </service>
+                        </services>
+
+                    </apiListing>
+
+                </configuration>
+
+            </plugin>
+        </plugins>
     </build>
 </project>

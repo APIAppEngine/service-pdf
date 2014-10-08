@@ -46,7 +46,7 @@
 
 
 
-    <si:chain input-channel="processDDXRequestChannel"
+    <si:chain id="processPdfDDXChain" input-channel="processDDXRequestChannel"
               output-channel="processDDXReplyChannel">
 
 
@@ -58,7 +58,7 @@
 
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.ProcessPdfDDXCFService"/>
+            <bean class="apiserver.services.pdf.service.ProcessPdfDDXCFConfig"/>
         </si:service-activator>
 
     </si:chain>
