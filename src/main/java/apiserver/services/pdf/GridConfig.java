@@ -1,16 +1,14 @@
 package apiserver.services.pdf;
 
 import apiserver.ApiServerConstants;
-import org.gridgain.grid.Grid;
-import org.gridgain.grid.GridConfiguration;
-import org.gridgain.grid.GridException;
-import org.gridgain.grid.GridGain;
-import org.gridgain.grid.GridProjection;
-import org.gridgain.grid.kernal.managers.discovery.GridDiscoveryManager;
-import org.gridgain.grid.marshaller.optimized.GridOptimizedMarshaller;
-import org.gridgain.grid.spi.discovery.GridDiscoverySpi;
-import org.gridgain.grid.spi.discovery.tcp.GridTcpDiscoverySpi;
-import org.gridgain.grid.spi.discovery.tcp.ipfinder.multicast.GridTcpDiscoveryMulticastIpFinder;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteException;
+import org.apache.ignite.Ignition;
+import org.apache.ignite.cluster.ClusterGroup;
+import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.marshaller.optimized.OptimizedMarshaller;
+import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
+import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,19 +25,19 @@ import java.util.concurrent.ExecutorService;
 @Configuration
 public class GridConfig implements Serializable
 {
-    private static Grid grid = null;
+    private static Ignite grid = null;
 
 
     @Bean
-    public Grid grid()
+    public Ignite grid()
     {
         try {
-            Grid grid = GridGain.start(getGridConfiguration());
+            Ignite grid = Ignition.start(getGridConfiguration());
             return grid;
         }
-        catch (GridException ge) {
+        catch (IgniteException ge) {
             if (ge.getMessage().contains("Grid instance was not properly started or was already stopped")) {
-                GridGain.restart(true);
+                Ignition.restart(true);
             }
             ge.printStackTrace();
             throw new RuntimeException(ge);
@@ -53,37 +51,37 @@ public class GridConfig implements Serializable
     {
         try {
             // Get grid-enabled executor service for nodes where attribute 'worker' is defined.
-            GridProjection projection = grid().forAttribute("ROLE", "connector-coldfusion");
+            ClusterGroup projection = grid().cluster().forAttribute("ROLE", "connector-coldfusion");
 
             if (projection.nodes().size() == 0) {  //todo, test that it returns null if CF is not running
-                throw new GridException("ColdFusion-Worker Grid Node is not running or accessible");
+                throw new IgniteException("ColdFusion-Worker Grid Node is not running or accessible");
             }
 
-            return projection.forRandom().compute().executorService();
-        }catch(GridException ex){
+            return projection.ignite().executorService();
+        }catch(IgniteException ex){
             throw new RuntimeException(ex);
         }
     }
 
 
-    private GridConfiguration getGridConfiguration()
+    private IgniteConfiguration getGridConfiguration()
     {
         Map<String, String> userAttr = new HashMap<String, String>();
         userAttr.put("ROLE", "ApiAppEngine");
         userAttr.put("ROLE", "image-pdf");
 
 
-        GridOptimizedMarshaller gom = new GridOptimizedMarshaller();
+        OptimizedMarshaller gom = new OptimizedMarshaller();
         gom.setRequireSerializable(false);
 
-        GridTcpDiscoveryMulticastIpFinder fndr = new GridTcpDiscoveryMulticastIpFinder();
+        TcpDiscoveryMulticastIpFinder fndr = new TcpDiscoveryMulticastIpFinder();
         fndr.setLocalAddress("127.0.0.1");
 
-        GridTcpDiscoverySpi spi = new GridTcpDiscoverySpi();
+        TcpDiscoverySpi spi = new TcpDiscoverySpi();
         spi.setIpFinder(fndr);
 
 
-        GridConfiguration gc = new GridConfiguration();
+        IgniteConfiguration gc = new IgniteConfiguration();
         gc.setGridName(ApiServerConstants.GRID_NAME);
         gc.setPeerClassLoadingEnabled(true);
         gc.setUserAttributes(userAttr);

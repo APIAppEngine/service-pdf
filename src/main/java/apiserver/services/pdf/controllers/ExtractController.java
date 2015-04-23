@@ -22,12 +22,10 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.MimeType;
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.ObjectResult;
 import apiserver.services.cache.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.ExtractImageResult;
 import apiserver.services.pdf.gateways.jobs.ExtractTextResult;
-import apiserver.workers.coldfusion.model.StringResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;

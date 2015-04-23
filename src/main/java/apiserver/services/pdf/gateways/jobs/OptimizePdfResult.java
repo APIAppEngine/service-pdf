@@ -1,8 +1,8 @@
 package apiserver.services.pdf.gateways.jobs;
 
+import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
 import apiserver.core.connectors.coldfusion.services.BinaryResult;
 import apiserver.services.cache.model.Document;
-import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
 
 /**
  * Created by mnimer on 4/14/14.

@@ -32,8 +32,8 @@
 
         <dependency>
             <groupId>com.mikenimer.apiappengine.connectors</groupId>
-            <artifactId>connector-coldfusion</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <artifactId>worker-coldfusion</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.gridgain</groupId>

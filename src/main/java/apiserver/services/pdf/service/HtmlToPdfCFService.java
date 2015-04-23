@@ -25,7 +25,6 @@ import apiserver.workers.coldfusion.model.ByteArrayResult;
 import apiserver.workers.coldfusion.services.pdf.HtmlToPdfCallable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.gridgain.grid.Grid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
@@ -41,7 +40,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class HtmlToPdfCFService implements Serializable
 {
-    @Autowired private Grid grid;
     // Get grid-enabled executor service for nodes where attribute 'worker' is defined.
     @Autowired private ExecutorService executorService;
 

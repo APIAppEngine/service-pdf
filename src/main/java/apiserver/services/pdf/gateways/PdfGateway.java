@@ -1,7 +1,20 @@
 package apiserver.services.pdf.gateways;
 
 
-import apiserver.services.pdf.gateways.jobs.*;
+import apiserver.services.pdf.gateways.jobs.AddFooterPdfResult;
+import apiserver.services.pdf.gateways.jobs.AddHeaderPdfResult;
+import apiserver.services.pdf.gateways.jobs.DDXPdfResult;
+import apiserver.services.pdf.gateways.jobs.DeletePdfPagesResult;
+import apiserver.services.pdf.gateways.jobs.ExtractImageResult;
+import apiserver.services.pdf.gateways.jobs.ExtractTextResult;
+import apiserver.services.pdf.gateways.jobs.MergePdfResult;
+import apiserver.services.pdf.gateways.jobs.OptimizePdfResult;
+import apiserver.services.pdf.gateways.jobs.PdfGetInfoResult;
+import apiserver.services.pdf.gateways.jobs.PdfSetInfoResult;
+import apiserver.services.pdf.gateways.jobs.RemoveHeaderFooterResult;
+import apiserver.services.pdf.gateways.jobs.SecurePdfResult;
+import apiserver.services.pdf.gateways.jobs.ThumbnailPdfResult;
+import apiserver.services.pdf.gateways.jobs.WatermarkPdfResult;
 
 import java.util.Map;
 import java.util.concurrent.Future;
