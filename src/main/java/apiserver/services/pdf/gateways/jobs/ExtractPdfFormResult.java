@@ -20,51 +20,12 @@ package apiserver.services.pdf.gateways.jobs;
  ******************************************************************************/
 
 import apiserver.core.connectors.coldfusion.jobs.CFPDFFormJob;
-import apiserver.core.connectors.coldfusion.services.ObjectResult;
-import apiserver.model.Document;
 
 /**
  * User: mikenimer
  * Date: 9/16/13
  */
-public class ExtractPdfFormResult extends CFPDFFormJob implements ObjectResult
+public class ExtractPdfFormResult extends CFPDFFormJob
 {
 
-    private String documentId;
-    private Document file;
-    private Object result;
-
-
-    public String getDocumentId()
-    {
-        return documentId;
-    }
-
-
-    public void setDocumentId(String documentId)
-    {
-        this.documentId = documentId;
-    }
-
-
-    public Document getFile()
-    {
-        return file;
-    }
-
-
-    public void setFile(Document file)
-    {
-        this.file = file;
-    }
-
-
-    public Object getResult() {
-        return result;
-    }
-
-
-    public void setResult(Object result) {
-        this.result = result;
-    }
 }

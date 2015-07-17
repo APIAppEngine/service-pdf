@@ -1,9 +1,7 @@
 package apiserver.services.pdf;
 
 
-import apiserver.PdfMicroServiceApplication;
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -22,7 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;

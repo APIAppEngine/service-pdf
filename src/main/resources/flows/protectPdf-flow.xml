@@ -47,16 +47,12 @@
     <si:chain id="protectPdfChain" input-channel="protectPdfRequestChannel"
               output-channel="protectPdfReplyChannel">
 
-
-        <si:service-activator
-                method="getFromCache">
-            <bean class="apiserver.services.cache.services.DocumentService"/>
-        </si:service-activator>
-
-
         <si:service-activator
                 method="execute">
-            <bean class="apiserver.services.pdf.service.ProtectPdfCFConfig"/>
+            <bean class="apiserver.core.connectors.coldfusion.ColdFusionHttpBridge">
+                <property name="cfcPath" value="/api-pdf.cfc?method=execute"/>
+                <property name="cfcMethod" value="POST"/>
+            </bean>
         </si:service-activator>
 
     </si:chain>

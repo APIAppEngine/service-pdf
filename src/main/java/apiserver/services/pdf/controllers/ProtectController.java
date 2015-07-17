@@ -19,20 +19,21 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
-import apiserver.exceptions.MessageConfigException;
+import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
+import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.SecurePdfResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,8 +55,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
+@Api(value = "/api/pdf", description = "[PDF]")
+@RequestMapping("/api/pdf")
 public class ProtectController
 {
     @Qualifier("protectPdfApiGateway")
@@ -80,18 +81,18 @@ public class ProtectController
      * @throws Exception
      */
     @ApiOperation(value = "Secure a pdf with a password")
-    @RequestMapping(value = "/protect", method = RequestMethod.POST, produces = "application/pdf")
-    public ResponseEntity<byte[]> protectPdf(
+    @RequestMapping(value = "/protect", method = RequestMethod.POST)
+    public ResponseEntity protectPdf(
             HttpServletRequest request,
             @ApiParam(name="file", required = true)
                 @RequestParam(value = "file", required = true) MultipartFile file,
-            @ApiParam(name="encrypt", required = false, allowableValues = "RC4_40,RC4_128,RC4_128M,AES_128,none", value = "Encryption type for the PDF output file:", defaultValue = "RC4_128")
+            @ApiParam(name="encrypt", required = false, allowableValues = "RC4_40,RC4_128,RC4_128M,AES_128,none", defaultValue = "RC4_128", value = "Encryption type for the PDF output file:")
                 @RequestParam(value = "encrypt", required = false) String encrypt,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
                 @RequestParam(value = "password", required = false) String password,
-            @ApiParam(name="newUserPassword", required = true, value="Password used to open PDF document.")
+            @ApiParam(name="newUserPassword", required = false, value="Password used to open PDF document.")
                 @RequestParam(value = "newUserPassword", required = false) String newUserPassword,
-            @ApiParam(name="newOwnerPassword", required = true, value = "Password used to set permissions on a PDF document.")
+            @ApiParam(name="newOwnerPassword", required = false, value = "Password used to set permissions on a PDF document.")
                 @RequestParam(value = "newOwnerPassword", required = false) String newOwnerPassword,
             @ApiParam(name="allowAssembly", required = false, value = "permissions on the PDF document")
                 @RequestParam(value = "allowAssembly", required = false) Boolean allowAssembly,
@@ -111,37 +112,9 @@ public class ProtectController
                 @RequestParam(value = "allowSecure", required = false) Boolean allowSecure
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        if( newUserPassword == null && newOwnerPassword == null)
-        {
-            throw new MessageConfigException("Missing newUserPassword or newOwnerPassword");
-        }
-
-
-        SecurePdfResult job = new SecurePdfResult();
-        //file
-        job.setFile(new Document(file));
-        if( password != null ) job.setPassword(password);
-        if( newUserPassword != null ) job.setNewUserPassword(newUserPassword);
-        if( newOwnerPassword != null ) job.setNewOwnerPassword(newOwnerPassword);
-        if( encrypt != null ) job.setEncrypt(encrypt);
-        // permission
-        if( allowAssembly != null ) job.setAllowAssembly(allowAssembly);
-        if( allowCopy != null ) job.setAllowCopy(allowCopy);
-        if( allowDegradedPrinting != null ) job.setAllowDegradedPrinting(allowDegradedPrinting);
-        if( allowFillIn != null ) job.setAllowFillIn(allowFillIn);
-        if( allowModifyAnnotations != null ) job.setAllowModifyAnnotations(allowModifyAnnotations);
-        if( allowPrinting != null ) job.setAllowPrinting(allowPrinting);
-        if( allowScreenReaders != null ) job.setAllowScreenReaders(allowScreenReaders);
-        if( allowSecure != null ) job.setAllowSecure(allowSecure);
-
-        Future<Map> future = gateway.protectPdf(job);
-        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        return executeJob(file, null, encrypt, password, newUserPassword, newOwnerPassword, allowAssembly, allowCopy, allowDegradedPrinting, allowFillIn, allowModifyAnnotations, allowPrinting, allowScreenReaders, allowSecure);
     }
+
 
     /**
      * Secure a cached pdf with a password
@@ -155,38 +128,86 @@ public class ProtectController
      */
     @ApiOperation(value = "Secure a cached pdf with a password")
     @RequestMapping(value = "/{documentId}/protect", method = RequestMethod.GET, produces = "application/pdf")
-    public ResponseEntity<byte[]> protectPdf(
+    public ResponseEntity protectPdf(
             @ApiParam(name="documentId", required = true)
-                @RequestPart("documentId") String documentId,
+                @RequestPart(value = "documentId", required = true) String documentId,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart("password") String password,
+                @RequestPart(value="password") String password,
             @ApiParam(name="newUserPassword", required = true, value="Password used to open PDF document.")
-                @RequestPart("newUserPassword") String newUserPassword,
+                @RequestPart(value="newUserPassword") String newUserPassword,
             @ApiParam(name="newOwnerPassword", required = true, value = "Password used to set permissions on a PDF document.")
-                @RequestPart("newOwnerPassword") String newOwnerPassword,
+                @RequestPart(value="newOwnerPassword") String newOwnerPassword,
             @ApiParam(name="encrypt", required = false, allowableValues = "RC4_40,RC4_128,RC4_128M,AES_128,none", value = "Encryption type for the PDF output file:")
-                @RequestPart("encrypt") String encrypt,
+                @RequestPart(value="encrypt") String encrypt,
             @ApiParam(name="allowAssembly", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowAssembly") Boolean allowAssembly,
+                @RequestPart(value="allowAssembly") Boolean allowAssembly,
             @ApiParam(name="allowCopy", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowCopy") Boolean allowCopy,
+                @RequestPart(value="allowCopy") Boolean allowCopy,
             @ApiParam(name="allowDegradedPrinting", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowDegradedPrinting") Boolean allowDegradedPrinting,
+                @RequestPart(value="allowDegradedPrinting") Boolean allowDegradedPrinting,
             @ApiParam(name="allowFillIn", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowFillIn") Boolean allowFillIn,
+                @RequestPart(value="allowFillIn") Boolean allowFillIn,
             @ApiParam(name="allowModifyAnnotations", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowModifyAnnotations") Boolean allowModifyAnnotations,
+                @RequestPart(value="allowModifyAnnotations") Boolean allowModifyAnnotations,
             @ApiParam(name="allowPrinting", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowPrinting") Boolean allowPrinting,
+                @RequestPart(value="allowPrinting") Boolean allowPrinting,
             @ApiParam(name="allowScreenReaders", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowScreenReaders") Boolean allowScreenReaders,
+                @RequestPart(value="allowScreenReaders") Boolean allowScreenReaders,
             @ApiParam(name="allowSecure", required = false, value = "permissions on the PDF document")
-                @RequestPart("allowSecure") Boolean allowSecure
+                @RequestPart(value="allowSecure") Boolean allowSecure
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        SecurePdfResult job = new SecurePdfResult();
+        return executeJob(null, documentId, encrypt, password, newUserPassword, newOwnerPassword, allowAssembly, allowCopy, allowDegradedPrinting, allowFillIn, allowModifyAnnotations, allowPrinting, allowScreenReaders, allowSecure);
+    }
+
+
+
+
+    private ResponseEntity executeJob(
+            MultipartFile file
+            , String documentId
+            , String encrypt
+            , String password
+            , String newUserPassword
+            , String newOwnerPassword
+            , Boolean allowAssembly
+            , Boolean allowCopy
+            , Boolean allowDegradedPrinting
+            , Boolean allowFillIn
+            , Boolean allowModifyAnnotations
+            , Boolean allowPrinting
+            , Boolean allowScreenReaders
+            , Boolean allowSecure
+    ) throws IOException, InterruptedException, ExecutionException, TimeoutException
+    {
+        if( newUserPassword == null && newOwnerPassword == null)
+        {
+            MultiValueMap _headers = new LinkedMultiValueMap();
+            _headers.add("Content-Type", "text/plain");
+            return new ResponseEntity("Missing newUserPassword or newOwnerPassword", HttpStatus.BAD_REQUEST);
+        }
+
+        if( encrypt != null ){
+            try {
+                CFPdfJob.Encryption encryption = CFPdfJob.Encryption.valueOf(encrypt.toUpperCase());
+            }catch(IllegalArgumentException ex){
+                String values = org.apache.commons.lang.StringUtils.join(CFPdfJob.Encryption.values(), ",");
+                MultiValueMap _headers = new LinkedMultiValueMap();
+                _headers.add("Content-Type", "text/plain");
+                return new ResponseEntity("Invalid encryption value. Valid values are: " + values, _headers, HttpStatus.BAD_REQUEST);
+            }
+        }
+
+
+        CFPdfJob job = new CFPdfJob();
+        job.setAction("protect");
+
         //file
-        job.setDocumentId(documentId);
+        if( file != null ) {
+            job.setDocument(new Document(file));
+        }else if( documentId != null ){
+            job.setDocumentId(documentId);
+        }
         if( password != null ) job.setPassword(password);
         if( newUserPassword != null ) job.setNewUserPassword(newUserPassword);
         if( newOwnerPassword != null ) job.setNewOwnerPassword(newOwnerPassword);
@@ -202,14 +223,10 @@ public class ProtectController
         if( allowSecure != null ) job.setAllowSecure(allowSecure);
 
         Future<Map> future = gateway.protectPdf(job);
-        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
-
-
 
 }

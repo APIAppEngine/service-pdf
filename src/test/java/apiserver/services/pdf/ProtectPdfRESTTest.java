@@ -1,6 +1,5 @@
 package apiserver.services.pdf;
 
-import apiserver.PdfMicroServiceApplication;
 import apiserver.PdfTestBase;
 import org.junit.Assert;
 import org.junit.Before;

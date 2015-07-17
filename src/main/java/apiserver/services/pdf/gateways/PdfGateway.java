@@ -1,8 +1,9 @@
 package apiserver.services.pdf.gateways;
 
 
-import apiserver.services.pdf.gateways.jobs.AddFooterPdfResult;
-import apiserver.services.pdf.gateways.jobs.AddHeaderPdfResult;
+import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
+import apiserver.services.pdf.gateways.jobs.AddFooterPdfJob;
+import apiserver.services.pdf.gateways.jobs.AddHeaderPdfJob;
 import apiserver.services.pdf.gateways.jobs.DDXPdfResult;
 import apiserver.services.pdf.gateways.jobs.DeletePdfPagesResult;
 import apiserver.services.pdf.gateways.jobs.ExtractImageResult;
@@ -11,8 +12,6 @@ import apiserver.services.pdf.gateways.jobs.MergePdfResult;
 import apiserver.services.pdf.gateways.jobs.OptimizePdfResult;
 import apiserver.services.pdf.gateways.jobs.PdfGetInfoResult;
 import apiserver.services.pdf.gateways.jobs.PdfSetInfoResult;
-import apiserver.services.pdf.gateways.jobs.RemoveHeaderFooterResult;
-import apiserver.services.pdf.gateways.jobs.SecurePdfResult;
 import apiserver.services.pdf.gateways.jobs.ThumbnailPdfResult;
 import apiserver.services.pdf.gateways.jobs.WatermarkPdfResult;
 
@@ -34,11 +33,11 @@ public interface PdfGateway
 
     Future<Map> extractImage(ExtractImageResult args);
 
-    Future<Map> addFooterToPdf(AddFooterPdfResult args);
+    Future<Map> addFooterToPdf(CFPdfJob args);
 
-    Future<Map> addHeaderToPdf(AddHeaderPdfResult args);
+    Future<Map> addHeaderToPdf(CFPdfJob args);
 
-    Future<Map> removeHeaderFooter(RemoveHeaderFooterResult args);
+    Future<Map> removeHeaderFooter(CFPdfJob args);
 
     Future<Map> pdfGetInfo(PdfGetInfoResult args);
 
@@ -46,11 +45,11 @@ public interface PdfGateway
 
     Future<Map> deletePages(DeletePdfPagesResult args);
 
-    Future<Map> protectPdf(SecurePdfResult args);
+    Future<Map> protectPdf(CFPdfJob args);
 
     Future<Map> thumbnailGenerator(ThumbnailPdfResult job);
 
-    Future<Map> transformPdf(SecurePdfResult job);
+    Future<Map> transformPdf(CFPdfJob job);
 
     Future<Map> addWatermarkToPdf(WatermarkPdfResult job);
 

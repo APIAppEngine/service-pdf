@@ -19,7 +19,6 @@ package apiserver.services.pdf;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.PdfMicroServiceApplication;
 import apiserver.PdfTestBase;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,16 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.InputStream;
 import java.io.Serializable;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;

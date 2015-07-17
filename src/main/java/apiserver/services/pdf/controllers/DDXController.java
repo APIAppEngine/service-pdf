@@ -1,8 +1,6 @@
 package apiserver.services.pdf.controllers;
 
-import apiserver.MimeType;
-import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
+import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.DDXPdfResult;
@@ -72,18 +70,15 @@ public class DDXController
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
         DDXPdfResult job = new DDXPdfResult();
-        job.setFile(new Document(file));
+        job.setDocument(new Document(file));
         job.setDdx(DDX);
 
 
         Future<Map> future = gateway.processDDX(job);
-        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-
-        byte[] fileBytes = payload.getResult();
-        String contentType = MimeType.pdf.contentType;
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 
@@ -112,13 +107,10 @@ public class DDXController
 
 
         Future<Map> future = gateway.processDDX(job);
-        DDXPdfResult payload = (DDXPdfResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-
-        byte[] fileBytes = payload.getResult();
-        String contentType = MimeType.pdf.contentType;
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 }

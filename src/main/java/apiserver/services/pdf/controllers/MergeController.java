@@ -20,8 +20,7 @@ package apiserver.services.pdf.controllers;
  ******************************************************************************/
 
 import apiserver.MimeType;
-import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
+import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.MergePdfResult;
@@ -112,12 +111,10 @@ public class MergeController
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = gateway.mergePdf(job);
-        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 

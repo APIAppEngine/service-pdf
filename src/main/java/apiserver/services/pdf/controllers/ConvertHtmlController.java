@@ -19,9 +19,8 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
+import apiserver.jobs.IProxyJob;
 import apiserver.services.pdf.gateways.PdfConversionGateway;
 import apiserver.services.pdf.gateways.jobs.Html2PdfResult;
 import com.wordnik.swagger.annotations.Api;
@@ -141,19 +140,19 @@ public class ConvertHtmlController
 
         //Optional Arguments
         if( backgroundVisible != null) args.setBackgroundVisible(backgroundVisible);
-        if( encryption != null ) args.setEncryption(encryption);
+        //if( encryption != null ) args.setEncryption(encryption);
         if( fontEmbed != null) args.setFontEmbed(fontEmbed);
         if( marginBottom != null) args.setMarginBottom(marginBottom);
         if( marginTop != null) args.setMarginTop(marginTop);
         if( marginLeft != null) args.setMarginLeft(marginLeft);
         if( marginRight != null) args.setMarginRight(marginRight);
-        if( orientation != null) args.setOrientation(orientation);
+        //if( orientation != null) args.setOrientation(orientation);
         if( ownerPassword != null) args.setOwnerPassword(ownerPassword);
         if( pageHeight != null) args.setPageHeight(pageHeight);
         if( pageWidth != null) args.setPageWidth(pageWidth);
-        if( pageType != null) args.setPageType(pageType);
+        //if( pageType != null) args.setPageType(pageType);
         if( scale != null) args.setScale(scale);
-        if( unit != null) args.setUnit(unit);
+        //if( unit != null) args.setUnit(unit);
         if( userPassword != null) args.setUserPassword(userPassword);
 
         List<String> permissionsArray = new ArrayList();
@@ -170,12 +169,10 @@ public class ConvertHtmlController
         }
 
         Future<Map> future = gateway.convertHtmlToPdf(args);
-        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 

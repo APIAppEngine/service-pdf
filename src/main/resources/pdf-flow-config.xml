@@ -28,6 +28,7 @@
 
 
     <!-- status flows -->
+    <import resource="flows/protectPdf-flow.xml"/>
     <import resource="flows/addFooterToPdf-flow.xml"/>
     <import resource="flows/addHeaderToPdf-flow.xml"/>
     <import resource="flows/deletePdfPages-flow.xml"/>
@@ -41,7 +42,6 @@
     <import resource="flows/pdfSetInfo-flow.xml"/>
     <import resource="flows/populatePdfForm-flow.xml"/>
     <import resource="flows/processDDX-flow.xml"/>
-    <import resource="flows/protectPdf-flow.xml"/>
     <import resource="flows/removePdfHeaderFooter-flow.xml"/>
     <import resource="flows/thumbnailPdf-flow.xml"/>
     <import resource="flows/transformPdf-flow.xml"/>

@@ -20,8 +20,8 @@ package apiserver.services.pdf.controllers;
  ******************************************************************************/
 
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
-import apiserver.core.connectors.coldfusion.services.ObjectResult;
+import apiserver.core.connectors.coldfusion.services.IObjectResult;
+import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.PdfGetInfoResult;
@@ -92,13 +92,13 @@ public class InfoController
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
         PdfGetInfoResult job = new PdfGetInfoResult();
-        job.setFile(new Document(file));
+        job.setDocument(new Document(file));
         if (password != null) {
             job.setPassword(password);
         }
 
         Future<Map> future = getInfoGateway.pdfGetInfo(job);
-        ObjectResult payload = (ObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IObjectResult payload = (IObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         return ResponseEntityHelper.processObject(payload.getResult());
     }
@@ -132,7 +132,7 @@ public class InfoController
         }
 
         Future<Map> future = getInfoGateway.pdfGetInfo(job);
-        ObjectResult payload = (ObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IObjectResult payload = (IObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         return ResponseEntityHelper.processObject(payload.getResult());
     }
@@ -163,7 +163,7 @@ public class InfoController
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
         PdfSetInfoResult job = new PdfSetInfoResult();
-        job.setFile(new Document(file));
+        job.setDocument(new Document(file));
         if (info != null) {
             job.setInfo(info);
         }
@@ -172,12 +172,10 @@ public class InfoController
         }
 
         Future<Map> future = setInfoGateway.pdfSetInfo(job);
-        BinaryResult payload = (BinaryResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 
@@ -215,12 +213,10 @@ public class InfoController
         }
 
         Future<Map> future = setInfoGateway.pdfSetInfo(job);
-        BinaryResult payload = (BinaryResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 }

@@ -20,7 +20,8 @@ package apiserver.services.pdf.controllers;
  ******************************************************************************/
 
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
+import apiserver.core.connectors.coldfusion.services.IBinaryResult;
+import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfFormGateway;
 import apiserver.services.pdf.gateways.jobs.ExtractPdfFormResult;
@@ -85,11 +86,11 @@ public class FormController
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
         ExtractPdfFormResult job = new ExtractPdfFormResult();
-        job.setFile(new Document(file));
+        //job.setDocument(new Document(file));
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = extractGateway.extractPdfForm(job);
-        ExtractPdfFormResult payload = (ExtractPdfFormResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IBinaryResult payload = (IBinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         return ResponseEntityHelper.processObject(payload.getResult());
     }
@@ -113,11 +114,11 @@ public class FormController
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
         ExtractPdfFormResult job = new ExtractPdfFormResult();
-        job.setDocumentId(documentId);
+        //job.setDocumentId(documentId);
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = extractGateway.extractPdfForm(job);
-        ExtractPdfFormResult payload = (ExtractPdfFormResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IBinaryResult payload = (IBinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         return ResponseEntityHelper.processObject(payload);
     }
@@ -143,17 +144,15 @@ public class FormController
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
         PopulatePdfFormResult job = new PopulatePdfFormResult();
-        job.setFile(new Document(file));
-        job.setFields(fields);
+        job.setDocument(new Document(file));
+        //job.setFields(fields);
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = populateGateway.populatePdfForm(job);
-        PopulatePdfFormResult payload = (PopulatePdfFormResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 
@@ -178,16 +177,14 @@ public class FormController
     {
         PopulatePdfFormResult job = new PopulatePdfFormResult();
         job.setDocumentId(documentId);
-        job.setFields(fields);
+        //job.setFields(fields);
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = populateGateway.populatePdfForm(job);
-        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 

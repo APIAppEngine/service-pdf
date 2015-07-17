@@ -1,10 +1,9 @@
 package apiserver.services.pdf.controllers;
 
-import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
+import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
+import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.SecurePdfResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -70,9 +69,9 @@ public class TransformerController
                 @RequestPart("rotation") Integer rotation
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        SecurePdfResult job = new SecurePdfResult();
+        CFPdfJob job = new CFPdfJob();
         //file
-        job.setFile(new Document(file));
+        job.setDocument(new Document(file));
         if( password != null ) job.setPassword(password);
         if( hScale != null ) job.setHScale(hScale);
         if( vScale != null ) job.setVScale(vScale);
@@ -80,12 +79,10 @@ public class TransformerController
         if( rotation != null ) job.setRotation(rotation);
 
         Future<Map> future = gateway.transformPdf(job);
-        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
     /**
@@ -116,7 +113,7 @@ public class TransformerController
                 @RequestPart("rotation") Integer rotation
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        SecurePdfResult job = new SecurePdfResult();
+        CFPdfJob job = new CFPdfJob();
         //file
         job.setDocumentId(documentId);
         if( password != null ) job.setPassword(password);
@@ -126,11 +123,9 @@ public class TransformerController
         if( rotation != null ) job.setRotation(rotation);
 
         Future<Map> future = gateway.transformPdf(job);
-        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 }

@@ -19,9 +19,9 @@ package apiserver.services.pdf;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.PdfMicroServiceApplication;
 import apiserver.PdfTestBase;
 import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
+import apiserver.jobs.IProxyJob;
 import apiserver.services.pdf.gateways.PdfConversionGateway;
 import apiserver.services.pdf.gateways.jobs.Html2PdfResult;
 import org.junit.Assert;
@@ -81,11 +81,13 @@ public class ConvertHtmlToPdfGatewayTest
             args.setPermissions(permissions);
 
             Future<Map> resultFuture = pdfHtmlGateway.convertHtmlToPdf(args);
-            Object result = resultFuture.get( defaultTimeout, TimeUnit.MILLISECONDS );
+            IProxyJob result = (IProxyJob)resultFuture.get( defaultTimeout, TimeUnit.MILLISECONDS );
 
             Assert.assertTrue(result != null);
-            Assert.assertTrue(((Html2PdfResult)result).getResult().length > 10000);
-            PdfTestBase.saveFileToLocalDisk("test-htmlToPdf2.pdf", ((Html2PdfResult)result).getResult());
+            Assert.assertTrue(result.getHttpResponse() != null);
+            Assert.assertTrue(result.getHttpResponse().getBody() != null);
+            //Assert.assertTrue(((IColdFusionJob)result).getHttpResponse().getBody().getResult().length > 10000);
+            PdfTestBase.saveFileToLocalDisk("test-htmlToPdf2.pdf", (byte[]) result.getHttpResponse().getBody());
         }
         catch (Exception ex){
             ex.printStackTrace();

@@ -19,20 +19,16 @@ package apiserver.services.pdf.gateways.jobs;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
-
 /**
  * User: mikenimer
  * Date: 9/16/13
  */
-public class Html2PdfResult extends CFDocumentJob implements BinaryResult
+public class Html2PdfResult extends CFDocumentJob
 {
 
     private String html;
     private String headerHtml;
     private String footerHtml;
-    private byte[] pdfBytes;
 
 
 
@@ -77,19 +73,6 @@ public class Html2PdfResult extends CFDocumentJob implements BinaryResult
      */
     public void setFooterHtml(String footerHtml) {
         this.footerHtml = footerHtml;
-    }
-
-
-    /**
-     * bytes of generated pdf to return
-     * @return
-     */
-    public byte[] getResult() {
-        return pdfBytes;
-    }
-
-    public void setResult(byte[] pdfBytes) {
-        this.pdfBytes = pdfBytes;
     }
 
 

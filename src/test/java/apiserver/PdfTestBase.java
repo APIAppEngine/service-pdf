@@ -1,5 +1,6 @@
 package apiserver;
 
+import apiserver.services.pdf.PdfMicroServiceApplication;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.AfterClass;

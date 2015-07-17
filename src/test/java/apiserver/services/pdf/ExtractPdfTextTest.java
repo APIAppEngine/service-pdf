@@ -1,19 +1,13 @@
 package apiserver.services.pdf;
 
-import apiserver.PdfMicroServiceApplication;
-import apiserver.PdfTestBase;
-import com.jayway.jsonpath.internal.JsonReader;
-import net.minidev.json.JSONArray;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;

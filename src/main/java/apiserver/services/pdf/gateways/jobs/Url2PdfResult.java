@@ -20,22 +20,17 @@ package apiserver.services.pdf.gateways.jobs;
  ******************************************************************************/
 
 import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
-
-import java.util.Map;
 
 /**
  * User: mikenimer
  * Date: 9/16/13
  */
-public class Url2PdfResult extends CFDocumentJob implements BinaryResult
+public class Url2PdfResult extends CFDocumentJob
 {
 
 
     // Url to load and save as pdf
     private String path;
-    // generated PDF bytes
-    private byte[] pdfBytes;
 
 
     public String getPath() {
@@ -46,25 +41,5 @@ public class Url2PdfResult extends CFDocumentJob implements BinaryResult
         this.path = path;
     }
 
-    public byte[] getResult() {
-        return pdfBytes;
-    }
 
-    public void setResult(byte[] pdfBytes) {
-        this.pdfBytes = pdfBytes;
-    }
-
-
-    @Override
-    public Map getOptions()
-    {
-        return super.getOptions();
-    }
-
-
-    @Override
-    public void setOptions(Map _options)
-    {
-        super.setOptions(_options);
-    }
 }

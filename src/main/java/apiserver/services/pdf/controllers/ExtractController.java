@@ -91,7 +91,7 @@ public class ExtractController
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         ExtractTextResult job = new ExtractTextResult();
-        job.setFile(new Document(file));
+        job.setDocument(new Document(file));
 
         job.setPages(pages==null?"*":pages);
         job.setType(type==null?"xml":type);
@@ -102,10 +102,10 @@ public class ExtractController
 
 
         Future future = textGateway.extractText(job);
-        ExtractTextResult payload = (ExtractTextResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        Map payload = (Map) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        Object result = payload.getResult();
+        Object result = null;//payload.getResult();
         String contentType = MimeType.pdf.contentType;
         return ResponseEntityHelper.processObject(result);
     }
@@ -128,7 +128,7 @@ public class ExtractController
         ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         ExtractImageResult job = new ExtractImageResult();
-        job.setFile(new Document(file));
+        job.setDocument(new Document(file));
         job.setPages(pages==null?"*":pages);
         job.setFormat(format==null?"jpg":format);
         job.setImagePrefix(imagePrefix==null?"*":imagePrefix);
@@ -136,10 +136,10 @@ public class ExtractController
 
 
         Future<Map> future = imageGateway.extractImage(job);
-        ExtractImageResult payload = (ExtractImageResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        Object payload = future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
 
-        Collection<byte[]> result = payload.getResult();
+        Collection<byte[]> result = null;//payload.getResult();
         return ResponseEntityHelper.processObject(result);
     }
 

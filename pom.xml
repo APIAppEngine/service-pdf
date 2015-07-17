@@ -21,28 +21,14 @@
         <dependency>
             <groupId>com.mikenimer.apiappengine</groupId>
             <artifactId>service-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.mikenimer.apiappengine</groupId>
             <artifactId>service-cache</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.mikenimer.apiappengine.connectors</groupId>
-            <artifactId>worker-coldfusion</artifactId>
             <version>1.0.1-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.gridgain</groupId>
-                    <artifactId>gridgain-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
-
-
 
     </dependencies>
 
@@ -128,7 +114,7 @@
                                 <basePath>/</basePath>
                                 <basePackage>
                                     <basePackage>apiserver.services.pdf.controllers.DDXController</basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.HeaderFooterController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.HeaderController</basePackage>
                                     <basePackage>apiserver.services.pdf.controllers.MergeController</basePackage>
                                     <basePackage>apiserver.services.pdf.controllers.OptimizeController</basePackage>
                                     <basePackage>apiserver.services.pdf.controllers.PagesController</basePackage>

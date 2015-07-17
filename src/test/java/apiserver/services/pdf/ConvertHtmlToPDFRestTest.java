@@ -19,7 +19,6 @@ package apiserver.services.pdf;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.PdfMicroServiceApplication;
 import apiserver.PdfTestBase;
 import org.junit.Assert;
 import org.junit.Before;

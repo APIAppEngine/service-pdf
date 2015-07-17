@@ -1,11 +1,12 @@
 package apiserver.services.pdf.gateways.jobs;
 
 import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
+import apiserver.model.Document;
 
 /**
- * Created by mnimer on 4/14/14.
+ * Created by mnimer on 4/7/14.
  */
-public class OptimizePdfResult extends CFPdfJob
+public class AddFooterPdfJob extends CFPdfJob
 {
 
 

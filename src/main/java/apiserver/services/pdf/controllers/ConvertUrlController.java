@@ -19,9 +19,8 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
+import apiserver.jobs.IProxyJob;
 import apiserver.services.pdf.gateways.PdfConversionGateway;
 import apiserver.services.pdf.gateways.jobs.Url2PdfResult;
 import com.wordnik.swagger.annotations.Api;
@@ -160,12 +159,10 @@ public class ConvertUrlController
         }
 
         Future<Map> future = gateway.convertUrlToPdf(args);
-        BinaryResult payload = (BinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        byte[] fileBytes = payload.getResult();
-        String contentType = "application/pdf";
-        ResponseEntity<byte[]> result = ResponseEntityHelper.processFile(fileBytes, contentType, false);
-        return result;
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 

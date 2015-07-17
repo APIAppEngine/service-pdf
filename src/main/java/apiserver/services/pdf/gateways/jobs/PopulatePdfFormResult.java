@@ -19,65 +19,16 @@ package apiserver.services.pdf.gateways.jobs;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.core.connectors.coldfusion.jobs.CFPDFFormJob;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
+
 import apiserver.model.Document;
+
+import java.util.Map;
 
 /**
  * User: mikenimer
  * Date: 9/16/13
  */
-public class PopulatePdfFormResult extends CFPDFFormJob implements BinaryResult
+public class PopulatePdfFormResult extends CFPDFFormJob
 {
 
-    private String documentId;
-    private Document file;
-    private String fields; //JSON of Map
-    private byte[] pdfBytes;
-
-
-    public String getDocumentId()
-    {
-        return documentId;
-    }
-
-
-    public void setDocumentId(String documentId)
-    {
-        this.documentId = documentId;
-    }
-
-
-    public Document getFile()
-    {
-        return file;
-    }
-
-
-    public void setFile(Document file)
-    {
-        this.file = file;
-    }
-
-
-    public String getFields() {
-        return fields;
-    }
-
-
-    public void setFields(String fields) {
-        this.fields = fields;
-    }
-
-
-    public byte[] getResult()
-    {
-        return pdfBytes;
-    }
-
-
-    public void setResult(byte[] pdfBytes)
-    {
-        this.pdfBytes = pdfBytes;
-    }
 }

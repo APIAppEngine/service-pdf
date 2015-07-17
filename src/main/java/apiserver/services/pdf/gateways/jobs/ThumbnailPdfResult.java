@@ -1,18 +1,13 @@
 package apiserver.services.pdf.gateways.jobs;
 
 import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
-import apiserver.core.connectors.coldfusion.services.BinaryResult;
-import apiserver.model.Document;
 
 /**
  * Created by mnimer on 5/4/14.
  */
-public class ThumbnailPdfResult extends CFPdfJob implements BinaryResult
+public class ThumbnailPdfResult extends CFPdfJob
 {
 
-    private String documentId;
-    private Document file;
-    private byte[] pdfBytes;
     private Integer maxBreadth;
     private Integer maxLength;
     private Integer maxScale;
@@ -23,42 +18,6 @@ public class ThumbnailPdfResult extends CFPdfJob implements BinaryResult
     private Boolean hiRes;
     private Boolean compressTiffs;
     private String format;
-
-
-    public String getDocumentId()
-    {
-        return documentId;
-    }
-
-
-    public void setDocumentId(String documentId)
-    {
-        this.documentId = documentId;
-    }
-
-
-    public Document getFile()
-    {
-        return file;
-    }
-
-
-    public void setFile(Document file)
-    {
-        this.file = file;
-    }
-
-
-    public byte[] getResult()
-    {
-        return pdfBytes;
-    }
-
-
-    public void setResult(byte[] pdfBytes)
-    {
-        this.pdfBytes = pdfBytes;
-    }
 
 
     public void setFormat(String format)
@@ -125,4 +84,5 @@ public class ThumbnailPdfResult extends CFPdfJob implements BinaryResult
     {
         return maxBreadth;
     }
+
 }
