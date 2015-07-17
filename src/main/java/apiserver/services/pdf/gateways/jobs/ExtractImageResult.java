@@ -2,7 +2,7 @@ package apiserver.services.pdf.gateways.jobs;
 
 import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
 import apiserver.core.connectors.coldfusion.services.CollectionResult;
-import apiserver.services.cache.model.Document;
+import apiserver.model.Document;
 
 import java.util.Collection;
 

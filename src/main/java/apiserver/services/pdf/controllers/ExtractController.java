@@ -22,7 +22,7 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.MimeType;
 import apiserver.core.common.ResponseEntityHelper;
-import apiserver.services.cache.model.Document;
+import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.ExtractImageResult;
 import apiserver.services.pdf.gateways.jobs.ExtractTextResult;

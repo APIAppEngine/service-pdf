@@ -21,7 +21,7 @@ package apiserver.services.pdf.gateways.jobs;
 
 import apiserver.core.connectors.coldfusion.jobs.CFPDFFormJob;
 import apiserver.core.connectors.coldfusion.services.BinaryResult;
-import apiserver.services.cache.model.Document;
+import apiserver.model.Document;
 
 /**
  * User: mikenimer

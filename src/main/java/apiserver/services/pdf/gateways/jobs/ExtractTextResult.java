@@ -2,7 +2,7 @@ package apiserver.services.pdf.gateways.jobs;
 
 import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
 import apiserver.core.connectors.coldfusion.services.StringResult;
-import apiserver.services.cache.model.Document;
+import apiserver.model.Document;
 
 /**
  * Created by mnimer on 4/17/14.

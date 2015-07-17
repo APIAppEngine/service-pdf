@@ -21,7 +21,7 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryResult;
-import apiserver.services.cache.model.Document;
+import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfFormGateway;
 import apiserver.services.pdf.gateways.jobs.ExtractPdfFormResult;
 import apiserver.services.pdf.gateways.jobs.PopulatePdfFormResult;

@@ -21,7 +21,7 @@ package apiserver.services.pdf.controllers;
 
 import apiserver.core.common.ResponseEntityHelper;
 import apiserver.core.connectors.coldfusion.services.BinaryResult;
-import apiserver.services.cache.model.Document;
+import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.ThumbnailPdfResult;
 import com.wordnik.swagger.annotations.Api;
