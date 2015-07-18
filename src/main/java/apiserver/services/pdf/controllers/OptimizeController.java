@@ -22,7 +22,7 @@ package apiserver.services.pdf.controllers;
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.OptimizePdfResult;
+import apiserver.services.pdf.gateways.jobs.CFPdfJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -91,11 +91,49 @@ public class OptimizeController
             //required options
             @ApiParam(name="algo", required = true, allowableValues = "bilinear,bicubic,nearest_neighbour", value = "Specifies the algorithm for image downsampling. The values are bilinear, bicubic, and nearest_neighbour")
                 @RequestPart("algo") String algo,
+            //optional options
+            @ApiParam(name="hscale", required = false, value="Horizontal scale of the image to be modified. Valid values are hscale<1")
+                @RequestPart(value = "hscale", required = false) Integer hscale,
+            @ApiParam(name="noattachments", required = false, allowableValues = "yes,no", value = "Discard all attachments")
+                @RequestPart(value = "noattachments", required = false) Boolean noattachments,
+            @ApiParam(name="nobookmarks", required = false, allowableValues = "yes,no", value = "Discard all bookmarks")
+                @RequestPart(value = "nobookmarks", required = false) Boolean nobookmarks,
+            @ApiParam(name="nocomments", required = false, allowableValues = "yes,no", value = "Discard all comments")
+                @RequestPart(value = "nocomments", required = false) Boolean nocomments,
+            @ApiParam(name="nofonts", required = false, allowableValues = "yes,no", value = "Discard all fonts")
+                @RequestPart(value = "nofonts", required = false) Boolean nofonts,
+            @ApiParam(name="nojavascripts", required = false, allowableValues = "yes,no", value = "Discard all JavaScript actions")
+                @RequestPart(value = "nojavascripts", required = false) Boolean nojavascripts,
+            @ApiParam(name="nolinks", required = false, allowableValues = "yes,no", value = "Discard external cross-references")
+                @RequestPart(value = "nolinks", required = false) Boolean nolinks,
+            @ApiParam(name="nometadata", required = false, allowableValues = "yes,no", value = "Discard document information and metadata")
+                @RequestPart(value = "nometadata", required = false) Boolean nometadata,
+            @ApiParam(name="nothumbnails", required = false, allowableValues = "yes,no", value = "Discard embedded page thumbnails")
+                @RequestPart(value = "nothumbnails", required = false) Boolean nothumbnails,
+            @ApiParam(name="pages", required = true, defaultValue = "*", value = "Page or pages in the source PDF document on which to perform the action. You can specify multiple pages and page ranges as follows: “1,6–9,56–89,100, 110–120”.")
+                @RequestPart(value = "pages", required = true) String pages,
+            @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
+                @RequestPart(value = "password", required = false) String password,
+            @ApiParam(name="vscale", required = false, value = "Vertical scale of the image to be modified. Valid values are vscale>0")
+                @RequestPart(value = "vscale", required = false) Integer vscale
+
+    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
+    {
+        return executeJob(file, null, algo, hscale, noattachments, nobookmarks, nocomments, nofonts, nojavascripts, nolinks, nometadata, nothumbnails, pages, password, vscale);
+    }
+
+
+
+    @ApiOperation(value = "TODO")
+    @RequestMapping(value = "/{documentId}/optimize", method = RequestMethod.GET, produces = "application/pdf")
+    public ResponseEntity<byte[]> optimizeCachedPdf(
+            @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
+           //required options
+            @ApiParam(name="algo", required = true, allowableValues = "bilinear,bicubic,nearest_neighbour", value = "Specifies the algorithm for image downsampling. The values are bilinear, bicubic, and nearest_neighbour")
+            @RequestPart("algo") String algo,
             @ApiParam(name="pages", required = true, defaultValue = "*", value = "Page or pages in the source PDF document on which to perform the action. You can specify multiple pages and page ranges as follows: “1,6–9,56–89,100, 110–120”.")
                 @RequestPart(value = "pages", required = true) String pages,
             //optional options
-            @ApiParam(name="vscale", required = false, value = "Vertical scale of the image to be modified. Valid values are vscale>0")
-                @RequestPart(value = "vscale", required = false) Integer vscale,
             @ApiParam(name="hscale", required = false, value="Horizontal scale of the image to be modified. Valid values are hscale<1")
                 @RequestPart(value = "hscale", required = false) Integer hscale,
             @ApiParam(name="noattachments", required = false, allowableValues = "yes,no", value = "Discard all attachments")
@@ -115,78 +153,49 @@ public class OptimizeController
             @ApiParam(name="nothumbnails", required = false, allowableValues = "yes,no", value = "Discard embedded page thumbnails")
                 @RequestPart(value = "nothumbnails", required = false) Boolean nothumbnails,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart(value = "password", required = false) String password
+                @RequestPart(value = "password", required = false) String password,
+            @ApiParam(name="vscale", required = false, value = "Vertical scale of the image to be modified. Valid values are vscale>0")
+                @RequestPart(value = "vscale", required = false) Integer vscale
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        OptimizePdfResult job = new OptimizePdfResult();
-        //file
-        job.setDocument(new Document(file));
-
-        job.setAlgo(algo);
-        job.setPages(pages);
-        if( vscale != null ) job.setVScale(new Double(vscale));
-        if( hscale != null ) job.setHScale(new Double(hscale));
-        if( noattachments != null ) job.setNoAttachments(noattachments);
-        if( nobookmarks != null ) job.setNoBookmarks(nobookmarks);
-        if( nocomments != null ) job.setNoComments(nocomments);
-        if( nofonts != null ) job.setNoFonts(nofonts);
-        if( nojavascripts != null ) job.setNoJavaScripts(nojavascripts);
-        if( nolinks != null ) job.setNoLinks(nolinks);
-        if( nometadata != null ) job.setNoMetadata(nometadata);
-        if( nothumbnails != null ) job.setNoThumbnails(nothumbnails);
-        if( password != null ) job.setPassword(password);
-
-        Future<Map> future = gateway.optimizePdf(job);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
+        return executeJob(null, documentId, algo, hscale, noattachments, nobookmarks, nocomments, nofonts, nojavascripts, nolinks, nometadata, nothumbnails, pages, password, vscale);
     }
 
 
 
 
-    @ApiOperation(value = "TODO")
-    @RequestMapping(value = "/{documentId}/optimize", method = RequestMethod.GET, produces = "application/pdf")
-    public ResponseEntity<byte[]> optimizeCachedPdf(
-            @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
-           //required options
-            @ApiParam(name="algo", required = true, allowableValues = "bilinear,bicubic,nearest_neighbour", value = "Specifies the algorithm for image downsampling. The values are bilinear, bicubic, and nearest_neighbour")
-            @RequestPart("algo") String algo,
-            @ApiParam(name="pages", required = true, defaultValue = "*", value = "Page or pages in the source PDF document on which to perform the action. You can specify multiple pages and page ranges as follows: “1,6–9,56–89,100, 110–120”.")
-            @RequestPart(value = "pages", required = true) String pages,
-            //optional options
-            @ApiParam(name="vscale", required = false, value = "Vertical scale of the image to be modified. Valid values are vscale>0")
-            @RequestPart(value = "vscale", required = false) Integer vscale,
-            @ApiParam(name="hscale", required = false, value="Horizontal scale of the image to be modified. Valid values are hscale<1")
-            @RequestPart(value = "hscale", required = false) Integer hscale,
-            @ApiParam(name="noattachments", required = false, allowableValues = "yes,no", value = "Discard all attachments")
-            @RequestPart(value = "noattachments", required = false) Boolean noattachments,
-            @ApiParam(name="nobookmarks", required = false, allowableValues = "yes,no", value = "Discard all bookmarks")
-            @RequestPart(value = "nobookmarks", required = false) Boolean nobookmarks,
-            @ApiParam(name="nocomments", required = false, allowableValues = "yes,no", value = "Discard all comments")
-            @RequestPart(value = "nocomments", required = false) Boolean nocomments,
-            @ApiParam(name="nofonts", required = false, allowableValues = "yes,no", value = "Discard all fonts")
-            @RequestPart(value = "nofonts", required = false) Boolean nofonts,
-            @ApiParam(name="nojavascripts", required = false, allowableValues = "yes,no", value = "Discard all JavaScript actions")
-            @RequestPart(value = "nojavascripts", required = false) Boolean nojavascripts,
-            @ApiParam(name="nolinks", required = false, allowableValues = "yes,no", value = "Discard external cross-references")
-            @RequestPart(value = "nolinks", required = false) Boolean nolinks,
-            @ApiParam(name="nometadata", required = false, allowableValues = "yes,no", value = "Discard document information and metadata")
-            @RequestPart(value = "nometadata", required = false) Boolean nometadata,
-            @ApiParam(name="nothumbnails", required = false, allowableValues = "yes,no", value = "Discard embedded page thumbnails")
-            @RequestPart(value = "nothumbnails", required = false) Boolean nothumbnails,
-            @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-            @RequestPart(value = "password", required = false) String password
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
+    private ResponseEntity<byte[]> executeJob(
+            MultipartFile file
+            , String documentId
+            , String algo
+            , Integer hscale
+            , Boolean noattachments
+            , Boolean nobookmarks
+            , Boolean nocomments
+            , Boolean nofonts
+            , Boolean nojavascripts
+            , Boolean nolinks
+            , Boolean nometadata
+            , Boolean nothumbnails
+            , String pages
+            , String password
+            , Integer vscale
+    ) throws IOException, InterruptedException, ExecutionException, TimeoutException
     {
-        OptimizePdfResult job = new OptimizePdfResult();
+        CFPdfJob job = new CFPdfJob();
+        job.setAction("optimize");
+
         //file
-        job.setDocumentId(documentId);
+        if( file != null ) {
+            job.setDocument(new Document(file));
+        }else{
+            job.setDocumentId(documentId);
+        }
+
 
         job.setAlgo(algo);
         job.setPages(pages);
-        if( vscale != null ) job.setVScale(new Double(vscale));
+
         if( hscale != null ) job.setHScale(new Double(hscale));
         if( noattachments != null ) job.setNoAttachments(noattachments);
         if( nobookmarks != null ) job.setNoBookmarks(nobookmarks);
@@ -197,6 +206,7 @@ public class OptimizeController
         if( nometadata != null ) job.setNoMetadata(nometadata);
         if( nothumbnails != null ) job.setNoThumbnails(nothumbnails);
         if( password != null ) job.setPassword(password);
+        if( vscale != null ) job.setVScale(new Double(vscale));
 
         Future<Map> future = gateway.optimizePdf(job);
         IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);

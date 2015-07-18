@@ -3,7 +3,7 @@ package apiserver.services.pdf.controllers;
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.DDXPdfResult;
+import apiserver.services.pdf.gateways.jobs.CFPdfJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -69,18 +69,8 @@ public class DDXController
                 @RequestParam("ddx") String DDX
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        DDXPdfResult job = new DDXPdfResult();
-        job.setDocument(new Document(file));
-        job.setDdx(DDX);
-
-
-        Future<Map> future = gateway.processDDX(job);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
+        return executeJob(file, null, DDX);
     }
-
 
 
     /**
@@ -101,10 +91,37 @@ public class DDXController
             @ApiParam(name="ddx", required = true) @RequestParam("ddx") String DDX
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        DDXPdfResult job = new DDXPdfResult();
-        job.setDocumentId(documentId);
-        job.setDdx(DDX);
+        return executeJob(null, documentId, DDX);
+    }
 
+
+    /**
+     *
+     * @param file
+     * @param documentId
+     * @param DDX
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     */
+    private ResponseEntity<byte[]> executeJob(
+            MultipartFile file
+            , String documentId
+            , String DDX
+    ) throws IOException, InterruptedException, ExecutionException, TimeoutException
+    {
+        CFPdfJob job = new CFPdfJob();
+
+        if( file != null ) {
+            job.setDocument(new Document(file));
+        }else{
+            job.setDocumentId(documentId);
+        }
+
+        job.setAction("processddx");
+        job.setDdx(DDX);
 
         Future<Map> future = gateway.processDDX(job);
         IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);

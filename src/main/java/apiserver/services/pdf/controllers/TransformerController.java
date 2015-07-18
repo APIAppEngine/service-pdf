@@ -1,9 +1,9 @@
 package apiserver.services.pdf.controllers;
 
-import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
+import apiserver.services.pdf.gateways.jobs.CFPdfJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -69,21 +69,10 @@ public class TransformerController
                 @RequestPart("rotation") Integer rotation
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        CFPdfJob job = new CFPdfJob();
-        //file
-        job.setDocument(new Document(file));
-        if( password != null ) job.setPassword(password);
-        if( hScale != null ) job.setHScale(hScale);
-        if( vScale != null ) job.setVScale(vScale);
-        if( position != null ) job.setPosition(position);
-        if( rotation != null ) job.setRotation(rotation);
-
-        Future<Map> future = gateway.transformPdf(job);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
+        return executeJob(file, null, password, hScale, vScale, position, rotation);
     }
+
+
 
     /**
      * Transform pages
@@ -113,9 +102,29 @@ public class TransformerController
                 @RequestPart("rotation") Integer rotation
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
+        return executeJob(null, documentId, password, hScale, vScale, position, rotation);
+    }
+
+
+
+    private ResponseEntity<byte[]> executeJob(
+            MultipartFile file
+            , String documentId
+            , String password
+            , Double hScale
+            , Double vScale
+            , String position
+            , Integer rotation
+    ) throws IOException, InterruptedException, ExecutionException, TimeoutException
+    {
         CFPdfJob job = new CFPdfJob();
+        job.setAction("transform");
         //file
-        job.setDocumentId(documentId);
+        if( file != null ) {
+            job.setDocument(new Document(file));
+        }else{
+            job.setDocumentId(documentId);
+        }
         if( password != null ) job.setPassword(password);
         if( hScale != null ) job.setHScale(hScale);
         if( vScale != null ) job.setVScale(vScale);
@@ -128,4 +137,5 @@ public class TransformerController
         //pass CF Response back to the client
         return payload.getHttpResponse();
     }
+
 }

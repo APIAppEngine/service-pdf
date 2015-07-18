@@ -23,6 +23,7 @@ import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
+import apiserver.services.pdf.gateways.jobs.CFPdfJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;

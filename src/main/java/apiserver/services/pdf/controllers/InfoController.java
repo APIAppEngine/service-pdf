@@ -24,8 +24,8 @@ import apiserver.core.connectors.coldfusion.services.IObjectResult;
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.PdfGetInfoResult;
-import apiserver.services.pdf.gateways.jobs.PdfSetInfoResult;
+import apiserver.services.pdf.gateways.jobs.CFPdfJob;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -91,17 +91,9 @@ public class InfoController
                 @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        PdfGetInfoResult job = new PdfGetInfoResult();
-        job.setDocument(new Document(file));
-        if (password != null) {
-            job.setPassword(password);
-        }
-
-        Future<Map> future = getInfoGateway.pdfGetInfo(job);
-        IObjectResult payload = (IObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        return ResponseEntityHelper.processObject(payload.getResult());
+        return executeGetInfoJob(file, null, password);
     }
+
 
 
     /**
@@ -125,16 +117,7 @@ public class InfoController
                 @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        PdfGetInfoResult job = new PdfGetInfoResult();
-        job.setDocumentId(documentId);
-        if (password != null) {
-            job.setPassword(password);
-        }
-
-        Future<Map> future = getInfoGateway.pdfGetInfo(job);
-        IObjectResult payload = (IObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        return ResponseEntityHelper.processObject(payload.getResult());
+        return executeGetInfoJob(null, documentId, password);
     }
 
 
@@ -156,27 +139,15 @@ public class InfoController
     public ResponseEntity<byte[]> setPdfInfo(
             @ApiParam(name = "file", required = true)
                 @RequestPart("file") MultipartFile file,
-            @ApiParam(name = "info", required = true, value = "Map variable for relevant information. You can specify the Author, Subject, Title, and Keywords for the PDF output file.")
-                @RequestParam("info") MultiValueMap info,
+            @ApiParam(name = "info", required = true, value = "Json String/Map variable for relevant information. You can specify the Author, Subject, Title, and Keywords for the PDF output file.")
+                @RequestParam("info") String info,
             @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
                 @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        PdfSetInfoResult job = new PdfSetInfoResult();
-        job.setDocument(new Document(file));
-        if (info != null) {
-            job.setInfo(info);
-        }
-        if (password != null) {
-            job.setPassword(password);
-        }
-
-        Future<Map> future = setInfoGateway.pdfSetInfo(job);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
+        return executeSetInfoJob(file, null, info, password);
     }
+
 
 
     /**
@@ -197,17 +168,68 @@ public class InfoController
     public ResponseEntity<byte[]> setCachedPdfInfo(
             @ApiParam(name = "documentId", required = true)
                 @RequestParam("documentId") String documentId,
-            @ApiParam(name = "info", required = true, value = "Map variable for relevant information. You can specify the Author, Subject, Title, and Keywords for the PDF output file.")
-                @RequestParam("info") MultiValueMap info,
+            @ApiParam(name = "info", required = true, value = "Json String/Map for relevant information. You can specify the Author, Subject, Title, and Keywords for the PDF output file.")
+                @RequestParam("info") String info,
             @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
                 @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
 
-        PdfSetInfoResult job = new PdfSetInfoResult();
-        job.setDocumentId(documentId);
-        if (info != null) {
+        return executeSetInfoJob(null, documentId, info, password);
+    }
+
+
+
+
+
+    private ResponseEntity<Object> executeGetInfoJob(
+            MultipartFile file
+            , String documentId
+            , String password
+    ) throws IOException, InterruptedException, ExecutionException, TimeoutException
+    {
+        CFPdfJob job = new CFPdfJob();
+        job.setAction("getinfo");
+        if( file != null ) {
+            job.setDocument(new Document(file));
+        }else{
+            job.setDocumentId(documentId);
+        }
+        if (password != null) {
+            job.setPassword(password);
+        }
+
+        Future<Map> future = getInfoGateway.pdfGetInfo(job);
+        IObjectResult payload = (IObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+
+        return ResponseEntityHelper.processObject(payload.getResult());
+    }
+
+
+
+
+
+
+    private ResponseEntity<byte[]> executeSetInfoJob(
+            MultipartFile file
+            , String documentId
+            , String infoMap
+            , String password
+    ) throws IOException, InterruptedException, ExecutionException, TimeoutException
+    {
+        CFPdfJob job = new CFPdfJob();
+        job.setAction("setinfo");
+
+        if( file != null ) {
+            job.setDocument(new Document(file));
+        }else{
+            job.setDocumentId(documentId);
+        }
+
+        if (infoMap != null) {
+            Map info = new ObjectMapper().readValue(infoMap, HashMap.class);
             job.setInfo(info);
         }
+
         if (password != null) {
             job.setPassword(password);
         }
@@ -218,5 +240,6 @@ public class InfoController
         //pass CF Response back to the client
         return payload.getHttpResponse();
     }
-
 }
+
+

@@ -1,19 +1,7 @@
 package apiserver.services.pdf.gateways;
 
 
-import apiserver.core.connectors.coldfusion.jobs.CFPdfJob;
-import apiserver.services.pdf.gateways.jobs.AddFooterPdfJob;
-import apiserver.services.pdf.gateways.jobs.AddHeaderPdfJob;
-import apiserver.services.pdf.gateways.jobs.DDXPdfResult;
-import apiserver.services.pdf.gateways.jobs.DeletePdfPagesResult;
-import apiserver.services.pdf.gateways.jobs.ExtractImageResult;
-import apiserver.services.pdf.gateways.jobs.ExtractTextResult;
-import apiserver.services.pdf.gateways.jobs.MergePdfResult;
-import apiserver.services.pdf.gateways.jobs.OptimizePdfResult;
-import apiserver.services.pdf.gateways.jobs.PdfGetInfoResult;
-import apiserver.services.pdf.gateways.jobs.PdfSetInfoResult;
-import apiserver.services.pdf.gateways.jobs.ThumbnailPdfResult;
-import apiserver.services.pdf.gateways.jobs.WatermarkPdfResult;
+import apiserver.services.pdf.gateways.jobs.CFPdfJob;
 
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -23,35 +11,32 @@ import java.util.concurrent.Future;
  */
 public interface PdfGateway
 {
-    Future<Map> mergePdf(MergePdfResult args);
 
-    Future<Map> optimizePdf(OptimizePdfResult args);
-
-    Future<Map> processDDX(DDXPdfResult args);
-
-    Future<Map> extractText(ExtractTextResult args);
-
-    Future<Map> extractImage(ExtractImageResult args);
 
     Future<Map> addFooterToPdf(CFPdfJob args);
-
     Future<Map> addHeaderToPdf(CFPdfJob args);
-
-    Future<Map> removeHeaderFooter(CFPdfJob args);
-
-    Future<Map> pdfGetInfo(PdfGetInfoResult args);
-
-    Future<Map> pdfSetInfo(PdfSetInfoResult args);
-
-    Future<Map> deletePages(DeletePdfPagesResult args);
-
+    Future<Map> addWatermarkToPdf(CFPdfJob job);
+    Future<Map> deletePages(CFPdfJob args);
+    Future<Map> extractImage(CFPdfJob args);
+    Future<Map> extractText(CFPdfJob args);
+    Future<Map> mergePdf(CFPdfJob args);
+    Future<Map> optimizePdf(CFPdfJob args);
+    Future<Map> pdfGetInfo(CFPdfJob args);
+    Future<Map> pdfSetInfo(CFPdfJob args);
+    Future<Map> processDDX(CFPdfJob args);
     Future<Map> protectPdf(CFPdfJob args);
-
-    Future<Map> thumbnailGenerator(ThumbnailPdfResult job);
-
+    Future<Map> thumbnailGenerator(CFPdfJob job);
     Future<Map> transformPdf(CFPdfJob job);
+    Future<Map> removeHeaderFooter(CFPdfJob args);
+    Future<Map> removeWatermarkFromPdf(CFPdfJob job);
 
-    Future<Map> addWatermarkToPdf(WatermarkPdfResult job);
+    //todo
+    //Future<Map> signPdf(CFPdfJob job);
 
-    Future<Map> removeWatermarkFromPdf(WatermarkPdfResult job);
+    //todo
+    //Future<Map> unsignPdf(CFPdfJob job);
+
+    //todo
+    //Future<Map> validatesignature(CFPdfJob job);
+    
 }

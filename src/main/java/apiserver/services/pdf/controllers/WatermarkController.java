@@ -23,7 +23,7 @@ import apiserver.MimeType;
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.WatermarkPdfResult;
+import apiserver.services.pdf.gateways.jobs.CFPdfJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -88,35 +88,20 @@ public class WatermarkController
                 @RequestPart("image") MultipartFile image,
             @ApiParam(name="foreground", required = false, allowableValues = "yes, no", value = "Placement of the watermark on the page:")
                 @RequestParam(value="foreground") Boolean foreground,
-            @ApiParam(name="showOnPrint", required = false, value = "Specify whether to print the watermark with the PDF document:")
-                @RequestParam(value="showOnPrint") Boolean showOnPrint,
+            @ApiParam(name="opacity", required = false, value = "Opacity of the watermark. Valid values are integers in the range 0 (transparent) through 10 (opaque).")
+                @RequestPart(value = "opacity", required = false) Double opacity,
             @ApiParam(name="position", required = false, value = "Position on the page where the watermark is placed. The position represents the top-left corner of the watermark. Specify the xand y coordinates; for example “50,30”.")
                 @RequestParam(value="position") String position,
-            @ApiParam(name="opacity", required = false, value = "Opacity of the watermark. Valid values are integers in the range 0 (transparent) through 10 (opaque).")
-                @RequestPart(value = "opacity", required = false) Double opacity
+            @ApiParam(name="showOnPrint", required = false, value = "Specify whether to print the watermark with the PDF document:")
+                @RequestParam(value="showOnPrint") Boolean showOnPrint
 
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        WatermarkPdfResult job = new WatermarkPdfResult();
-        //file
-        job.setDocument(new Document(file));
-        if( image != null ){
-            Document doc = new Document(image);
-            doc.setContentType(MimeType.getMimeType(image.getOriginalFilename()));
-            doc.setFileName(image.getOriginalFilename());
-        }
-
-        if( foreground != null ) job.setForeground(foreground);
-        if( showOnPrint != null ) job.setShowOnPrint(showOnPrint);
-        if( position != null ) job.setPosition(position);
-        if( opacity != null ) job.setOpacity(opacity);
-
-        Future<Map> future = gateway.addWatermarkToPdf(job);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
+        return executeAddWatermarkJob(file, null, image, foreground, opacity, position, showOnPrint);
     }
+
+
+
 
     /**
      * Add Watermark to cached pdf
@@ -142,33 +127,15 @@ public class WatermarkController
                 @RequestPart("image") MultipartFile image,
             @ApiParam(name="foreground", required = false, allowableValues = "yes, no", value = "Placement of the watermark on the page:")
                 @RequestParam(value="foreground") Boolean foreground,
-            @ApiParam(name="showOnPrint", required = false, value = "Specify whether to print the watermark with the PDF document:")
-                @RequestParam(value="showOnPrint") Boolean showOnPrint,
+            @ApiParam(name="opacity", required = false, value = "Opacity of the watermark. Valid values are integers in the range 0 (transparent) through 10 (opaque).")
+                @RequestPart(value = "opacity", required = false) Double opacity,
             @ApiParam(name="position", required = false, value = "Position on the page where the watermark is placed. The position represents the top-left corner of the watermark. Specify the xand y coordinates; for example “50,30”.")
                 @RequestParam(value="position") String position,
-            @ApiParam(name="opacity", required = false, value = "Opacity of the watermark. Valid values are integers in the range 0 (transparent) through 10 (opaque).")
-                @RequestPart(value = "opacity", required = false) Double opacity
+            @ApiParam(name="showOnPrint", required = false, value = "Specify whether to print the watermark with the PDF document:")
+                @RequestParam(value="showOnPrint") Boolean showOnPrint
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        WatermarkPdfResult job = new WatermarkPdfResult();
-        //file
-        job.setDocumentId(documentId);
-        if( image != null ){
-            Document doc = new Document(image);
-            doc.setContentType(MimeType.getMimeType(image.getOriginalFilename()));
-            doc.setFileName(image.getOriginalFilename());
-        }
-
-        if( foreground != null ) job.setForeground(foreground);
-        if( showOnPrint != null ) job.setShowOnPrint(showOnPrint);
-        if( position != null ) job.setPosition(position);
-        if( opacity != null ) job.setOpacity(opacity);
-
-        Future<Map> future = gateway.addWatermarkToPdf(job);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
+        return executeAddWatermarkJob(null, documentId, image, foreground, opacity, position, showOnPrint);
     }
 
 
@@ -195,18 +162,9 @@ public class WatermarkController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        WatermarkPdfResult job = new WatermarkPdfResult();
-        //file
-        job.setDocument(new Document(file));
-        if( pages != null ) job.setPages(pages);
-        if( password != null ) job.setPassword(password);
-
-        Future<Map> future = gateway.removeWatermarkFromPdf(job);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
+        return executeRemoveWatermarkJob(file, null, pages, password);
     }
+
 
 
     /**
@@ -232,9 +190,66 @@ public class WatermarkController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        WatermarkPdfResult job = new WatermarkPdfResult();
+        return executeRemoveWatermarkJob(null, documentId, pages, password);
+    }
+
+
+
+    private ResponseEntity<byte[]> executeAddWatermarkJob(
+            MultipartFile file
+            , String documentId
+            , MultipartFile image
+            , Boolean foreground
+            , Double opacity
+            , String position
+            , Boolean showOnPrint
+    ) throws IOException, InterruptedException, ExecutionException, TimeoutException
+    {
+        CFPdfJob job = new CFPdfJob();
         //file
-        job.setDocumentId( documentId );
+        if( file != null ) {
+            job.setDocument(new Document(file));
+        }else{
+            job.setDocumentId(documentId);
+        }
+
+        if( image != null ){
+            Document doc = new Document(image);
+            doc.setContentType(MimeType.getMimeType(image.getOriginalFilename()));
+            doc.setFileName(image.getOriginalFilename());
+        }
+
+        if( foreground != null ) job.setForeground(foreground);
+        if( showOnPrint != null ) job.setShowOnPrint(showOnPrint);
+        if( position != null ) job.setPosition(position);
+        if( opacity != null ) job.setOpacity(opacity);
+
+        Future<Map> future = gateway.addWatermarkToPdf(job);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
+    }
+
+
+
+
+    private ResponseEntity<byte[]> executeRemoveWatermarkJob(
+            MultipartFile file
+            , String documentId
+            , String pages
+            , String password
+    ) throws IOException, InterruptedException, ExecutionException, TimeoutException
+    {
+        CFPdfJob job = new CFPdfJob();
+        job.setAction("removeWatermark");
+        //file
+        if( file != null ) {
+            job.setDocument(new Document(file));
+        }else{
+            job.setDocumentId(documentId);
+        }
+
         if( pages != null ) job.setPages(pages);
         if( password != null ) job.setPassword(password);
 
@@ -244,6 +259,4 @@ public class WatermarkController
         //pass CF Response back to the client
         return payload.getHttpResponse();
     }
-
-
 }

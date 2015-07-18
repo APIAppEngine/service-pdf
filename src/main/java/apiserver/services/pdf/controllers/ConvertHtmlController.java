@@ -19,10 +19,9 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
 import apiserver.jobs.IProxyJob;
 import apiserver.services.pdf.gateways.PdfConversionGateway;
-import apiserver.services.pdf.gateways.jobs.Html2PdfResult;
+import apiserver.services.pdf.gateways.jobs.CFDocumentJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -55,7 +54,7 @@ import java.util.concurrent.TimeoutException;
 @RequestMapping("/pdf")
 public class ConvertHtmlController
 {
-    @Qualifier("convertHtmlToPdfChannelApiGateway")
+    @Qualifier("convertHtmlToPdfApiGateway")
     @Autowired
     public PdfConversionGateway gateway;
 
@@ -83,62 +82,88 @@ public class ConvertHtmlController
             @ApiParam(name="footerHtml", required = false)
                 @RequestParam(value = "footerHtml", required = false) String footerHtml,
             // Optional arguments
-            @ApiParam(name="backgroundVisible", required = false, defaultValue = "true")
-                @RequestParam(value = "backgroundVisible", required = false) Boolean backgroundVisible,
+            @ApiParam(name="authPassword", required = false)
+                @RequestParam(value = "authPassword", required = false) String authPassword,
+            @ApiParam(name="authUser", required = false)
+                @RequestParam(value = "authUser", required = false) String authUser,
+            @ApiParam(name="backgroundVisible", required = false, defaultValue = "false")
+                @RequestParam(value = "backgroundVisible", required = false, defaultValue = "false") Boolean backgroundVisible,
             @ApiParam(name="encryption", required = false, defaultValue = "none", allowableValues = "128-bit,40-bit,none")
-                @RequestParam(value = "encryption", required = false) CFDocumentJob.Encryption encryption,
+                @RequestParam(value = "encryption", required = false) String encryption,
+            @ApiParam(name="bookmark", required = false, defaultValue = "false")
+                @RequestParam(value = "bookmark", required = false, defaultValue = "false") Boolean bookmark,
             @ApiParam(name="fontEmbed", required = false, defaultValue = "true", allowableValues = "true,false")
                 @RequestParam(value = "fontEmbed", required = false) Boolean fontEmbed,
+            @ApiParam(name="formFields", required = false, defaultValue = "true", allowableValues = "true,false")
+                @RequestParam(value = "formFields", required = false) Boolean formFields,
+            @ApiParam(name="formstype", required = false, defaultValue = "true", allowableValues = "FDF,PDF,HTML,XML")
+                @RequestParam(value = "formstype", required = false) Boolean formstype,
             @ApiParam(name="marginBottom", required = false, defaultValue = "0")
-                @RequestParam(value = "marginBottom", required = false) Integer marginBottom,
+                @RequestParam(value = "marginBottom", defaultValue = "0") Integer marginBottom,
             @ApiParam(name="marginTop", required = false, defaultValue = "0")
-                @RequestParam(value = "marginTop", required = false) Integer marginTop,
+                @RequestParam(value = "marginTop", defaultValue = "0") Integer marginTop,
             @ApiParam(name="marginLeft", required = false, defaultValue = "0")
-                @RequestParam(value = "marginLeft", required = false) Integer marginLeft,
+                @RequestParam(value = "marginLeft", defaultValue = "0") Integer marginLeft,
             @ApiParam(name="marginRight", required = false, defaultValue = "0")
-                @RequestParam(value = "marginRight", required = false) Integer marginRight,
+                @RequestParam(value = "marginRight", defaultValue = "0") Integer marginRight,
             @ApiParam(name="orientation", required = false, defaultValue = "portrait", allowableValues = "portrait,landscape")
-                @RequestParam(value = "orientation", required = false) CFDocumentJob.Orientation orientation,
+                @RequestParam(value = "orientation", required = false) String orientation,
             @ApiParam(name="ownerPassword", required = false)
+                @RequestParam(value = "openpassword", required = false) String openpassword,
+            @ApiParam(name="openpassword", required = false)
                 @RequestParam(value = "ownerPassword", required = false) String ownerPassword,
             @ApiParam(name="pageHeight", required = false)
                 @RequestParam(value = "pageHeight", required = false) Integer pageHeight,
             @ApiParam(name="pageWidth", required = false)
                 @RequestParam(value = "pageWidth", required = false) Integer pageWidth,
             @ApiParam(name="pageType", required = false, defaultValue = "letter", allowableValues = "legal,letter,a4,a5,b4,b5,b4-jis,b5-jis,custom")
-                @RequestParam(value = "pageType", required = false) CFDocumentJob.PageType pageType,
+                @RequestParam(value = "pageType", required = false) String pageType,
+            @ApiParam(name="pdfa", required = false)
+                @RequestParam(value = "pdfa", required = false) Boolean pdfa,
             @ApiParam(name="scale", required = false)
                 @RequestParam(value = "scale", required = false) Integer scale,
             @ApiParam(name="unit", required = false)
-                @RequestParam(value = "unit", required = false) CFDocumentJob.Unit unit,
+                @RequestParam(value = "unit", required = false) String unit,
+            @ApiParam(name="permissionpasswrd", required = false)
+                @RequestParam(value = "permissionpasswrd", required = false) String permissionpasswrd,
             @ApiParam(name="userPassword", required = false)
                 @RequestParam(value = "userPassword", required = false) String userPassword,
+            @ApiParam(name="tagged", required = false)
+                @RequestParam(value = "tagged", required = false) Boolean tagged,
             // Permisions[] items
-            @ApiParam(name="allowPrinting", required = false, defaultValue = "false")
-                @RequestParam(value = "allowPrinting", required = false) Boolean allowPrinting,
-            @ApiParam(name="allowModifyContents", required = false, defaultValue = "false")
-                @RequestParam(value = "allowModifyContents", required = false) Boolean allowModifyContents,
-            @ApiParam(name="allowCopy", required = false, defaultValue = "false")
-                @RequestParam(value = "allowCopy", required = false) Boolean allowCopy,
-            @ApiParam(name="allowModifyAnnotations", required = false, defaultValue = "false")
-                @RequestParam(value = "allowModifyAnnotations", required = false) Boolean allowModifyAnnotations,
-            @ApiParam(name="allowFillIn", required = false, defaultValue = "false")
-                @RequestParam(value = "allowFillIn", required = false) Boolean allowFillIn,
-            @ApiParam(name="allowScreenReaders", required = false, defaultValue = "false")
-                @RequestParam(value = "allowScreenReaders", required = false) Boolean allowScreenReaders,
+            @ApiParam(name="allowPrinting", required = false, defaultValue = "true")
+                @RequestParam(value = "allowPrinting", defaultValue = "true") Boolean allowPrinting,
+            @ApiParam(name="allowModifyContents", required = false, defaultValue = "true")
+                @RequestParam(value = "allowModifyContents", defaultValue = "true") Boolean allowModifyContents,
+            @ApiParam(name="allowCopy", required = false, defaultValue = "true")
+                @RequestParam(value = "allowCopy", defaultValue = "true") Boolean allowCopy,
+            @ApiParam(name="allowModifyAnnotations", required = false, defaultValue = "true")
+                @RequestParam(value = "allowModifyAnnotations", defaultValue = "true") Boolean allowModifyAnnotations,
+            @ApiParam(name="allowFillIn", required = false, defaultValue = "true")
+                @RequestParam(value = "allowFillIn", defaultValue = "true") Boolean allowFillIn,
+            @ApiParam(name="allowScreenReaders", required = false, defaultValue = "true")
+                @RequestParam(value = "allowScreenReaders", defaultValue = "true") Boolean allowScreenReaders,
             @ApiParam(name="allowAssembly", required = false, defaultValue = "false")
-                @RequestParam(value = "allowAssembly", required = false) Boolean allowAssembly,
-            @ApiParam(name="allowDegradedPrinting", required = false, defaultValue = "false")
-                @RequestParam(value = "allowDegradedPrinting", required = false) Boolean allowDegradedPrinting
+                @RequestParam(value = "allowAssembly", defaultValue = "true") Boolean allowAssembly,
+            @ApiParam(name="allowDegradedPrinting", required = false, defaultValue = "true")
+                @RequestParam(value = "allowDegradedPrinting", defaultValue = "true") Boolean allowDegradedPrinting
 
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        Html2PdfResult args = new Html2PdfResult();
+        CFDocumentJob args = new CFDocumentJob();
         args.setHtml(html);
         args.setHeaderHtml(headerHtml);
         args.setFooterHtml(footerHtml);
 
         //Optional Arguments
+        if( authPassword != null) args.setAuthPassword(authPassword);
+        if( authUser != null) args.setAuthUser(authUser);
+        if( bookmark != null) args.setBookmark(bookmark);
+        if( formFields != null) args.setFormFields(formFields);
+        if( pdfa != null) args.setPdfa(pdfa);
+        if( permissionpasswrd != null) args.setPermissionPasswrd(permissionpasswrd);
+        if( tagged != null) args.setTagged(tagged);
+
         if( backgroundVisible != null) args.setBackgroundVisible(backgroundVisible);
         //if( encryption != null ) args.setEncryption(encryption);
         if( fontEmbed != null) args.setFontEmbed(fontEmbed);

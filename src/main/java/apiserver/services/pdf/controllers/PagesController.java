@@ -22,7 +22,7 @@ package apiserver.services.pdf.controllers;
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
-import apiserver.services.pdf.gateways.jobs.DeletePdfPagesResult;
+import apiserver.services.pdf.gateways.jobs.CFPdfJob;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,17 +81,7 @@ public class PagesController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        DeletePdfPagesResult job = new DeletePdfPagesResult();
-        //file
-        job.setDocument(new Document(file));
-        if(pages!=null) job.setPages(pages);
-        if(password!=null) job.setPassword(password);
-
-        Future<Map> future = gateway.deletePages(job);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
+        return executeJob(file, null, pages, password);
     }
 
 
@@ -118,9 +108,26 @@ public class PagesController
 
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        DeletePdfPagesResult job = new DeletePdfPagesResult();
+        return executeJob(null, documentId, pages, password);
+    }
+
+
+
+    private ResponseEntity<byte[]> executeJob(
+            MultipartFile file
+            , String documentId
+            , String pages
+            , String password
+    ) throws IOException, InterruptedException, ExecutionException, TimeoutException
+    {
+        CFPdfJob job = new CFPdfJob();
+        job.setAction("deletePages");
         //file
-        job.setDocumentId(documentId);
+        if( file != null ) {
+            job.setDocument(new Document(file));
+        }else{
+            job.setDocumentId(documentId);
+        }
         if(pages!=null) job.setPages(pages);
         if(password!=null) job.setPassword(password);
 
@@ -130,6 +137,5 @@ public class PagesController
         //pass CF Response back to the client
         return payload.getHttpResponse();
     }
-
 
 }

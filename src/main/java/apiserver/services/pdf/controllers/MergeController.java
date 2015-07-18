@@ -23,6 +23,7 @@ import apiserver.MimeType;
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
+import apiserver.services.pdf.gateways.jobs.CFPdfJob;
 import apiserver.services.pdf.gateways.jobs.MergePdfResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -64,13 +65,18 @@ public class MergeController
 
     /**
      * Merge two pdf files into one.
-     * @param file1
-     * @param file2
+     * @param files
+     * @param order
+     * @param packagePdf
+     * @param ascending
+     * @param keepBookmark
+     * @param pages
+     * @param password
      * @return
      * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws IOException
      * @throws Exception
      */
     @ApiOperation(value = "Merge two PDF documents into an output PDF file.")
@@ -92,7 +98,22 @@ public class MergeController
                 @RequestPart("password") String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        MergePdfResult job = new MergePdfResult();
+        return executeJob(files, order, packagePdf, ascending, keepBookmark, pages, password);
+    }
+
+
+    private ResponseEntity<byte[]> executeJob(
+            MultipartFile[] files
+            , String order
+            , Boolean packagePdf
+            , Boolean ascending
+            , Boolean keepBookmark
+            , String pages
+            , String password
+    ) throws IOException, InterruptedException, ExecutionException, TimeoutException
+    {
+        CFPdfJob job = new CFPdfJob();
+        job.setAction("merge");
 
         int idx = 0;
         Document[] documents = new Document[files.length];
