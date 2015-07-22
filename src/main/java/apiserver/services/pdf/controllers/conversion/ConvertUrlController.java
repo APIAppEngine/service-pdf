@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,9 +49,10 @@ import java.util.concurrent.TimeoutException;
  * User: mnimer
  * Date: 9/15/12
  */
+
 @Controller
 @RestController
-@Api(value = "/api/pdf", description = "[PDF]", basePath = "/pdf")
+@Api(value = "/api/pdf", description = "[PDF]")
 @RequestMapping("/api/pdf")
 public class ConvertUrlController
 {
@@ -63,7 +65,7 @@ public class ConvertUrlController
 
     /**
      * Convert the html returned from a url to pdf
-     * @param path
+     * @param url
      * @return
      * @throws InterruptedException
      * @throws java.util.concurrent.ExecutionException
@@ -71,10 +73,10 @@ public class ConvertUrlController
      * @throws java.io.IOException
      */
     @ApiOperation(value = "Convert a URL into a PDF document.")
-    @RequestMapping(value = "/convert/url", method = {RequestMethod.GET})
+    @RequestMapping(value = "/convert/url", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity url2pdf(
             @ApiParam(name="url", required = true)
-                @RequestParam(value = "url", required = true) String path,
+                @RequestParam(value = "url", required = true) String url,
             // Optional arguments
             @ApiParam(name="authPassword", required = false)
                 @RequestParam(value = "authPassword", required = false) String authPassword,
@@ -144,7 +146,7 @@ public class ConvertUrlController
             ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
         CFDocumentJob args = new CFDocumentJob();
-        args.setUrl(path);
+        args.setUrl(url);
 
 
         if( authPassword != null) args.setAuthPassword(authPassword);
@@ -181,7 +183,7 @@ public class ConvertUrlController
         if( allowScreenReaders ) permissionsArray.add(CFDocumentJob.Permission.AllowScreenReaders.name());
         if( allowPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowPrinting.name());
         if( permissionsArray.size() > 0 ) {
-            args.setPermissions((String[]) permissionsArray.toArray());
+            args.setPermissions(StringUtils.toStringArray(permissionsArray));
         }
 
         Future<Map> future = gateway.convertUrlToPdf(args);

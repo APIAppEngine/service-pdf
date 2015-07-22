@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,8 +51,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
+@Api(value = "/api/pdf", description = "[PDF]")
+@RequestMapping("/api/pdf")
 public class ConvertHtmlController
 {
     @Qualifier("convertHtmlToPdfApiGateway")
@@ -190,7 +191,7 @@ public class ConvertHtmlController
         if( allowScreenReaders!= null && allowScreenReaders ) permissionsArray.add(CFDocumentJob.Permission.AllowScreenReaders.name());
         if( allowPrinting!= null && allowPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowPrinting.name());
         if( permissionsArray!= null && permissionsArray.size() > 0 ) {
-            args.setPermissions((String[]) permissionsArray.toArray());
+            args.setPermissions(StringUtils.toStringArray(permissionsArray));
         }
 
         Future<Map> future = gateway.convertHtmlToPdf(args);
