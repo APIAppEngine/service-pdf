@@ -1,4 +1,4 @@
-package apiserver.services.pdf.controllers;
+package apiserver.services.pdf.controllers.forms;
 
 /*******************************************************************************
  Copyright (c) 2013 Mike Nimer.
@@ -24,8 +24,7 @@ import apiserver.core.connectors.coldfusion.services.IBinaryResult;
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfFormGateway;
-import apiserver.services.pdf.gateways.jobs.ExtractPdfFormResult;
-import apiserver.services.pdf.gateways.jobs.PopulatePdfFormResult;
+import apiserver.services.pdf.gateways.jobs.CFPDFFormJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -85,7 +84,7 @@ public class FormController
             @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        ExtractPdfFormResult job = new ExtractPdfFormResult();
+        CFPDFFormJob job = new CFPDFFormJob();
         //job.setDocument(new Document(file));
         if( password != null ) job.setPassword(password);
 
@@ -113,7 +112,7 @@ public class FormController
             @ApiParam(name="password", required = false) @RequestPart("password") String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        ExtractPdfFormResult job = new ExtractPdfFormResult();
+        CFPDFFormJob job = new CFPDFFormJob();
         //job.setDocumentId(documentId);
         if( password != null ) job.setPassword(password);
 
@@ -143,7 +142,7 @@ public class FormController
             @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        PopulatePdfFormResult job = new PopulatePdfFormResult();
+        CFPDFFormJob job = new CFPDFFormJob();
         job.setDocument(new Document(file));
         //job.setFields(fields);
         if( password != null ) job.setPassword(password);
@@ -175,7 +174,7 @@ public class FormController
             @ApiParam(name="password", required = false) @RequestPart("password") String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        PopulatePdfFormResult job = new PopulatePdfFormResult();
+        CFPDFFormJob job = new CFPDFFormJob();
         job.setDocumentId(documentId);
         //job.setFields(fields);
         if( password != null ) job.setPassword(password);

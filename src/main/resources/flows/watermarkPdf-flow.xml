@@ -56,7 +56,7 @@
         <si:service-activator
                 method="execute">
             <bean class="apiserver.core.connectors.coldfusion.ColdFusionHttpBridge">
-                <property name="cfcPath" value="/api-pdf.cfc?method=protectPdf"/>
+                <property name="cfcPath" value="/api-pdf.cfc?method=executeForPdf"/>
                 <property name="cfcMethod" value="POST"/>
             </bean>
         </si:service-activator>
@@ -73,7 +73,7 @@
         <si:service-activator
                 method="execute">
             <bean class="apiserver.core.connectors.coldfusion.ColdFusionHttpBridge">
-                <property name="cfcPath" value="/api-pdf.cfc?method=protectPdf"/>
+                <property name="cfcPath" value="/api-pdf.cfc?method=executeForPdf"/>
                 <property name="cfcMethod" value="POST"/>
             </bean>
         </si:service-activator>

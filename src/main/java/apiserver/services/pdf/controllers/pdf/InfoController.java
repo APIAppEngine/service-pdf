@@ -1,4 +1,4 @@
-package apiserver.services.pdf.controllers;
+package apiserver.services.pdf.controllers.pdf;
 
 /*******************************************************************************
  Copyright (c) 2013 Mike Nimer.
@@ -37,7 +37,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,8 +55,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
+@Api(value = "/api/pdf", description = "[PDF]")
+@RequestMapping("/api/pdf")
 public class InfoController
 {
     @Qualifier("pdfGetInfoApiGateway")
@@ -83,10 +83,10 @@ public class InfoController
      * @throws Exception
      */
     @ApiOperation(value = "Get information about a PDF document ")
-    @RequestMapping(value = "/info/get", method = RequestMethod.POST, produces = "application/pdf")
+    @RequestMapping(value = "/info/get", method = RequestMethod.POST)
     public ResponseEntity<Object> getPdfInfo(
             @ApiParam(name = "file", required = true)
-                @RequestPart("file") MultipartFile file,
+                @RequestParam("file") MultipartFile file,
             @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
                 @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
@@ -94,31 +94,6 @@ public class InfoController
         return executeGetInfoJob(file, null, password);
     }
 
-
-
-    /**
-     * Get information about document
-     *
-     * @param documentId
-     * @param password   Password to open pdf
-     * @return
-     * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
-     * @throws Exception
-     */
-    @ApiOperation(value = "Get information about a cached PDF document ")
-    @RequestMapping(value = "/{documentId}/info/get", method = RequestMethod.GET, produces = "application/pdf")
-    public ResponseEntity<Object> getCachedPdfInfo(
-            @ApiParam(name = "documentId", required = true)
-                @RequestParam("documentId") String documentId,
-            @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestParam(value = "password", required = false) String password
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
-
-        return executeGetInfoJob(null, documentId, password);
-    }
 
 
     /**
@@ -135,10 +110,10 @@ public class InfoController
      * @throws Exception
      */
     @ApiOperation(value = "Set information about a PDF document ")
-    @RequestMapping(value = "/info/set", method = RequestMethod.POST, produces = "application/pdf")
+    @RequestMapping(value = "/info/set", method = RequestMethod.POST)
     public ResponseEntity<byte[]> setPdfInfo(
             @ApiParam(name = "file", required = true)
-                @RequestPart("file") MultipartFile file,
+                @RequestParam("file") MultipartFile file,
             @ApiParam(name = "info", required = true, value = "Json String/Map variable for relevant information. You can specify the Author, Subject, Title, and Keywords for the PDF output file.")
                 @RequestParam("info") String info,
             @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
@@ -148,34 +123,6 @@ public class InfoController
         return executeSetInfoJob(file, null, info, password);
     }
 
-
-
-    /**
-     * Set information about cached document
-     *
-     * @param documentId PDF to update
-     * @param info       Map of key/values to set
-     * @param password   Password to open pdf
-     * @return
-     * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
-     * @throws Exception
-     */
-    @ApiOperation(value = "Set information about a cached PDF document ")
-    @RequestMapping(value = "/{documentId}/info/set", method = RequestMethod.GET, produces = "application/pdf")
-    public ResponseEntity<byte[]> setCachedPdfInfo(
-            @ApiParam(name = "documentId", required = true)
-                @RequestParam("documentId") String documentId,
-            @ApiParam(name = "info", required = true, value = "Json String/Map for relevant information. You can specify the Author, Subject, Title, and Keywords for the PDF output file.")
-                @RequestParam("info") String info,
-            @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestParam(value = "password", required = false) String password
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception {
-
-        return executeSetInfoJob(null, documentId, info, password);
-    }
 
 
 
@@ -199,9 +146,10 @@ public class InfoController
         }
 
         Future<Map> future = getInfoGateway.pdfGetInfo(job);
-        IObjectResult payload = (IObjectResult) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        return ResponseEntityHelper.processObject(payload.getResult());
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 

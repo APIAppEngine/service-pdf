@@ -1,4 +1,4 @@
-package apiserver.services.pdf.controllers;
+package apiserver.services.pdf.controllers.pdf;
 
 /*******************************************************************************
  Copyright (c) 2013 Mike Nimer.
@@ -32,7 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,8 +49,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-//@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
+//@Api(value = "/api/pdf", description = "[PDF]")
+@RequestMapping("/api/pdf")
 public class PagesController
 {
     @Qualifier("deletePagesPdfGateway")
@@ -71,45 +71,19 @@ public class PagesController
      * @throws Exception
      */
     @ApiOperation(value = "Delete one or more pages from a pdf")
-    @RequestMapping(value = "/modify/pages", method = RequestMethod.DELETE, produces = "application/pdf")
+    @RequestMapping(value = "/modify/pages/delete", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> deletePagesFromPdf(
             @ApiParam(name="file", required = true)
-                @RequestPart("file") MultipartFile file,
+                @RequestParam("file") MultipartFile file,
             @ApiParam(name="pages", required = false, value = "page or pages to add the footer")
-                @RequestPart(value = "pages", required = false) String pages,
+                @RequestParam(value = "pages", required = false, defaultValue = "*") String pages,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart(value = "password", required = false) String password
+                @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         return executeJob(file, null, pages, password);
     }
 
-
-
-    /**
-     * Delete one or more pages from a pdf
-     * @param documentId
-     * @return
-     * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
-     * @throws Exception
-     */
-    @ApiOperation(value = "Delete one or more pages from a pdf")
-    @RequestMapping(value = "/modify/{documentId}/pages", method = RequestMethod.DELETE, produces = "application/pdf")
-    public ResponseEntity<byte[]> deletePagesFromCachedPdf(
-            @ApiParam(name="documentId", required = true)
-                @RequestPart("documentId") String documentId,
-            @ApiParam(name="pages", required = false, value = "page or pages to add the footer")
-                @RequestPart(value = "pages", required = false) String pages,
-            @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart(value = "password", required = false) String password
-
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
-    {
-        return executeJob(null, documentId, pages, password);
-    }
 
 
 

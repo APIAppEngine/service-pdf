@@ -73,6 +73,7 @@ public class CFPdfJob extends GetDocumentJob implements IProxyJob, Serializable
     private static final Object TYPE = "type";
     private static final Object FORMAT = "format";
     private static final Object IMAGEPREFIX = "imagePrefix";
+    private IDocument image = null;
 
 
     /**
@@ -194,7 +195,7 @@ public class CFPdfJob extends GetDocumentJob implements IProxyJob, Serializable
     }
 
 
-    public void setDdx(String ddx)
+    public void setDdx(Object ddx)
     {
         this.getOptions().put(DDX, ddx);
     }
@@ -212,9 +213,15 @@ public class CFPdfJob extends GetDocumentJob implements IProxyJob, Serializable
     }
 
 
+    public IDocument getImage()
+    {
+        return this.image;
+    }
+
+
     public void setImage(IDocument image)
     {
-        this.getOptions().put(IMAGE, image);
+        this.image = image;
     }
 
 
@@ -475,6 +482,9 @@ public class CFPdfJob extends GetDocumentJob implements IProxyJob, Serializable
         args.put(ApiServerConstants.ACTION, this.getAction() );
         args.put(ApiServerConstants.FILE, getDocument() );
         args.put(ApiServerConstants.OPTIONS, getOptions());
+        if( this.image != null ){
+            args.put(ApiServerConstants.IMAGE, this.getImage());
+        }
         return args;
     }
 }

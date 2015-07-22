@@ -34,7 +34,7 @@
     <si:channel id="mergePdfFormReplyChannel"/>
 
 
-    <si:gateway id="mergePdfFormApiGateway"
+    <si:gateway id="mergePdfApiGateway"
                 service-interface="apiserver.services.pdf.gateways.PdfGateway"
                 default-reply-channel="mergePdfFormReplyChannel"
                 default-reply-timeout="#{applicationProperties.defaultReplyTimeout}">
@@ -52,7 +52,7 @@
         <si:service-activator
                 method="execute">
             <bean class="apiserver.core.connectors.coldfusion.ColdFusionHttpBridge">
-                <property name="cfcPath" value="/api-pdf.cfc?method=protectPdf"/>
+                <property name="cfcPath" value="/api-pdf.cfc?method=executeMultipleFilesForPdf"/>
                 <property name="cfcMethod" value="POST"/>
             </bean>
         </si:service-activator>

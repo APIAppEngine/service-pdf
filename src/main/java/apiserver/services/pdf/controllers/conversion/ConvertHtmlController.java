@@ -1,4 +1,4 @@
-package apiserver.services.pdf.controllers;
+package apiserver.services.pdf.controllers.conversion;
 
 /*******************************************************************************
  Copyright (c) 2013 Mike Nimer.
@@ -50,11 +50,11 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]", basePath = "/pdf")
-@RequestMapping("/api/pdf")
-public class ConvertUrlController
+@Api(value = "/pdf", description = "[PDF]")
+@RequestMapping("/pdf")
+public class ConvertHtmlController
 {
-    @Qualifier("convertUrlToPdfChannelApiGateway")
+    @Qualifier("convertHtmlToPdfApiGateway")
     @Autowired
     public PdfConversionGateway gateway;
 
@@ -62,19 +62,25 @@ public class ConvertUrlController
 
 
     /**
-     * Convert the html returned from a url to pdf
-     * @param path
+     * Convert an HTML string into a PDF document.
+     * @param html
+     * @param headerHtml
+     * @param footerHtml
      * @return
      * @throws InterruptedException
      * @throws java.util.concurrent.ExecutionException
      * @throws java.util.concurrent.TimeoutException
      * @throws java.io.IOException
      */
-    @ApiOperation(value = "Convert a URL into a PDF document.")
-    @RequestMapping(value = "/convert/url", method = {RequestMethod.GET})
-    public ResponseEntity<byte[]> url2pdf(
-            @ApiParam(name="path", required = true)
-                @RequestParam(value = "path") String path,
+    @ApiOperation(value = "Convert an HTML string into a PDF document.")
+    @RequestMapping(value = "/convert/html", method = {RequestMethod.POST, RequestMethod.GET}, produces = "application/pdf")
+    public ResponseEntity<byte[]> html2pdf(
+            @ApiParam(name="html", required = true)
+                @RequestParam(value = "html") String html,
+            @ApiParam(name="headerHtml", required = false)
+                @RequestParam(value = "headerHtml", required = false) String headerHtml,
+            @ApiParam(name="footerHtml", required = false)
+                @RequestParam(value = "footerHtml", required = false) String footerHtml,
             // Optional arguments
             @ApiParam(name="authPassword", required = false)
                 @RequestParam(value = "authPassword", required = false) String authPassword,
@@ -141,12 +147,15 @@ public class ConvertUrlController
                 @RequestParam(value = "allowAssembly", defaultValue = "true") Boolean allowAssembly,
             @ApiParam(name="allowDegradedPrinting", required = false, defaultValue = "true")
                 @RequestParam(value = "allowDegradedPrinting", defaultValue = "true") Boolean allowDegradedPrinting
-            ) throws InterruptedException, ExecutionException, TimeoutException, IOException
+
+    ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
         CFDocumentJob args = new CFDocumentJob();
-        args.setUrl(path);
+        args.setHtml(html);
+        args.setHeaderHtml(headerHtml);
+        args.setFooterHtml(footerHtml);
 
-
+        //Optional Arguments
         if( authPassword != null) args.setAuthPassword(authPassword);
         if( authUser != null) args.setAuthUser(authUser);
         if( bookmark != null) args.setBookmark(bookmark);
@@ -156,35 +165,35 @@ public class ConvertUrlController
         if( tagged != null) args.setTagged(tagged);
 
         if( backgroundVisible != null) args.setBackgroundVisible(backgroundVisible);
-        if( encryption != null ) args.setEncryption( CFDocumentJob.Encryption.valueOf(encryption));
+        //if( encryption != null ) args.setEncryption(encryption);
         if( fontEmbed != null) args.setFontEmbed(fontEmbed);
         if( marginBottom != null) args.setMarginBottom(marginBottom);
         if( marginTop != null) args.setMarginTop(marginTop);
         if( marginLeft != null) args.setMarginLeft(marginLeft);
         if( marginRight != null) args.setMarginRight(marginRight);
-        if( orientation != null) args.setOrientation( CFDocumentJob.Orientation.valueOf(orientation) );
+        //if( orientation != null) args.setOrientation(orientation);
         if( ownerPassword != null) args.setOwnerPassword(ownerPassword);
         if( pageHeight != null) args.setPageHeight(pageHeight);
         if( pageWidth != null) args.setPageWidth(pageWidth);
-        if( pageType != null) args.setPageType( CFDocumentJob.PageType.valueOf(pageType));
+        //if( pageType != null) args.setPageType(pageType);
         if( scale != null) args.setScale(scale);
-        if( unit != null) args.setUnit(CFDocumentJob.Unit.valueOf(unit));
+        //if( unit != null) args.setUnit(unit);
         if( userPassword != null) args.setUserPassword(userPassword);
 
         List<String> permissionsArray = new ArrayList();
-        if( allowAssembly ) permissionsArray.add(CFDocumentJob.Permission.AllowAssembly.name());
-        if( allowCopy ) permissionsArray.add(CFDocumentJob.Permission.AllowCopy.name());
-        if( allowDegradedPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowDegradedPrinting.name());
-        if( allowFillIn  ) permissionsArray.add(CFDocumentJob.Permission.AllowFillIn.name());
-        if( allowModifyAnnotations ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyAnnotations.name());
-        if( allowModifyContents ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyContents.name());
-        if( allowScreenReaders ) permissionsArray.add(CFDocumentJob.Permission.AllowScreenReaders.name());
-        if( allowPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowPrinting.name());
-        if( permissionsArray.size() > 0 ) {
+        if( allowAssembly!= null && allowAssembly ) permissionsArray.add(CFDocumentJob.Permission.AllowAssembly.name());
+        if( allowCopy!= null && allowCopy ) permissionsArray.add(CFDocumentJob.Permission.AllowCopy.name());
+        if( allowDegradedPrinting!= null && allowDegradedPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowDegradedPrinting.name());
+        if( allowFillIn!= null && allowFillIn  ) permissionsArray.add(CFDocumentJob.Permission.AllowFillIn.name());
+        if( allowModifyAnnotations!= null && allowModifyAnnotations ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyAnnotations.name());
+        if( allowModifyContents!= null && allowModifyContents ) permissionsArray.add(CFDocumentJob.Permission.AllowModifyContents.name());
+        if( allowScreenReaders!= null && allowScreenReaders ) permissionsArray.add(CFDocumentJob.Permission.AllowScreenReaders.name());
+        if( allowPrinting!= null && allowPrinting ) permissionsArray.add(CFDocumentJob.Permission.AllowPrinting.name());
+        if( permissionsArray!= null && permissionsArray.size() > 0 ) {
             args.setPermissions((String[]) permissionsArray.toArray());
         }
 
-        Future<Map> future = gateway.convertUrlToPdf(args);
+        Future<Map> future = gateway.convertHtmlToPdf(args);
         IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
         //pass CF Response back to the client

@@ -1,4 +1,4 @@
-package apiserver.services.pdf.controllers;
+package apiserver.services.pdf.controllers.pdf;
 
 /*******************************************************************************
  Copyright (c) 2013 Mike Nimer.
@@ -33,7 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,8 +50,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
+@Api(value = "/api/pdf", description = "[PDF]")
+@RequestMapping("/api/pdf")
 public class ThumbnailController
 {
     @Qualifier("thumbnailPdfGateway")
@@ -84,102 +84,45 @@ public class ThumbnailController
      * @throws java.io.IOException
      * @throws Exception
      */
-    @ApiOperation(value = "Generate thumbnails from the pages of a PDF", response = byte[].class )
-    @RequestMapping(value = "/thumbnail", method = RequestMethod.POST, produces = "application/pdf")
-    public ResponseEntity<byte[]> thumbnailPdf(
+    @ApiOperation(value = "Generate thumbnails from the pages of a PDF")
+    @RequestMapping(value = "/thumbnails", method = RequestMethod.POST)
+    public ResponseEntity thumbnailPdf(
             @ApiParam(name="file", required = true)
-                @RequestPart("file") MultipartFile file,
+                @RequestParam("file") MultipartFile file,
             @ApiParam(name="compressTiffs", required = false, value="Compress thumbnail which are in TIFF format.")
-                @RequestPart("compressTiffs") Boolean compressTiffs,
+                @RequestParam(value = "compressTiffs", required = false) Boolean compressTiffs,
             @ApiParam(name="format", required = false, allowableValues = "png,jpeg,tiff", value = "File type of thumbnail image output:")
-                @RequestPart("format") String format,
+                @RequestParam(value = "format", required = false, defaultValue = "jpeg") String format,
             @ApiParam(name="hires", required = false, value = "Sets a high resolution for the thumbnail if set to yes.")
-                @RequestPart("hires") Boolean hires,
+                @RequestParam(value = "hires", required = false, defaultValue = "true") Boolean hires,
             @ApiParam(name="imagePrefix", required = false, allowableValues = "png,jpeg,tiff", value = "Prefix used for each image thumbnail file generated. The image filenames use the format: imagePrefix_page_n.format. For example, the thumbnail for page 1 of a document with the imagePrefix attribute set to myThumbnail is myThumbnail_page_1.jpg.")
-                @RequestPart("imagePrefix") String imagePrefix,
+                @RequestParam(value = "imagePrefix", required = false, defaultValue = "pdf_") String imagePrefix,
             @ApiParam(name="maxBreadth", required = false, value="Specifies maximum width of the thumbnail")
-                @RequestPart("maxBreadth") Integer maxBreadth,
+                @RequestParam(value = "maxBreadth", required = false) Integer maxBreadth,
             @ApiParam(name="maxLength", required = false, value = "Specifies the maximum length of the thumbnail")
-                @RequestPart("maxlength") Integer maxLength,
+                @RequestParam(value = "maxlength", required = false) Integer maxLength,
             @ApiParam(name="maxScale", required = false, value = "Specifies the maximum scale of the thumbnail")
-                @RequestPart("maxscale") Integer maxScale,
+                @RequestParam(value = "maxscale", required = false) Integer maxScale,
             @ApiParam(name="pages", required = false, value="Page or pages in the source PDF document on which to perform the action. You can specify multiple pages and page ranges as follows: “1,6–9,56–89,100, 110–120”.")
-                @RequestPart("pages") String pages,
+                @RequestParam(value = "pages", required = false, defaultValue = "*") String pages,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart("password") String password,
+                @RequestParam(value = "password", required = false) String password,
             @ApiParam(name="resolution", required = false, allowableValues = "low,high", value = "Image quality used to generate thumbnail images")
-                @RequestPart("resolution") String resolution,
+                @RequestParam(value = "resolution", required = false, defaultValue = "high") String resolution,
             @ApiParam(name="scale", required = false, value="Size of the thumbnail relative to the source page. The value represents a percentage from 1 through 100.")
-                @RequestPart("scale") Integer scale,
+                @RequestParam(value = "scale", required = false) Integer scale,
             @ApiParam(name="transparent", required = false, value = "(format=\"png\" only) Specifies whether the image background is transparent or opaque:")
-                @RequestPart("transparent") Boolean transparent
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
+                @RequestParam(value = "transparent", required = false) Boolean transparent
+    ) throws Exception
     {
         return executeJob(file, null, compressTiffs, format, hires, imagePrefix, maxBreadth, maxLength, maxScale, pages, password, resolution, scale, transparent);
     }
 
 
-    /**
-     * Generate thumbnails from the pages of a PDF
-     * @param documentId
-     * @param format    png,jpeg,tiff
-     * @param imagePrefix   string used as a prefix in the output filename
-     * @param resolution low, high
-     * @param scale percentage between 1 and 100
-     * @param transparent
-     * @param hires You can set this attribute to true to extract high-resolution images from the page. If a document contains high-resolution images and you want to retain the resolution of the images, then this attribute is useful
-     * @param compressTiffs
-     * @param maxScale  maximum scale of the thumbnail
-     * @param maxLength maximum length of the thumbnail
-     * @param maxBreadth    maximum width of the thumbnail
-     * @param pages
-     * @param password
-     * @return
-     * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
-     * @throws Exception
-     */
-    @ApiOperation(value = "Generate thumbnails from the pages of a PDF", response = byte[].class)
-    @RequestMapping(value = "/thumbnail/{documentId}", method = RequestMethod.POST, produces = "application/pdf")
-    public ResponseEntity<byte[]> thumbnailCachedPdf(
-            @ApiParam(name="documentId", required = true)
-                @RequestPart("documentId") String documentId,
-            @ApiParam(name="compressTiffs", required = false, value="Compress thumbnail which are in TIFF format.")
-                @RequestPart("compressTiffs") Boolean compressTiffs,
-            @ApiParam(name="format", required = false, allowableValues = "png,jpeg,tiff", value = "File type of thumbnail image output:")
-                @RequestPart("format") String format,
-            @ApiParam(name="hires", required = false, value = "Sets a high resolution for the thumbnail if set to yes.")
-                @RequestPart("hires") Boolean hires,
-            @ApiParam(name="imagePrefix", required = false, allowableValues = "png,jpeg,tiff", value = "Prefix used for each image thumbnail file generated. The image filenames use the format: imagePrefix_page_n.format. For example, the thumbnail for page 1 of a document with the imagePrefix attribute set to myThumbnail is myThumbnail_page_1.jpg.")
-                @RequestPart("imagePrefix") String imagePrefix,
-            @ApiParam(name="maxBreadth", required = false, value="Specifies maximum width of the thumbnail")
-                @RequestPart("maxBreadth") Integer maxBreadth,
-            @ApiParam(name="maxLength", required = false, value = "Specifies the maximum length of the thumbnail")
-                @RequestPart("maxlength") Integer maxLength,
-            @ApiParam(name="maxScale", required = false, value = "Specifies the maximum scale of the thumbnail")
-                @RequestPart("maxscale") Integer maxScale,
-            @ApiParam(name="pages", required = false, value="Page or pages in the source PDF document on which to perform the action. You can specify multiple pages and page ranges as follows: “1,6–9,56–89,100, 110–120”.")
-                @RequestPart("pages") String pages,
-            @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart("password") String password,
-            @ApiParam(name="resolution", required = false, allowableValues = "low,high", value = "Image quality used to generate thumbnail images")
-                @RequestPart("resolution") String resolution,
-            @ApiParam(name="scale", required = false, value="Size of the thumbnail relative to the source page. The value represents a percentage from 1 through 100.")
-                @RequestPart("scale") Integer scale,
-            @ApiParam(name="transparent", required = false, value = "(format=\"png\" only) Specifies whether the image background is transparent or opaque:")
-                @RequestPart("transparent") Boolean transparent
-
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
-    {
-        return executeJob(null, documentId, compressTiffs, format, hires, imagePrefix, maxBreadth, maxLength, maxScale, pages, password, resolution, scale, transparent);
-    }
 
 
 
-
-    private ResponseEntity<byte[]> executeJob(
+    private ResponseEntity executeJob(
             MultipartFile file
             , String documentId
             , Boolean compressTiffs

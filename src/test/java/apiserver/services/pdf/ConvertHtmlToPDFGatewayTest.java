@@ -20,10 +20,9 @@ package apiserver.services.pdf;
  ******************************************************************************/
 
 import apiserver.PdfTestBase;
-import apiserver.core.connectors.coldfusion.jobs.CFDocumentJob;
 import apiserver.jobs.IProxyJob;
 import apiserver.services.pdf.gateways.PdfConversionGateway;
-import apiserver.services.pdf.gateways.jobs.Html2PdfResult;
+import apiserver.services.pdf.gateways.jobs.CFDocumentJob;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +64,7 @@ public class ConvertHtmlToPdfGatewayTest
     {
         try
         {
-            Html2PdfResult args = new Html2PdfResult();
+            CFDocumentJob args = new CFDocumentJob();
             args.setHtml("<b>Hello World</b>");
             args.setFontEmbed(true);
             args.setMarginBottom(2);

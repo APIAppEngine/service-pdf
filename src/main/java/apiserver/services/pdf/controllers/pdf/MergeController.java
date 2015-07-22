@@ -1,4 +1,4 @@
-package apiserver.services.pdf.controllers;
+package apiserver.services.pdf.controllers.pdf;
 
 /*******************************************************************************
  Copyright (c) 2013 Mike Nimer.
@@ -24,7 +24,7 @@ import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.CFPdfJob;
-import apiserver.services.pdf.gateways.jobs.MergePdfResult;
+import apiserver.services.pdf.gateways.jobs.CFPdfMultipleFilesJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -35,7 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,11 +52,11 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
+@Api(value = "/api/pdf", description = "[PDF]")
+@RequestMapping("/api/pdf")
 public class MergeController
 {
-    @Qualifier("mergePdfFormApiGateway")
+    @Qualifier("mergePdfApiGateway")
     @Autowired
     public PdfGateway gateway;
 
@@ -66,11 +66,7 @@ public class MergeController
     /**
      * Merge two pdf files into one.
      * @param files
-     * @param order
-     * @param packagePdf
-     * @param ascending
      * @param keepBookmark
-     * @param pages
      * @param password
      * @return
      * @throws InterruptedException
@@ -80,39 +76,27 @@ public class MergeController
      * @throws Exception
      */
     @ApiOperation(value = "Merge two PDF documents into an output PDF file.")
-    @RequestMapping(value = "/merge", method = RequestMethod.POST, produces = "application/pdf")
+    @RequestMapping(value = "/merge", method = RequestMethod.POST)
     public ResponseEntity<byte[]> mergePdfDocuments(
-            @ApiParam(name="files", required = true, value = "multiple pdf files to merge into one.")
-                @RequestPart("files") MultipartFile[] files,
-            @ApiParam(name="order", required = true, allowableValues = "name,time", value="How to order the files when merging, required only when package is specified as true")
-                @RequestPart("order") String order,
-            @ApiParam(name="package", required = true, allowableValues = "yes,no", value="create PDF packages if set to true.")
-                @RequestPart("package") Boolean packagePdf,
-            @ApiParam(name="ascending", required = true, allowableValues = "yes,no", value="Order in which the PDF files are sorted:")
-                @RequestPart("ascending") Boolean ascending,
-            @ApiParam(name="keepBookmark", required = true, allowableValues = "yes,no", value="Specifies whether bookmarks from the source PDF documents are retained in the merged document")
-                @RequestPart("keepBookmark") Boolean keepBookmark,
-            @ApiParam(name="pages", required = true, value="Page or pages in the source PDF document on which to perform the action. You can specify multiple pages and page ranges as follows: “1,6–9,56–89,100, 110–120”.")
-                @RequestPart("pages") String pages,
-            @ApiParam(name="password", required = true, value="Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart("password") String password
+            @ApiParam(name="file", required = true, value = "multiple pdf files to merge into one.")
+                @RequestParam(value = "file", required = true) MultipartFile[] files,
+            @ApiParam(name="keepBookmark", required = false, allowableValues = "yes,no", value="Specifies whether bookmarks from the source PDF documents are retained in the merged document")
+                @RequestParam(value = "keepBookmark", required = false) Boolean keepBookmark,
+            @ApiParam(name="password", required = false, value="Owner or user password of the source PDF document, if the document is password-protected.")
+                @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        return executeJob(files, order, packagePdf, ascending, keepBookmark, pages, password);
+        return executeJob(files, keepBookmark, password);
     }
 
 
     private ResponseEntity<byte[]> executeJob(
             MultipartFile[] files
-            , String order
-            , Boolean packagePdf
-            , Boolean ascending
             , Boolean keepBookmark
-            , String pages
             , String password
     ) throws IOException, InterruptedException, ExecutionException, TimeoutException
     {
-        CFPdfJob job = new CFPdfJob();
+        CFPdfMultipleFilesJob job = new CFPdfMultipleFilesJob();
         job.setAction("merge");
 
         int idx = 0;
@@ -123,12 +107,9 @@ public class MergeController
             doc.setContentType(MimeType.getMimeType(file.getOriginalFilename()));
             documents[idx++] = doc;
         }
+        job.setDocuments(documents);
 
-        if( order != null ) job.setOrder(order);
-        if( packagePdf != null ) job.setPackagePdf(packagePdf);
-        if( ascending != null ) job.setAscending(ascending);
         if( keepBookmark != null ) job.setKeepBookmark(keepBookmark);
-        if( pages != null ) job.setPages(pages);
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = gateway.mergePdf(job);

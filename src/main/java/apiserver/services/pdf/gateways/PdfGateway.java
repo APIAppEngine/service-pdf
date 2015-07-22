@@ -2,6 +2,7 @@ package apiserver.services.pdf.gateways;
 
 
 import apiserver.services.pdf.gateways.jobs.CFPdfJob;
+import apiserver.services.pdf.gateways.jobs.CFPdfMultipleFilesJob;
 
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -19,7 +20,7 @@ public interface PdfGateway
     Future<Map> deletePages(CFPdfJob args);
     Future<Map> extractImage(CFPdfJob args);
     Future<Map> extractText(CFPdfJob args);
-    Future<Map> mergePdf(CFPdfJob args);
+    Future<Map> mergePdf(CFPdfMultipleFilesJob args);
     Future<Map> optimizePdf(CFPdfJob args);
     Future<Map> pdfGetInfo(CFPdfJob args);
     Future<Map> pdfSetInfo(CFPdfJob args);

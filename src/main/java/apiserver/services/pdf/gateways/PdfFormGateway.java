@@ -1,7 +1,6 @@
 package apiserver.services.pdf.gateways;
 
-import apiserver.services.pdf.gateways.jobs.ExtractPdfFormResult;
-import apiserver.services.pdf.gateways.jobs.PopulatePdfFormResult;
+import apiserver.services.pdf.gateways.jobs.CFPDFFormJob;
 
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -11,6 +10,6 @@ import java.util.concurrent.Future;
  */
 public interface PdfFormGateway
 {
-    Future<Map> extractPdfForm(ExtractPdfFormResult args);
-    Future<Map> populatePdfForm(PopulatePdfFormResult args);
+    Future<Map> extractPdfForm(CFPDFFormJob args);
+    Future<Map> populatePdfForm(CFPDFFormJob args);
 }

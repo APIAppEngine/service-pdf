@@ -1,4 +1,4 @@
-package apiserver.services.pdf.controllers;
+package apiserver.services.pdf.controllers.pdf;
 
 /*******************************************************************************
  Copyright (c) 2013 Mike Nimer.
@@ -35,7 +35,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,8 +52,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
+@Api(value = "/api/pdf", description = "[PDF]")
+@RequestMapping("/api/pdf")
 public class WatermarkController
 {
     @Qualifier("watermarkPdfGateway")
@@ -80,20 +79,20 @@ public class WatermarkController
      * @throws Exception
      */
     @ApiOperation(value = "Add Watermark")
-    @RequestMapping(value = "/modify/watermark", method = RequestMethod.POST, produces = "application/pdf")
+    @RequestMapping(value = "/modify/watermark", method = RequestMethod.POST)
     public ResponseEntity<byte[]> addWatermarkToPdf(
             @ApiParam(name="file", required = true)
-                @RequestPart("file") MultipartFile file,
+                @RequestParam("file") MultipartFile file,
             @ApiParam(name="image", required = true)
-                @RequestPart("image") MultipartFile image,
+                @RequestParam("image") MultipartFile image,
             @ApiParam(name="foreground", required = false, allowableValues = "yes, no", value = "Placement of the watermark on the page:")
-                @RequestParam(value="foreground") Boolean foreground,
+                @RequestParam(value="foreground", required = false) Boolean foreground,
             @ApiParam(name="opacity", required = false, value = "Opacity of the watermark. Valid values are integers in the range 0 (transparent) through 10 (opaque).")
-                @RequestPart(value = "opacity", required = false) Double opacity,
+                @RequestParam(value = "opacity", required = false) Double opacity,
             @ApiParam(name="position", required = false, value = "Position on the page where the watermark is placed. The position represents the top-left corner of the watermark. Specify the xand y coordinates; for example “50,30”.")
-                @RequestParam(value="position") String position,
+                @RequestParam(value="position", required = false) String position,
             @ApiParam(name="showOnPrint", required = false, value = "Specify whether to print the watermark with the PDF document:")
-                @RequestParam(value="showOnPrint") Boolean showOnPrint
+                @RequestParam(value="showOnPrint", required = false, defaultValue = "true") Boolean showOnPrint
 
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
@@ -101,42 +100,6 @@ public class WatermarkController
     }
 
 
-
-
-    /**
-     * Add Watermark to cached pdf
-     * @param documentId
-     * @param image
-     * @param foreground
-     * @param showOnPrint
-     * @param position
-     * @param opacity
-     * @return
-     * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
-     * @throws Exception
-     */
-    @ApiOperation(value = "Add Watermark to cached pdf")
-    @RequestMapping(value = "/modify/{documentId}/watermark", method = RequestMethod.POST, produces = "application/pdf")
-    public ResponseEntity<byte[]> addWatermarkToCachedPdf(
-            @ApiParam(name="documentId", required = true)
-                @RequestPart("documentId") String documentId,
-            @ApiParam(name="image", required = true)
-                @RequestPart("image") MultipartFile image,
-            @ApiParam(name="foreground", required = false, allowableValues = "yes, no", value = "Placement of the watermark on the page:")
-                @RequestParam(value="foreground") Boolean foreground,
-            @ApiParam(name="opacity", required = false, value = "Opacity of the watermark. Valid values are integers in the range 0 (transparent) through 10 (opaque).")
-                @RequestPart(value = "opacity", required = false) Double opacity,
-            @ApiParam(name="position", required = false, value = "Position on the page where the watermark is placed. The position represents the top-left corner of the watermark. Specify the xand y coordinates; for example “50,30”.")
-                @RequestParam(value="position") String position,
-            @ApiParam(name="showOnPrint", required = false, value = "Specify whether to print the watermark with the PDF document:")
-                @RequestParam(value="showOnPrint") Boolean showOnPrint
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
-    {
-        return executeAddWatermarkJob(null, documentId, image, foreground, opacity, position, showOnPrint);
-    }
 
 
     /**
@@ -152,14 +115,14 @@ public class WatermarkController
      * @throws Exception
      */
     @ApiOperation(value = "Remove Watermark")
-    @RequestMapping(value = "/modify/watermark", method = RequestMethod.DELETE, produces = "application/pdf")
+    @RequestMapping(value = "/modify/watermark/remove", method = RequestMethod.POST)
     public ResponseEntity<byte[]> removeWatermarkFromPdf(
             @ApiParam(name="file", required = true)
-                @RequestPart("file") MultipartFile file,
+                @RequestParam("file") MultipartFile file,
             @ApiParam(name="pages", required = false, value = "page or pages to add the footer")
-                @RequestPart(value = "pages", required = false) String pages,
+                @RequestParam(value = "pages", required = false) String pages,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart(value = "password", required = false) String password
+                @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         return executeRemoveWatermarkJob(file, null, pages, password);
@@ -167,31 +130,6 @@ public class WatermarkController
 
 
 
-    /**
-     * Remove watermark
-     * @param documentId
-     * @param pages
-     * @param password
-     * @return
-     * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
-     * @throws Exception
-     */
-    @ApiOperation(value = "Remove Watermark")
-    @RequestMapping(value = "/modify/{documentId}/watermark", method = RequestMethod.DELETE, produces = "application/pdf")
-    public ResponseEntity<byte[]> removeWatermarkFromCachedPdf(
-            @ApiParam(name="documentId", required = true)
-                @RequestPart("documentId") String documentId,
-            @ApiParam(name="pages", required = false, value = "page or pages to add the footer")
-                @RequestPart(value = "pages", required = false) String pages,
-            @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart(value = "password", required = false) String password
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
-    {
-        return executeRemoveWatermarkJob(null, documentId, pages, password);
-    }
 
 
 
@@ -206,6 +144,7 @@ public class WatermarkController
     ) throws IOException, InterruptedException, ExecutionException, TimeoutException
     {
         CFPdfJob job = new CFPdfJob();
+        job.setAction("addwatermark");
         //file
         if( file != null ) {
             job.setDocument(new Document(file));
@@ -217,6 +156,7 @@ public class WatermarkController
             Document doc = new Document(image);
             doc.setContentType(MimeType.getMimeType(image.getOriginalFilename()));
             doc.setFileName(image.getOriginalFilename());
+            job.setImage(doc);
         }
 
         if( foreground != null ) job.setForeground(foreground);

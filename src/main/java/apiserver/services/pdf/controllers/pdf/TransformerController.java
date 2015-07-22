@@ -1,4 +1,4 @@
-package apiserver.services.pdf.controllers;
+package apiserver.services.pdf.controllers.pdf;
 
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,8 +31,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
+@Api(value = "/api/pdf", description = "[PDF]")
+@RequestMapping("/api/pdf")
 public class TransformerController
 {
     @Qualifier("transformPdfGateway")
@@ -53,20 +54,20 @@ public class TransformerController
      * @throws Exception
      */
     @ApiOperation(value = "Transform pages in pdf")
-    @RequestMapping(value = "/transform", method = RequestMethod.POST, produces = "application/pdf")
+    @RequestMapping(value = "/transform", method = RequestMethod.POST)
     public ResponseEntity<byte[]> transformPdf(
             @ApiParam(name = "file", required = true)
-                @RequestPart("file") MultipartFile file,
-            @ApiParam(name = "password", required = false, value="Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart("password") String password,
+                @RequestParam("file") MultipartFile file,
             @ApiParam(name = "hScale", required = false, value="Horizontal scale of the image to be modified. Valid values are hscale<1")
-                @RequestPart("hScale") Double hScale,
-            @ApiParam(name = "vScale", required = false, value = "Vertical scale of the image to be modified. Valid values are vscale>0")
-                @RequestPart("vScale") Double vScale,
+                @RequestParam(value = "hScale", required = false, defaultValue = "1") Double hScale,
+            @ApiParam(name = "password", required = false, value="Owner or user password of the source PDF document, if the document is password-protected.")
+                @RequestParam(value = "password", required = false) String password,
             @ApiParam(name = "position", required = false, value="Position on the page where the watermark is placed. The position represents the top-left corner of the watermark. Specify the xand y coordinates; for example “50,30”.")
-                @RequestPart("position") String position,
+                @RequestParam(value = "position", required = false) String position,
             @ApiParam(name = "rotation", required = false, allowableValues = "0, 90, 180, 270", value = "Degree of rotation")
-                @RequestPart("rotation") Integer rotation
+                @RequestParam(value = "rotation", required = false) Integer rotation,
+            @ApiParam(name = "vScale", required = false, value = "Vertical scale of the image to be modified. Valid values are vscale>0")
+                @RequestParam(value = "vScale", required = false, defaultValue = "1") Double vScale
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
         return executeJob(file, null, password, hScale, vScale, position, rotation);
@@ -74,36 +75,6 @@ public class TransformerController
 
 
 
-    /**
-     * Transform pages
-     * @param file
-     * @param password
-     * @return
-     * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
-     * @throws Exception
-     */
-    @ApiOperation(value = "Transform pages in pdf")
-    @RequestMapping(value = "/transform/{documentId}", method = RequestMethod.GET, produces = "application/pdf")
-    public ResponseEntity<byte[]> transformPdf(
-            @ApiParam(name="documentId", required = true)
-                @RequestPart("documentId") String documentId,
-            @ApiParam(name = "password", required = false, value="Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart("password") String password,
-            @ApiParam(name = "hScale", required = false, value="Horizontal scale of the image to be modified. Valid values are hscale<1")
-                @RequestPart("hScale") Double hScale,
-            @ApiParam(name = "vScale", required = false, value = "Vertical scale of the image to be modified. Valid values are vscale>0")
-                @RequestPart("vScale") Double vScale,
-            @ApiParam(name = "position", required = false, value="Position on the page where the watermark is placed. The position represents the top-left corner of the watermark. Specify the xand y coordinates; for example “50,30”.")
-                @RequestPart("position") String position,
-            @ApiParam(name = "rotation", required = false, allowableValues = "0, 90, 180, 270", value = "Degree of rotation")
-                @RequestPart("rotation") Integer rotation
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
-    {
-        return executeJob(null, documentId, password, hScale, vScale, position, rotation);
-    }
 
 
 

@@ -1,4 +1,4 @@
-package apiserver.services.pdf.controllers;
+package apiserver.services.pdf.controllers.pdf;
 
 /*******************************************************************************
  Copyright (c) 2013 Mike Nimer.
@@ -20,12 +20,10 @@ package apiserver.services.pdf.controllers;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.MimeType;
-import apiserver.core.common.ResponseEntityHelper;
+import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfGateway;
 import apiserver.services.pdf.gateways.jobs.CFPdfJob;
-import apiserver.services.pdf.gateways.jobs.ExtractTextResult;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -36,7 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,9 +51,9 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
-public class ExtractTextController
+@Api(value = "/api/pdf", description = "[PDF]")
+@RequestMapping("/api/pdf")
+public class ExtractImageController
 {
     @Qualifier("extractPdfTextApiGateway")
     @Autowired
@@ -71,14 +69,12 @@ public class ExtractTextController
 
 
     /**
-     * Extract all the words in the PDF.
+     * Extract images in pdf
      * @param file
-     * @param addquads
-     * @param honourspaces
+     * @param format
+     * @param imagePrefix
      * @param pages
      * @param password
-     * @param type
-     * @param useStructure
      * @return
      * @throws InterruptedException
      * @throws ExecutionException
@@ -86,38 +82,32 @@ public class ExtractTextController
      * @throws IOException
      * @throws Exception
      */
-    @ApiOperation(value = "Extract all the words in the PDF.")
-    @RequestMapping(value = "/extract/text", method = RequestMethod.POST, produces = "application/pdf")
-    public ResponseEntity<Object> extractTextFromPdf(
+    @ApiOperation(value = "Extract images in pdf")
+    @RequestMapping(value = "/extract/image", method = RequestMethod.POST)
+    public ResponseEntity<Object> extractImageFromPdf(
             @ApiParam(name = "file", required = true)
-                @RequestPart("file") MultipartFile file,
-            @ApiParam(name = "addquads", required = false, defaultValue = "false", value = "add the position or quadrants for the text in the PDF")
-                @RequestPart(value = "addquads", required = false) String addquads,
-            @ApiParam(name = "honourspaces", required = false, defaultValue = "false", value = "Set this option to 'true', for improved readability and spacing.")
-                @RequestPart(value = "honourspaces", required = false) Boolean honourspaces,
+                @RequestParam(value="file", required = true) MultipartFile file,
+            @ApiParam(name = "format", required = false, value = "png|tiff|jpg - Format in which the images should be extracted")
+                @RequestParam(value = "format", required = false, defaultValue = "jpg") String format,
+            @ApiParam(name = "imagePrefix", required = false, value = "the string that you want to prefix with the image name")
+                @RequestParam(value = "imagePrefix", required = false, defaultValue = "pdf-") String imagePrefix,
             @ApiParam(name = "pages", required = false, defaultValue = "*", value = "page numbers from where the text needs to be extracted from the PDF document")
-                @RequestPart(value = "pages", required = false) String pages,
+                @RequestParam(value = "pages", required = false, defaultValue = "*") String pages,
             @ApiParam(name = "password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
-                @RequestPart(value = "password", required = false) String password,
-            @ApiParam(name = "type", required = false, defaultValue = "xml", value = "string or xml format in which the text needs to be extracted")
-                @RequestPart(value = "type", required = false) String type,
-            @ApiParam(name = "usestructure", required = false, value = "Lets you extract content based on the PDF structure. For better readability of the extracted text, use this attribute together with the attribute honourspaces.")
-                @RequestPart(value = "usestructure", required = false) Boolean useStructure
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
+                @RequestParam(value = "password", required = false) String password
+        ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        return executeJob(file, addquads, honourspaces, pages, password, type, useStructure);
+        return executeJob(file, format, imagePrefix, pages, password);
     }
 
 
     /**
      *
      * @param file
-     * @param addquads
-     * @param honourspaces
+     * @param format
+     * @param imagePrefix
      * @param pages
      * @param password
-     * @param type
-     * @param useStructure
      * @return
      * @throws IOException
      * @throws InterruptedException
@@ -126,34 +116,27 @@ public class ExtractTextController
      */
     private ResponseEntity<Object> executeJob(
             MultipartFile file
-            , String addquads
-            , Boolean honourspaces
+            , String format
+            , String imagePrefix
             , String pages
             , String password
-            , String type
-            , Boolean useStructure
     ) throws IOException, InterruptedException, ExecutionException, TimeoutException
     {
         CFPdfJob job = new CFPdfJob();
-        job.setAction("extracttext");
+        job.setAction("extractimage");
         job.setDocument(new Document(file));
         job.setPages(pages==null?"*":pages);
-        job.setType(type==null?"xml":type);
-        if(addquads!=null) job.setAddQuads(addquads);
-        if(honourspaces!=null) job.setHonourSpaces(honourspaces);
+        job.setFormat(format==null?"jpg":format);
+        job.setImagePrefix(imagePrefix==null?"*":imagePrefix);
         if(password!=null) job.setPassword(password);
-        if(useStructure!=null) job.setUseStructure(useStructure);
 
 
-        Future future = textGateway.extractText(job);
-        Map payload = (Map) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        Future<Map> future = imageGateway.extractImage(job);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-
-        Object result = null;//payload.getResult();
-        String contentType = MimeType.pdf.contentType;
-        return ResponseEntityHelper.processObject(result);
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
-
 
 
 }

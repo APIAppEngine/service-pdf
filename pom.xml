@@ -86,8 +86,8 @@
                                 <description>Convert different formats to PDF.</description>
                                 <basePath>/</basePath>
                                 <basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.ConvertHtmlController</basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.ConvertUrlController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.conversion.ConvertHtmlController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.conversion.ConvertUrlController</basePackage>
                                 </basePackage>
                             </service>
                             <service>
@@ -95,7 +95,7 @@
                                 <description>Work with PDF forms.</description>
                                 <basePath>/</basePath>
                                 <basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.FormController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.forms.FormController</basePackage>
                                 </basePackage>
                             </service>
                             <service>
@@ -103,9 +103,9 @@
                                 <description>Information about PDF files</description>
                                 <basePath>/</basePath>
                                 <basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.InfoController</basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.ExtractController</basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.ThumbnailController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.InfoController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.ExtractImageController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.ThumbnailController</basePackage>
                                 </basePackage>
                             </service>
                             <service>
@@ -113,13 +113,13 @@
                                 <description>Various modifications to pdf files.</description>
                                 <basePath>/</basePath>
                                 <basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.DDXController</basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.HeaderController</basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.MergeController</basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.OptimizeController</basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.PagesController</basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.TransformerController</basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.WatermarkController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.DDXController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.HeaderController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.MergeController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.OptimizeController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.PagesController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.TransformerController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.WatermarkController</basePackage>
                                 </basePackage>
                             </service>
                             <service>
@@ -127,7 +127,7 @@
                                 <description>Secure PDF files</description>
                                 <basePath>/</basePath>
                                 <basePackage>
-                                    <basePackage>apiserver.services.pdf.controllers.ProtectController</basePackage>
+                                    <basePackage>apiserver.services.pdf.controllers.pdf.ProtectController</basePackage>
                                 </basePackage>
                             </service>
                         </services>

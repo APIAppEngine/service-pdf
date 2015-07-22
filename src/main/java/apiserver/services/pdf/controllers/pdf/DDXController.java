@@ -1,4 +1,4 @@
-package apiserver.services.pdf.controllers;
+package apiserver.services.pdf.controllers.pdf;
 
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -31,8 +32,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
+@Api(value = "/api/pdf", description = "[PDF]")
+@RequestMapping("/api/pdf")
 public class DDXController
 {
 
@@ -61,38 +62,17 @@ public class DDXController
      * @throws Exception
      */
     @ApiOperation(value = "Use DDX instructions to manipulate PDF documents")
-    @RequestMapping(value = "/modify/ddx", method = RequestMethod.POST, produces = "application/pdf")
+    @RequestMapping(value = "/modify/ddx", method = RequestMethod.POST)
     public ResponseEntity<byte[]> processDDX(
             @ApiParam(name="file", required = true)
                 @RequestPart("file") MultipartFile file,
-            @ApiParam(name="ddx", required = true, value = "XML string with DDX instructions")
-                @RequestParam("ddx") String DDX
+            @ApiParam(name="ddx", required = true, value = "XML file with DDX instructions")
+                @RequestParam("ddx") Object ddx
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        return executeJob(file, null, DDX);
+        return executeJob(file, null, ddx);
     }
 
-
-    /**
-     * apply a DDX file to a cached PDF for advanced manipulation
-     * @param documentId
-     * @param DDX
-     * @return
-     * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
-     * @throws Exception
-     */
-    @ApiOperation(value = "Use a DDX file for advanced manipulation")
-    @RequestMapping(value = "/modify/{documentId}/ddx", method = RequestMethod.POST, produces = "application/pdf")
-    public ResponseEntity<byte[]> processCachedPdfDDX(
-            @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
-            @ApiParam(name="ddx", required = true) @RequestParam("ddx") String DDX
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException
-    {
-        return executeJob(null, documentId, DDX);
-    }
 
 
     /**
@@ -109,9 +89,16 @@ public class DDXController
     private ResponseEntity<byte[]> executeJob(
             MultipartFile file
             , String documentId
-            , String DDX
+            , Object DDX
     ) throws IOException, InterruptedException, ExecutionException, TimeoutException
     {
+        String _ddx;
+        if( DDX instanceof MultipartFile ){
+            _ddx = org.apache.commons.io.IOUtils.toString( ((MultipartFile)DDX).getInputStream() );
+        }else{
+            _ddx = DDX.toString();
+        }
+
         CFPdfJob job = new CFPdfJob();
 
         if( file != null ) {
@@ -120,8 +107,8 @@ public class DDXController
             job.setDocumentId(documentId);
         }
 
-        job.setAction("processddx");
-        job.setDdx(DDX);
+        job.setAction("processDDX");
+        job.setDdx(_ddx);
 
         Future<Map> future = gateway.processDDX(job);
         IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
