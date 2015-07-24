@@ -52,8 +52,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/api/pdf", description = "[PDF]")
-@RequestMapping("/api/pdf")
+@Api(value = "/api/v1/pdf", description = "[PDF]")
+@RequestMapping("/api/v1/pdf")
 public class MergeController
 {
     @Qualifier("mergePdfApiGateway")
@@ -78,20 +78,23 @@ public class MergeController
     @ApiOperation(value = "Merge two PDF documents into an output PDF file.")
     @RequestMapping(value = "/merge", method = RequestMethod.POST)
     public ResponseEntity<byte[]> mergePdfDocuments(
-            @ApiParam(name="file", required = true, value = "multiple pdf files to merge into one.")
-                @RequestParam(value = "file", required = true) MultipartFile[] files,
+            @ApiParam(name="file1", required = true, value = "multiple pdf files to merge into one.")
+                @RequestParam(value = "file", required = true) MultipartFile file1,
+            @ApiParam(name="file2", required = true, value = "multiple pdf files to merge into one.")
+                @RequestParam(value = "file", required = true) MultipartFile file2,
             @ApiParam(name="keepBookmark", required = false, allowableValues = "yes,no", value="Specifies whether bookmarks from the source PDF documents are retained in the merged document")
                 @RequestParam(value = "keepBookmark", required = false) Boolean keepBookmark,
             @ApiParam(name="password", required = false, value="Owner or user password of the source PDF document, if the document is password-protected.")
                 @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {
-        return executeJob(files, keepBookmark, password);
+        return executeJob(file1, file2, keepBookmark, password);
     }
 
 
     private ResponseEntity<byte[]> executeJob(
-            MultipartFile[] files
+            MultipartFile file1
+            , MultipartFile file2
             , Boolean keepBookmark
             , String password
     ) throws IOException, InterruptedException, ExecutionException, TimeoutException
@@ -100,13 +103,18 @@ public class MergeController
         job.setAction("merge");
 
         int idx = 0;
-        Document[] documents = new Document[files.length];
-        for (MultipartFile file : files) {
-            Document doc = new Document(file);
-            doc.setFileName(file.getOriginalFilename());
-            doc.setContentType(MimeType.getMimeType(file.getOriginalFilename()));
-            documents[idx++] = doc;
-        }
+        Document[] documents = new Document[2];
+
+        Document doc = new Document(file1);
+        doc.setFileName(file1.getOriginalFilename());
+        doc.setContentType(MimeType.getMimeType(file1.getOriginalFilename()));
+        documents[idx++] = doc;
+
+        Document doc2 = new Document(file2);
+        doc2.setFileName(file2.getOriginalFilename());
+        doc2.setContentType(MimeType.getMimeType(file2.getOriginalFilename()));
+        documents[idx++] = doc2;
+
         job.setDocuments(documents);
 
         if( keepBookmark != null ) job.setKeepBookmark(keepBookmark);

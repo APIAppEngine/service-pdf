@@ -31,10 +31,14 @@ import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,8 +56,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/pdf", description = "[PDF]")
-@RequestMapping("/pdf")
+@Api(value = "/api/v1/pdf", description = "[PDF]")
+@RequestMapping("/api/v1/pdf")
 public class FormController
 {
     @Qualifier("populatePdfFormApiGateway")
@@ -80,47 +84,35 @@ public class FormController
     @ApiOperation(value = "Extract the value of the form fields in a pdf")
     @RequestMapping(value = "/form/extract", method = RequestMethod.POST)
     public ResponseEntity<Object> extractFormFields(
-            @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
-            @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
+            @ApiParam(name="file", required = true)
+                @RequestParam(value = "file", required = true) MultipartFile file,
+            @ApiParam(name="format", required = false, allowableValues = "xml,json")
+                @RequestParam(value = "format", required = false, defaultValue = "xml") String format,
+            @ApiParam(name="password", required = false)
+                @RequestParam(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
+        if( !format.toLowerCase().equals("xml") && !format.toLowerCase().equals("json") )
+        {
+            MultiValueMap _headers = new LinkedMultiValueMap();
+            _headers.add("Content-Type", "text/plain");
+            return new ResponseEntity("Invalid format. Allowable values are XML or JSON", HttpStatus.BAD_REQUEST);
+        }
+
+
         CFPDFFormJob job = new CFPDFFormJob();
-        //job.setDocument(new Document(file));
+        job.setDocument(new Document(file));
+        job.setFormat(format);
         if( password != null ) job.setPassword(password);
 
-        Future<Map> future = extractGateway.extractPdfForm(job);
-        IBinaryResult payload = (IBinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        Future<Map> future = extractGateway.extractPdfForm(job, format);
+        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        return ResponseEntityHelper.processObject(payload.getResult());
+        //pass CF Response back to the client
+        return payload.getHttpResponse();
     }
 
 
-    /**
-     * Extract the value of the form fields in a pdf
-     * @param documentId
-     * @return
-     * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
-     * @throws Exception
-     */
-    @ApiOperation(value = "Extract the value of the form fields in a pdf")
-    @RequestMapping(value = "/form/{documentId}/extract", method = RequestMethod.GET, produces = "application/pdf")
-    public ResponseEntity<Object> extractCachedFormFields(
-            @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
-            @ApiParam(name="password", required = false) @RequestPart("password") String password
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException
-    {
-        CFPDFFormJob job = new CFPDFFormJob();
-        //job.setDocumentId(documentId);
-        if( password != null ) job.setPassword(password);
-
-        Future<Map> future = extractGateway.extractPdfForm(job);
-        IBinaryResult payload = (IBinaryResult)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        return ResponseEntityHelper.processObject(payload);
-    }
 
 
     /**
@@ -137,14 +129,17 @@ public class FormController
     @ApiOperation(value = "Populate the pdf form fields")
     @RequestMapping(value = "/form/populate", method = RequestMethod.POST, produces = "application/pdf")
     public ResponseEntity<byte[]> populateFormFields(
-            @ApiParam(name="file", required = true) @RequestPart("file") MultipartFile file,
-            @ApiParam(name="fields", required = true) @RequestPart("fields") String fields,
-            @ApiParam(name="password", required = false) @RequestPart(value = "password", required = false) String password
+            @ApiParam(name="file", required = true)
+                @RequestPart(value = "file", required = true) MultipartFile file,
+            @ApiParam(name="xmlData", required = true)
+                @RequestPart(value = "xmlData", required = true) String xmlData,
+            @ApiParam(name="password", required = false)
+                @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
         CFPDFFormJob job = new CFPDFFormJob();
         job.setDocument(new Document(file));
-        //job.setFields(fields);
+        job.setFields(xmlData);
         if( password != null ) job.setPassword(password);
 
         Future<Map> future = populateGateway.populatePdfForm(job);
@@ -154,37 +149,6 @@ public class FormController
         return payload.getHttpResponse();
     }
 
-
-    /**
-     * Populate the pdf form fields
-     * @param documentId
-     * @param xfdf XML
-     * @return
-     * @throws InterruptedException
-     * @throws java.util.concurrent.ExecutionException
-     * @throws java.util.concurrent.TimeoutException
-     * @throws java.io.IOException
-     * @throws Exception
-     */
-    @ApiOperation(value = "Populate the pdf form fields")
-    @RequestMapping(value = "/form/{documentId}/populate", method = RequestMethod.POST, produces = "application/pdf")
-    public ResponseEntity<byte[]> populateCachedFormFields(
-            @ApiParam(name="documentId", required = true) @RequestPart("documentId") String documentId,
-            @ApiParam(name="fields", required = true) @RequestPart("fields") String fields,
-            @ApiParam(name="password", required = false) @RequestPart("password") String password
-    ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
-    {
-        CFPDFFormJob job = new CFPDFFormJob();
-        job.setDocumentId(documentId);
-        //job.setFields(fields);
-        if( password != null ) job.setPassword(password);
-
-        Future<Map> future = populateGateway.populatePdfForm(job);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
-
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
-    }
 
 
 }

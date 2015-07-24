@@ -31,8 +31,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/api/pdf", description = "[PDF]")
-@RequestMapping("/api/pdf")
+@Api(value = "/api/v1/pdf", description = "[PDF]")
+@RequestMapping("/api/v1/pdf")
 public class FooterController
 {
 
@@ -74,9 +74,9 @@ public class FooterController
                 @RequestParam(value = "file") MultipartFile file,
             @ApiParam(name="align", required = false, allowableValues = "left,right,center")
                 @RequestParam(value = "align", required = false) String align,
-            @ApiParam(name="bottomMargin", required = false, value = "value of the header bottom marign")
+            @ApiParam(name="bottomMargin", required = false, value = "value of the bottom margin")
                 @RequestParam(value = "bottomMargin", required = false) Integer bottomMargin,
-            @ApiParam(name="leftMargin", required = false, value = "value of the header left marign")
+            @ApiParam(name="leftMargin", required = false, value = "value of the left margin")
                 @RequestParam(value = "leftMargin", required = false) Integer leftMargin,
             @ApiParam(name="numberFormat", required = false, allowableValues = "lowercaseroman, numeric, uppercaseroman", value = "used with either _PAGENUMBER or _LASTPAGENUMBER")
                 @RequestParam(value = "numberFormat", required = false) String numberFormat,
@@ -86,13 +86,13 @@ public class FooterController
                 @RequestParam(value = "pages", required = false) String pages,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")
                 @RequestParam(value = "password", required = false) String password,
-            @ApiParam(name="rightMargin", required = false, value = "value of the header right margin")
+            @ApiParam(name="rightMargin", required = false, value = "value of the right margin")
                 @RequestParam(value = "rightMargin", required = false) Integer rightMargin,
             @ApiParam(name="showOnPrint", required = false, defaultValue = "false", value = "Specify whether to print the watermark with the PDF document")
                 @RequestParam(value = "showOnPrint", required = false) Boolean showOnPrint,
             @ApiParam(name="text", required = false, value = "_PAGELABEL: add current page label|_LASTPAGELABEL: add last page label|PAGENUMBER: add current page number|_LASTPAGENUMBER: add last page number \\text for the header. You can also add a normal text string.")
                 @RequestParam(value = "text", required = false) String text,
-            @ApiParam(name="topMargin", required = false, value = "value of the header top marign")
+            @ApiParam(name="topMargin", required = false, value = "value of the top marign")
                 @RequestParam(value = "topMargin", required = false) Integer topMargin
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException, Exception
     {

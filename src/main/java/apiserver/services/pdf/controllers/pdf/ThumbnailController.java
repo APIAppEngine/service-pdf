@@ -50,8 +50,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/api/pdf", description = "[PDF]")
-@RequestMapping("/api/pdf")
+@Api(value = "/api/v1/pdf", description = "[PDF]")
+@RequestMapping("/api/v1/pdf")
 public class ThumbnailController
 {
     @Qualifier("thumbnailPdfGateway")
@@ -100,9 +100,9 @@ public class ThumbnailController
             @ApiParam(name="maxBreadth", required = false, value="Specifies maximum width of the thumbnail")
                 @RequestParam(value = "maxBreadth", required = false) Integer maxBreadth,
             @ApiParam(name="maxLength", required = false, value = "Specifies the maximum length of the thumbnail")
-                @RequestParam(value = "maxlength", required = false) Integer maxLength,
+                @RequestParam(value = "maxLength", required = false) Integer maxLength,
             @ApiParam(name="maxScale", required = false, value = "Specifies the maximum scale of the thumbnail")
-                @RequestParam(value = "maxscale", required = false) Integer maxScale,
+                @RequestParam(value = "maxScale", required = false) Integer maxScale,
             @ApiParam(name="pages", required = false, value="Page or pages in the source PDF document on which to perform the action. You can specify multiple pages and page ranges as follows: “1,6–9,56–89,100, 110–120”.")
                 @RequestParam(value = "pages", required = false, defaultValue = "*") String pages,
             @ApiParam(name="password", required = false, value = "Owner or user password of the source PDF document, if the document is password-protected.")

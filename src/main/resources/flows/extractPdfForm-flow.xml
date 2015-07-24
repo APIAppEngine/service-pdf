@@ -30,6 +30,8 @@
 
 
     <si:channel id="extractPdfFormRequestChannel"/>
+    <si:channel id="extractPdfFormXMLRequestChannel"/>
+    <si:channel id="extractPdfFormJSONRequestChannel"/>
 
     <si:channel id="extractPdfFormReplyChannel"/>
 
@@ -46,14 +48,40 @@
 
 
 
-    <si:chain id="extractPdfFormChain" input-channel="extractPdfFormRequestChannel"
-              output-channel="extractPdfFormReplyChannel">
 
+
+    <si:header-value-router input-channel="extractPdfFormRequestChannel" header-name="format">
+        <si:mapping value="xml" channel="extractPdfFormXMLRequestChannel" />
+        <si:mapping value="json" channel="extractPdfFormJSONRequestChannel" />
+    </si:header-value-router>
+
+
+
+
+    <si:chain id="extractPdfFormChainAsXml"
+              input-channel="extractPdfFormXMLRequestChannel"
+              output-channel="extractPdfFormReplyChannel">
 
         <si:service-activator
                 method="execute">
             <bean class="apiserver.core.connectors.coldfusion.ColdFusionHttpBridge">
-                <property name="cfcPath" value="/api-pdf.cfc?method=execute"/>
+                <property name="cfcPath" value="/api-pdfform.cfc?method=extractFormFieldsAsXml"/>
+                <property name="cfcMethod" value="POST"/>
+            </bean>
+        </si:service-activator>
+
+    </si:chain>
+
+
+
+    <si:chain id="extractPdfFormChainAsJson"
+              input-channel="extractPdfFormJSONRequestChannel"
+              output-channel="extractPdfFormReplyChannel">
+
+        <si:service-activator
+                method="execute">
+            <bean class="apiserver.core.connectors.coldfusion.ColdFusionHttpBridge">
+                <property name="cfcPath" value="/api-pdfform.cfc?method=extractFormFieldsAsJson"/>
                 <property name="cfcMethod" value="POST"/>
             </bean>
         </si:service-activator>

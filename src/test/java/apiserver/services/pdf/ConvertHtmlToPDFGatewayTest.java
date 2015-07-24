@@ -79,7 +79,7 @@ public class ConvertHtmlToPdfGatewayTest
             };
             args.setPermissions(permissions);
 
-            Future<Map> resultFuture = pdfHtmlGateway.convertHtmlToPdf(args);
+            Future<Map> resultFuture = pdfHtmlGateway.cfdocumentConvertHtmlToPdf(args);
             IProxyJob result = (IProxyJob)resultFuture.get( defaultTimeout, TimeUnit.MILLISECONDS );
 
             Assert.assertTrue(result != null);

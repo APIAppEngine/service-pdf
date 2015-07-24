@@ -51,8 +51,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/api/pdf", description = "[PDF]")
-@RequestMapping("/api/pdf")
+@Api(value = "/api/v1/pdf", description = "[PDF]")
+@RequestMapping("/api/v1/pdf")
 public class ConvertHtmlController
 {
     @Qualifier("convertHtmlToPdfApiGateway")
@@ -78,6 +78,8 @@ public class ConvertHtmlController
     public ResponseEntity<byte[]> html2pdf(
             @ApiParam(name="html", required = true)
                 @RequestParam(value = "html") String html,
+            @ApiParam(name="useWebkit", required = false)
+                @RequestParam(value = "useWebkit", required = false, defaultValue = "false") Boolean useWebkit,
             @ApiParam(name="headerHtml", required = false)
                 @RequestParam(value = "headerHtml", required = false) String headerHtml,
             @ApiParam(name="footerHtml", required = false)
@@ -194,11 +196,21 @@ public class ConvertHtmlController
             args.setPermissions(StringUtils.toStringArray(permissionsArray));
         }
 
-        Future<Map> future = gateway.convertHtmlToPdf(args);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        if( !useWebkit ) {
+            // use the old cfdocument tag
+            Future<Map> future = gateway.cfdocumentConvertHtmlToPdf(args);
+            IProxyJob payload = (IProxyJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
+            //pass CF Response back to the client
+            return payload.getHttpResponse();
+        }else{
+            // use the new cfhtmltopdf tag
+            Future<Map> future = gateway.cfHtmlToPdfConvertHtmlToPdf(args);
+            IProxyJob payload = (IProxyJob) future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+
+            //pass CF Response back to the client
+            return payload.getHttpResponse();
+        }
     }
 
 

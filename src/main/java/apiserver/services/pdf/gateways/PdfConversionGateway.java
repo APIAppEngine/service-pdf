@@ -30,9 +30,13 @@ import java.util.concurrent.Future;
  */
 public interface PdfConversionGateway
 {
-    Future<Map> convertUrlToPdf(CFDocumentJob args);
+    Future<Map> cfdocumentConvertUrlToPdf(CFDocumentJob args);
 
-    Future<Map> convertHtmlToPdf(CFDocumentJob args);
+    Future<Map> cfHtmlToPdfConvertUrlToPdf(CFDocumentJob args);
+
+    Future<Map> cfdocumentConvertHtmlToPdf(CFDocumentJob args);
+
+    Future<Map> cfHtmlToPdfConvertHtmlToPdf(CFDocumentJob args);
 
     //todo
     //Future<Map> convertWordDocToPdf(CFDocumentJob args);

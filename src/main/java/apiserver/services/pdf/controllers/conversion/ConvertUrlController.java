@@ -56,11 +56,12 @@ import java.util.concurrent.TimeoutException;
 @RequestMapping("/api/pdf")
 public class ConvertUrlController
 {
-    @Qualifier("convertUrlToPdfChannelApiGateway")
+    @Qualifier("convertUrlToPdfApiGateway")
     @Autowired
-    public PdfConversionGateway gateway;
+    public PdfConversionGateway cfdocumentGateway;
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+
+    private @Value("${applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
 
 
     /**
@@ -78,22 +79,24 @@ public class ConvertUrlController
             @ApiParam(name="url", required = true)
                 @RequestParam(value = "url", required = true) String url,
             // Optional arguments
+            @ApiParam(name="useWebkit", required = false)
+                @RequestParam(value = "useWebkit", required = false, defaultValue = "false") Boolean useWebkit,
             @ApiParam(name="authPassword", required = false)
                 @RequestParam(value = "authPassword", required = false) String authPassword,
             @ApiParam(name="authUser", required = false)
                 @RequestParam(value = "authUser", required = false) String authUser,
             @ApiParam(name="backgroundVisible", required = false, defaultValue = "false")
                 @RequestParam(value = "backgroundVisible", required = false, defaultValue = "false") Boolean backgroundVisible,
-            @ApiParam(name="encryption", required = false, defaultValue = "none", allowableValues = "128-bit,40-bit,none")
-                @RequestParam(value = "encryption", required = false) String encryption,
             @ApiParam(name="bookmark", required = false, defaultValue = "false")
                 @RequestParam(value = "bookmark", required = false, defaultValue = "false") Boolean bookmark,
+            @ApiParam(name="encryption", required = false, defaultValue = "none", allowableValues = "128-bit,40-bit,none")
+                @RequestParam(value = "encryption", required = false) String encryption,
             @ApiParam(name="fontEmbed", required = false, defaultValue = "true", allowableValues = "true,false")
                 @RequestParam(value = "fontEmbed", required = false) Boolean fontEmbed,
             @ApiParam(name="formFields", required = false, defaultValue = "true", allowableValues = "true,false")
                 @RequestParam(value = "formFields", required = false) Boolean formFields,
-            @ApiParam(name="formstype", required = false, defaultValue = "true", allowableValues = "FDF,PDF,HTML,XML")
-                @RequestParam(value = "formstype", required = false) Boolean formstype,
+            @ApiParam(name="formsType", required = false, defaultValue = "true", allowableValues = "FDF,PDF,HTML,XML")
+                @RequestParam(value = "formsType", required = false) Boolean formstype,
             @ApiParam(name="marginBottom", required = false, defaultValue = "0")
                 @RequestParam(value = "marginBottom", defaultValue = "0") Integer marginBottom,
             @ApiParam(name="marginTop", required = false, defaultValue = "0")
@@ -106,8 +109,6 @@ public class ConvertUrlController
                 @RequestParam(value = "orientation", required = false) String orientation,
             @ApiParam(name="ownerPassword", required = false)
                 @RequestParam(value = "openpassword", required = false) String openpassword,
-            @ApiParam(name="openpassword", required = false)
-                @RequestParam(value = "ownerPassword", required = false) String ownerPassword,
             @ApiParam(name="pageHeight", required = false)
                 @RequestParam(value = "pageHeight", required = false) Integer pageHeight,
             @ApiParam(name="pageWidth", required = false)
@@ -165,7 +166,6 @@ public class ConvertUrlController
         if( marginLeft != null) args.setMarginLeft(marginLeft);
         if( marginRight != null) args.setMarginRight(marginRight);
         if( orientation != null) args.setOrientation( CFDocumentJob.Orientation.valueOf(orientation) );
-        if( ownerPassword != null) args.setOwnerPassword(ownerPassword);
         if( pageHeight != null) args.setPageHeight(pageHeight);
         if( pageWidth != null) args.setPageWidth(pageWidth);
         if( pageType != null) args.setPageType( CFDocumentJob.PageType.valueOf(pageType));
@@ -186,11 +186,21 @@ public class ConvertUrlController
             args.setPermissions(StringUtils.toStringArray(permissionsArray));
         }
 
-        Future<Map> future = gateway.convertUrlToPdf(args);
-        IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+        if( !useWebkit ){
+            // Use the old cfddcument tag
+            Future<Map> future = cfdocumentGateway.cfdocumentConvertUrlToPdf(args);
+            IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
 
-        //pass CF Response back to the client
-        return payload.getHttpResponse();
+            //pass CF Response back to the client
+            return payload.getHttpResponse();
+        }else{
+            // Use the new cfhtmltopdf tag
+            Future<Map> future = cfdocumentGateway.cfHtmlToPdfConvertUrlToPdf(args);
+            IProxyJob payload = (IProxyJob)future.get(defaultTimeout, TimeUnit.MILLISECONDS);
+
+            //pass CF Response back to the client
+            return payload.getHttpResponse();
+        }
     }
 
 

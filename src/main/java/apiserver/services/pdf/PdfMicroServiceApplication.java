@@ -51,7 +51,7 @@ public class PdfMicroServiceApplication extends DelegatingWebMvcConfiguration
 
 
 
-    @Value("${mashape.key}")
+    @Value("${mashape.pdf.key}")
     private String mashapeKey = null;
 
     @Bean

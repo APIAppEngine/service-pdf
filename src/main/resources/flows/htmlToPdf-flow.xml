@@ -29,6 +29,7 @@
 
 
 
+    <si:channel id="convertCFDocumentChannelRequestChannel"/>
     <si:channel id="convertHtmlToPdfChannelRequestChannel"/>
 
     <si:channel id="convertHtmlToPdfChannelReplyChannel"/>
@@ -39,20 +40,39 @@
                 default-reply-channel="convertHtmlToPdfChannelReplyChannel"
                 default-reply-timeout="#{applicationProperties.defaultReplyTimeout}">
 
-        <si:method name="convertHtmlToPdf"
+        <si:method name="cfdocumentConvertHtmlToPdf"
+                   request-channel="convertCFDocumentChannelRequestChannel"/>
+
+        <si:method name="cfHtmlToPdfConvertHtmlToPdf"
                    request-channel="convertHtmlToPdfChannelRequestChannel"/>
 
     </si:gateway>
 
 
 
-    <si:chain id="htmlToPdfChain" input-channel="convertHtmlToPdfChannelRequestChannel"
+    <si:chain id="cfdocumentHtmlToPdfChain" input-channel="convertCFDocumentChannelRequestChannel"
               output-channel="convertHtmlToPdfChannelReplyChannel">
 
         <si:service-activator
                 method="execute">
             <bean class="apiserver.core.connectors.coldfusion.ColdFusionHttpBridge">
                 <property name="cfcPath" value="/api-cfdocument.cfc?method=htmlToPdf"/>
+                <property name="cfcMethod" value="POST"/>
+            </bean>
+        </si:service-activator>
+
+    </si:chain>
+
+
+
+
+    <si:chain id="cfhtmlToPdfChain" input-channel="convertHtmlToPdfChannelRequestChannel"
+              output-channel="convertHtmlToPdfChannelReplyChannel">
+
+        <si:service-activator
+                method="execute">
+            <bean class="apiserver.core.connectors.coldfusion.ColdFusionHttpBridge">
+                <property name="cfcPath" value="/api-cfhtmltopdf.cfc?method=htmlToPdf"/>
                 <property name="cfcMethod" value="POST"/>
             </bean>
         </si:service-activator>

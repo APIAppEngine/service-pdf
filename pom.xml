@@ -45,6 +45,14 @@
 
         <plugins>
             <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>com.mikenimer.apiappengine.util</groupId>
                 <artifactId>swagger-plugin</artifactId>
                 <version>1.0.0-SNAPSHOT</version>

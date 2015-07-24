@@ -55,8 +55,8 @@ import java.util.concurrent.TimeoutException;
  */
 @Controller
 @RestController
-@Api(value = "/api/pdf", description = "[PDF]")
-@RequestMapping("/api/pdf")
+@Api(value = "/api/v1/pdf", description = "[PDF]")
+@RequestMapping("/api/v1/pdf")
 public class InfoController
 {
     @Qualifier("pdfGetInfoApiGateway")
@@ -174,6 +174,7 @@ public class InfoController
         }
 
         if (infoMap != null) {
+            //deserialize the json infoMAP
             Map info = new ObjectMapper().readValue(infoMap, HashMap.class);
             job.setInfo(info);
         }

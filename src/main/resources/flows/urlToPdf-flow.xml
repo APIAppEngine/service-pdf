@@ -29,30 +29,50 @@
 
 
 
-    <si:channel id="convertUrlToPdfRequestChannel"/>
+    <si:channel id="convertCfDocumentUrlToPdfRequestChannel"/>
+    <si:channel id="convertCfHtmlToPdfUrlToPdfRequestChannel"/>
 
     <si:channel id="convertUrlToPdfReplyChannel"/>
 
 
-    <si:gateway id="convertUrlToPdfChannelApiGateway"
+    <si:gateway id="convertUrlToPdfApiGateway"
                 service-interface="apiserver.services.pdf.gateways.PdfConversionGateway"
                 default-reply-channel="convertUrlToPdfReplyChannel"
                 default-reply-timeout="#{applicationProperties.defaultReplyTimeout}">
 
-        <si:method name="convertUrlToPdf"
-                   request-channel="convertUrlToPdfRequestChannel"/>
+        <si:method name="cfdocumentConvertUrlToPdf"
+                   request-channel="convertCfDocumentUrlToPdfRequestChannel"/>
+
+        <si:method name="cfHtmlToPdfConvertUrlToPdf"
+                   request-channel="convertCfHtmlToPdfUrlToPdfRequestChannel"/>
 
     </si:gateway>
 
 
 
-    <si:chain id="urlToPdf" input-channel="convertUrlToPdfRequestChannel"
+    <si:chain id="cfDocumentUrlToPdf"
+              input-channel="convertCfDocumentUrlToPdfRequestChannel"
               output-channel="convertUrlToPdfReplyChannel">
 
         <si:service-activator
                 method="execute">
             <bean class="apiserver.core.connectors.coldfusion.ColdFusionHttpBridge">
                 <property name="cfcPath" value="/api-cfdocument.cfc?method=urlToPdf"/>
+                <property name="cfcMethod" value="POST"/>
+            </bean>
+        </si:service-activator>
+
+    </si:chain>
+
+
+    <si:chain id="cfHtmlToPdfUrlToPdf"
+              input-channel="convertCfHtmlToPdfUrlToPdfRequestChannel"
+              output-channel="convertUrlToPdfReplyChannel">
+
+        <si:service-activator
+                method="execute">
+            <bean class="apiserver.core.connectors.coldfusion.ColdFusionHttpBridge">
+                <property name="cfcPath" value="/api-cfhtmltopdf.cfc?method=urlToPdf"/>
                 <property name="cfcMethod" value="POST"/>
             </bean>
         </si:service-activator>
