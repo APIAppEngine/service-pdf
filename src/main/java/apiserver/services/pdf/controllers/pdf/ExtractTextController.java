@@ -64,7 +64,7 @@ public class ExtractTextController
     public PdfGateway imageGateway;
 
     private
-    @Value("#{applicationProperties.defaultReplyTimeout}")
+    @Value("${defaultReplyTimeout}")
     Integer defaultTimeout;
 
 

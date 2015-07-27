@@ -39,7 +39,7 @@ public class RemoveHeaderFooterController
     @Autowired
     public PdfGateway headerFooterGateway;
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    private  @Value("${defaultReplyTimeout}")  Integer defaultTimeout;
 
 
 

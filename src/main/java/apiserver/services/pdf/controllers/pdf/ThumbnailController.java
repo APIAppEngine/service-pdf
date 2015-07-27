@@ -58,7 +58,7 @@ public class ThumbnailController
     @Autowired
     public PdfGateway gateway;
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    private  @Value("${defaultReplyTimeout}")  Integer defaultTimeout;
 
 
 
