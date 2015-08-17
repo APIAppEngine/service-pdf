@@ -1,6 +1,6 @@
 package apiserver.services.pdf.gateways;
 
-import apiserver.services.pdf.gateways.jobs.CFPDFFormJob;
+import apiserver.services.pdf.gateways.jobs.CFPdfFormJob;
 import org.springframework.messaging.handler.annotation.Header;
 
 import java.util.Map;
@@ -11,6 +11,6 @@ import java.util.concurrent.Future;
  */
 public interface PdfFormGateway
 {
-    Future<Map> extractPdfForm(CFPDFFormJob args, @Header("format") String format);
-    Future<Map> populatePdfForm(CFPDFFormJob args);
+    Future<Map> extractPdfForm(CFPdfFormJob args, @Header("format") String format);
+    Future<Map> populatePdfForm(CFPdfFormJob args);
 }

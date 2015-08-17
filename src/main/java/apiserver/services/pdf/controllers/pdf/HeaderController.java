@@ -39,7 +39,7 @@ public class HeaderController
     @Autowired
     public PdfGateway headerGateway;
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    private  @Value("${defaultReplyTimeout}")  Integer defaultTimeout;
 
 
     /**

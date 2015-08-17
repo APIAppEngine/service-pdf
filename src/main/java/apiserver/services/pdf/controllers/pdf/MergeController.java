@@ -60,7 +60,7 @@ public class MergeController
     @Autowired
     public PdfGateway gateway;
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    private  @Value("${defaultReplyTimeout}")  Integer defaultTimeout;
 
 
     /**
@@ -79,9 +79,9 @@ public class MergeController
     @RequestMapping(value = "/merge", method = RequestMethod.POST)
     public ResponseEntity<byte[]> mergePdfDocuments(
             @ApiParam(name="file1", required = true, value = "multiple pdf files to merge into one.")
-                @RequestParam(value = "file", required = true) MultipartFile file1,
+                @RequestParam(value = "file1", required = true) MultipartFile file1,
             @ApiParam(name="file2", required = true, value = "multiple pdf files to merge into one.")
-                @RequestParam(value = "file", required = true) MultipartFile file2,
+                @RequestParam(value = "file2", required = true) MultipartFile file2,
             @ApiParam(name="keepBookmark", required = false, allowableValues = "yes,no", value="Specifies whether bookmarks from the source PDF documents are retained in the merged document")
                 @RequestParam(value = "keepBookmark", required = false) Boolean keepBookmark,
             @ApiParam(name="password", required = false, value="Owner or user password of the source PDF document, if the document is password-protected.")

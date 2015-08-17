@@ -66,7 +66,7 @@ public class InfoController
     @Autowired public PdfGateway setInfoGateway;
 
     private
-    @Value("#{applicationProperties.defaultReplyTimeout}")
+    @Value("${defaultReplyTimeout}")
     Integer defaultTimeout;
 
 

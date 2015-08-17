@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdfMicroServiceApplication.class)
 @IntegrationTest("server.port=0")
-public class ConvertUrlToPdfPdfRestTest implements Serializable
+public class ConvertUrlToPDFPdfRestTest implements Serializable
 {
     @Autowired public WebApplicationContext context;
 

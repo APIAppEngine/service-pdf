@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
 public class DDXController
 {
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    private  @Value("${defaultReplyTimeout}")  Integer defaultTimeout;
 
     @Qualifier("processDDXGateway")
     @Autowired public PdfGateway gateway;

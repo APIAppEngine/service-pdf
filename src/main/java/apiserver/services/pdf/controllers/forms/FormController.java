@@ -19,12 +19,10 @@ package apiserver.services.pdf.controllers.forms;
  along with the ApiServer Project.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-import apiserver.core.common.ResponseEntityHelper;
-import apiserver.core.connectors.coldfusion.services.IBinaryResult;
 import apiserver.jobs.IProxyJob;
 import apiserver.model.Document;
 import apiserver.services.pdf.gateways.PdfFormGateway;
-import apiserver.services.pdf.gateways.jobs.CFPDFFormJob;
+import apiserver.services.pdf.gateways.jobs.CFPdfFormJob;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -68,7 +66,7 @@ public class FormController
     @Autowired
     public PdfFormGateway extractGateway;
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    private @Value("${defaultReplyTimeout}")  Integer defaultTimeout;
 
 
     /**
@@ -100,7 +98,7 @@ public class FormController
         }
 
 
-        CFPDFFormJob job = new CFPDFFormJob();
+        CFPdfFormJob job = new CFPdfFormJob();
         job.setDocument(new Document(file));
         job.setFormat(format);
         if( password != null ) job.setPassword(password);
@@ -137,7 +135,7 @@ public class FormController
                 @RequestPart(value = "password", required = false) String password
     ) throws InterruptedException, ExecutionException, TimeoutException, IOException
     {
-        CFPDFFormJob job = new CFPDFFormJob();
+        CFPdfFormJob job = new CFPdfFormJob();
         job.setDocument(new Document(file));
         job.setFields(xmlData);
         if( password != null ) job.setPassword(password);

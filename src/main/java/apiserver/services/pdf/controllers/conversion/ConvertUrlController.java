@@ -52,8 +52,8 @@ import java.util.concurrent.TimeoutException;
 
 @Controller
 @RestController
-@Api(value = "/api/pdf", description = "[PDF]")
-@RequestMapping("/api/pdf")
+@Api(value = "/api/v1/pdf")
+@RequestMapping("/api/v1/pdf")
 public class ConvertUrlController
 {
     @Qualifier("convertUrlToPdfApiGateway")
@@ -61,7 +61,7 @@ public class ConvertUrlController
     public PdfConversionGateway cfdocumentGateway;
 
 
-    private @Value("${applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    private @Value("${defaultReplyTimeout}") Integer defaultTimeout;
 
 
     /**

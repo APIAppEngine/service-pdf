@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Created by mnimer on 4/13/14.
  */
-public class CFPDFFormJob extends GetDocumentJob implements IProxyJob, Serializable
+public class CFPdfFormJob extends GetDocumentJob implements IProxyJob, Serializable
 {
     private static final String OVERWRITEDATA = "overwriteDate";
     private static final String PASSWORD = "password";

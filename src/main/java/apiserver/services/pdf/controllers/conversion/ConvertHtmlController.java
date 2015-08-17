@@ -59,7 +59,7 @@ public class ConvertHtmlController
     @Autowired
     public PdfConversionGateway gateway;
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    private @Value("${defaultReplyTimeout}") Integer defaultTimeout;
 
 
     /**

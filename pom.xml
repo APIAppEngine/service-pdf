@@ -17,6 +17,21 @@
     <name>service-pdf</name>
     <url>http://maven.apache.org</url>
 
+
+    <distributionManagement>
+        <repository>
+            <id>aws-release</id>
+            <name>AWS Release Repository</name>
+            <url>s3://mnimer-apiappengine/release</url>
+        </repository>
+        <snapshotRepository>
+            <id>aws-snapshot</id>
+            <name>AWS Snapshot Repository</name>
+            <url>s3://mnimer-apiappengine/snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+
     <dependencies>
         <dependency>
             <groupId>com.mikenimer.apiappengine</groupId>
@@ -29,7 +44,6 @@
             <artifactId>service-cache</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
-
     </dependencies>
 
 
@@ -146,5 +160,46 @@
 
             </plugin>
         </plugins>
+
+
+        <extensions>
+            <extension>
+                <groupId>org.springframework.build</groupId>
+                <artifactId>aws-maven</artifactId>
+                <version>5.0.0.RELEASE</version>
+            </extension>
+        </extensions>
     </build>
+
+
+    <profiles>
+        <profile>
+            <id>S3-Deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.bazaarvoice.maven.plugins</groupId>
+                        <artifactId>s3-upload-maven-plugin</artifactId>
+                        <version>1.2</version>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>s3-upload</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <bucketName>mnimer-apiappengine</bucketName>
+                            <source>target/service-pdf.jar</source>
+                            <destination>service-pdf.jar</destination>
+                            <accessKey>${accessKey}</accessKey>
+                            <secretKey>${secretKey}</secretKey>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>

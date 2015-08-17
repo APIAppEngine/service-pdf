@@ -40,7 +40,7 @@ public class FooterController
     @Autowired
     public PdfGateway footerGateway;
 
-    private @Value("#{applicationProperties.defaultReplyTimeout}") Integer defaultTimeout;
+    private  @Value("${defaultReplyTimeout}")  Integer defaultTimeout;
 
 
 
